@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Ursly Desktop",
+  "version": "1.0.0",
+  "identifier": "io.ursly.desktop",
+  "build": {
+    "beforeDevCommand": "",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "",
+    "frontendDist": "../../../dist/apps/web"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Ursly",
+        "width": 1600,
+        "height": 1000,
+        "minWidth": 1200,
+        "minHeight": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "center": true,
+        "zoomHotkeysEnabled": true,
+        "url": "index.html"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' tauri: asset: http://localhost:* https://app.ursly.io https://api.ursly.io https://auth.ursly.io https://grpc.ursly.io https://*.ursly.io; connect-src 'self' tauri: http://localhost:* ws://localhost:* https://app.ursly.io https://api.ursly.io https://auth.ursly.io https://grpc.ursly.io https://*.ursly.io wss://*.ursly.io wss://api.ursly.io; script-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: http://localhost:* https://app.ursly.io https://*.ursly.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com http://localhost:* https://app.ursly.io; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob: tauri: asset:; frame-src 'self' http://localhost:* https://auth.ursly.io"
+    },
+    "trayIcon": {
+      "iconPath": "icons/tray-icon.png",
+      "iconAsTemplate": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Utility",
+    "shortDescription": "GPU Metrics Monitor for AI Models",
+    "longDescription": "Desktop application for monitoring GPU metrics while running AI models with Ursly.io",
+    "copyright": "2024 Ursly.io",
+    "publisher": "Ursly.io",
+    "macOS": {
+      "minimumSystemVersion": "10.15",
+      "frameworks": [],
+      "exceptionDomain": null
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      },
+      "wix": {
+        "language": "en-US"
+      },
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null,
+        "languages": ["English"],
+        "displayLanguageSelector": false,
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

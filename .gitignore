@@ -1,0 +1,91 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+dist
+tmp
+/out-tsc
+*.js.map
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDE - Cursor
+.cursor/*
+!.cursor/rules
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.local
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# Tauri / Rust
+apps/desktop/src-tauri/target/
+**/*.rs.bk
+Cargo.lock
+!apps/desktop/src-tauri/Cargo.lock
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Logs
+logs
+*.log
+pids
+*.pid
+*.seed
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Build artifacts
+build/
+*.tsbuildinfo
+

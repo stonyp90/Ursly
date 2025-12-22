@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ursly - AI Media Asset Orchestration for Creative Teams</title>
+  <meta name="description" content="AI-powered media asset orchestration with role-based access control. Built for creative teams, production studios, and media companies.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <span class="logo-icon">U</span>
+        <span class="logo-text">URSLY</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#integrations">Integrations</a>
+        <a href="#deployment">Deployment</a>
+        <a href="https://github.com/stonyp90/ursly" class="btn-nav" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://app.ursly.io" class="btn-nav-app" target="_blank" rel="noopener">
+          Try Demo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <a href="#features">Features</a>
+    <a href="#security">Security</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#integrations">Integrations</a>
+    <a href="#deployment">Deployment</a>
+    <a href="https://github.com/stonyp90/ursly" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://app.ursly.io" class="mobile-app-link" target="_blank" rel="noopener">Try Demo</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="badge-container">
+        <span class="badge">M&E + GAMING</span>
+        <span class="badge badge-secondary">Open Source</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="gradient-text">Open Source</span>
+        <span class="gradient-text-secondary">LLM</span><br>
+        Orchestrator
+      </h1>
+      <p class="hero-description">
+        Run AI on your existing GPU workstations and cloud instances. 
+        Built for M&E studios and game developers who already have the hardware. 
+        Enterprise access control without the enterprise price tag.
+      </p>
+      <div class="hero-actions">
+        <a href="#getting-started" class="btn-primary">
+          Get Started
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#how-it-works" class="btn-secondary">
+          See How It Works
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">Your GPUs</span>
+          <span class="stat-label">Workstations & Cloud</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">LLM + Whisper</span>
+          <span class="stat-label">Ollama Powered</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">100% Open</span>
+          <span class="stat-label">MIT Licensed</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-illustration">
+        <div class="illustration-ring ring-1"></div>
+        <div class="illustration-ring ring-2"></div>
+        <div class="illustration-ring ring-3"></div>
+        <div class="illustration-center">
+          <div class="agent-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v10M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m6 0h10M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/></svg>
+          </div>
+        </div>
+        <div class="floating-card card-1">
+          <div class="card-icon success"></div>
+          <span>Agent Active</span>
+        </div>
+        <div class="floating-card card-2">
+          <div class="card-icon warning"></div>
+          <span>Task Running</span>
+        </div>
+        <div class="floating-card card-3">
+          <div class="card-icon primary"></div>
+          <span>Access Granted</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What is Ursly Section -->
+  <section class="what-is">
+    <div class="container">
+      <div class="what-is-content">
+        <div class="what-is-text">
+          <span class="section-tag">// WHAT IS URSLY</span>
+          <h2 class="section-title">AI for Creative Teams,<br>Under Your Control</h2>
+          <p class="lead-text">
+            Ursly orchestrates AI agents for media production workflows. Automate transcription, 
+            captioning, scene analysis, and asset tagging while keeping full control over access.
+          </p>
+          <p>
+            Built for studios, post-production houses, and creative teams who need AI power 
+            without sacrificing security. Role-based access ensures only authorized team members 
+            can trigger AI workflows on your sensitive media assets.
+          </p>
+        </div>
+        <div class="what-is-highlights">
+          <div class="highlight">
+            <div class="highlight-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            </div>
+            <div>
+              <h4>Media-First</h4>
+              <p>Built for video, audio, and creative assets</p>
+            </div>
+          </div>
+          <div class="highlight">
+            <div class="highlight-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <h4>RBAC Protected</h4>
+              <p>Role-based access for sensitive content</p>
+            </div>
+          </div>
+          <div class="highlight">
+            <div class="highlight-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            </div>
+            <div>
+              <h4>Local Inference</h4>
+              <p>Run AI on your servers, footage never leaves</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// KEY FEATURES</span>
+        <h2 class="section-title">AI Power for Media Production</h2>
+        <p class="section-description">
+          From transcription to asset management, automate your creative workflows with enterprise-grade security.
+        </p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card feature-large">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3 class="feature-title">Role-Based Access Control</h3>
+          <p class="feature-description">
+            Protect sensitive media assets with granular permissions. Producers, editors, 
+            and assistants get exactly the access they need. No more sharing API keys 
+            or worrying about unauthorized AI access to unreleased content.
+          </p>
+          <div class="feature-visual">
+            <div class="role-demo">
+              <div class="role-item">
+                <span class="role-badge admin">Producer</span>
+                <span class="role-perms">Full Access</span>
+              </div>
+              <div class="role-item">
+                <span class="role-badge operator">Editor</span>
+                <span class="role-perms">Execute, View</span>
+              </div>
+              <div class="role-item">
+                <span class="role-badge viewer">Assistant</span>
+                <span class="role-perms">View Only</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-secondary">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v10M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m6 0h10M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/></svg>
+          </div>
+          <h3 class="feature-title">Media AI Agents</h3>
+          <p class="feature-description">
+            Deploy specialized agents for your creative workflows. 
+            Transcription, captioning, scene detection, and more.
+          </p>
+          <ul class="feature-list">
+            <li>Auto-transcription & captions</li>
+            <li>Scene analysis</li>
+            <li>Asset tagging & metadata</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-success">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3 class="feature-title">Batch Processing</h3>
+          <p class="feature-description">
+            Queue media files for AI processing. Track progress 
+            across your entire library in real-time.
+          </p>
+          <ul class="feature-list">
+            <li>Bulk transcription</li>
+            <li>Watch folders</li>
+            <li>Progress notifications</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3 class="feature-title">Audit & Compliance</h3>
+          <p class="feature-description">
+            Every AI interaction is logged. Know who accessed what, 
+            when, and why. Essential for client confidentiality.
+          </p>
+          <ul class="feature-list">
+            <li>Complete access history</li>
+            <li>User attribution</li>
+            <li>Client project isolation</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3 class="feature-title">Local Models</h3>
+          <p class="feature-description">
+            Run Whisper, LLaMA, and other models on your hardware. 
+            Your footage never leaves your network.
+          </p>
+          <ul class="feature-list">
+            <li>Ollama integration</li>
+            <li>GPU acceleration</li>
+            <li>Air-gapped support</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IAM & Security Section -->
+  <section id="security" class="security-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// IDENTITY & ACCESS MANAGEMENT</span>
+        <h2 class="section-title">Protect Your Media Assets</h2>
+        <p class="section-description">
+          Client footage, unreleased content, sensitive projects. Control who can run AI on what with fine-grained RBAC.
+        </p>
+      </div>
+
+      <div class="iam-grid">
+        <div class="iam-card">
+          <div class="iam-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Role-Based Access Control (RBAC)</h3>
+          <p>Producers, editors, assistants, clients. Each role gets exactly the AI access they need. No more or less.</p>
+          <div class="iam-features">
+            <span class="iam-tag">Team Hierarchy</span>
+            <span class="iam-tag">Permission Levels</span>
+            <span class="iam-tag">Group Management</span>
+          </div>
+        </div>
+
+        <div class="iam-card">
+          <div class="iam-icon iam-icon-accent">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M14.5 10l3-4M9.5 14l-3 4M14.5 14l3 4"/></svg>
+          </div>
+          <h3>Project-Based Access (ReBAC)</h3>
+          <p>Assigned to a project? Access its assets. Moved off the project? Access revoked. Client work stays isolated automatically.</p>
+          <div class="iam-features">
+            <span class="iam-tag">Project Isolation</span>
+            <span class="iam-tag">Client Boundaries</span>
+            <span class="iam-tag">Asset Hierarchies</span>
+          </div>
+        </div>
+
+        <div class="iam-card">
+          <div class="iam-icon iam-icon-success">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="16" r="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>Studio SSO Integration</h3>
+          <p>Connect your existing identity system. Frame.io, Okta, Azure AD, Google Workspace. One login for your whole team.</p>
+          <div class="iam-features">
+            <span class="iam-tag">SSO Ready</span>
+            <span class="iam-tag">OIDC / SAML</span>
+            <span class="iam-tag">MFA Support</span>
+          </div>
+        </div>
+
+        <div class="iam-card">
+          <div class="iam-icon iam-icon-warning">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15l3 3 3-3"/></svg>
+          </div>
+          <h3>Compliance Ready</h3>
+          <p>Full audit trails for every AI action. Know who processed what content and when. Export reports for client deliverables.</p>
+          <div class="iam-features">
+            <span class="iam-tag">Audit Logs</span>
+            <span class="iam-tag">Access Reports</span>
+            <span class="iam-tag">Client Exports</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="iam-visual">
+        <div class="iam-diagram">
+          <div class="iam-diagram-header">
+            <span class="iam-diagram-title">Access Decision Flow</span>
+          </div>
+          <div class="iam-diagram-content">
+            <div class="iam-flow">
+              <div class="iam-flow-node iam-flow-user">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>User Request</span>
+              </div>
+              <div class="iam-flow-arrow"></div>
+              <div class="iam-flow-node iam-flow-check">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Policy Engine</span>
+              </div>
+              <div class="iam-flow-arrow"></div>
+              <div class="iam-flow-node iam-flow-result">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Allow / Deny</span>
+              </div>
+            </div>
+            <div class="iam-checks">
+              <div class="iam-check">
+                <span class="iam-check-icon check-pass"></span>
+                <span>user.role == "editor"</span>
+              </div>
+              <div class="iam-check">
+                <span class="iam-check-icon check-pass"></span>
+                <span>user.projects.includes(asset.project)</span>
+              </div>
+              <div class="iam-check">
+                <span class="iam-check-icon check-pass"></span>
+                <span>asset.client == user.assignedClient</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// HOW IT WORKS</span>
+        <h2 class="section-title">From Raw Footage to AI-Enhanced Assets</h2>
+      </div>
+
+      <div class="steps-visual">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h3>Deploy On Your Servers</h3>
+          <p>
+            Install Ursly on your studio infrastructure. 
+            Your footage stays on your network, always.
+          </p>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h3>Set Up Your Team</h3>
+          <p>
+            Configure roles for producers, editors, and assistants. 
+            Assign project-based access to client work.
+          </p>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h3>Connect Your NLE</h3>
+          <p>
+            Install our Premiere Pro or Resolve plugin. 
+            AI agents appear right in your timeline.
+          </p>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <h3>Automate Your Workflow</h3>
+          <p>
+            Transcribe, caption, analyze. Let AI handle the tedious work 
+            while your team focuses on creative decisions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deployment Section -->
+  <section id="deployment" class="deployment">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// DEPLOYMENT</span>
+        <h2 class="section-title">Run Anywhere, Your Way</h2>
+        <p class="section-description">
+          Deploy as a managed service on any major cloud provider or run on your own infrastructure.
+        </p>
+      </div>
+
+      <div class="cloud-grid">
+        <div class="cloud-card">
+          <div class="cloud-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M18.75 11.35a4.32 4.32 0 0 0-.79-2.32c.02-.1.04-.2.04-.31V8.5c0-2.76-2.24-5-5-5-2.33 0-4.29 1.59-4.84 3.75A3.5 3.5 0 0 0 5 10.5c0 1.93 1.57 3.5 3.5 3.5h9.75c1.52 0 2.75-1.23 2.75-2.75 0-1.42-1.08-2.59-2.25-2.9z"/><path d="M12.5 17v4M8.5 17v4M16.5 17v4"/></svg>
+          </div>
+          <h4>AWS</h4>
+          <p>Deploy on ECS, EKS, or EC2</p>
+        </div>
+
+        <div class="cloud-card">
+          <div class="cloud-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h4>Google Cloud</h4>
+          <p>Cloud Run, GKE, or Compute</p>
+        </div>
+
+        <div class="cloud-card">
+          <div class="cloud-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M22.38 9.85l-8.5-4.91a2 2 0 0 0-2 0l-8.5 4.91a2 2 0 0 0-1 1.73v4.91a2 2 0 0 0 1 1.73l8.5 4.91a2 2 0 0 0 2 0l8.5-4.91a2 2 0 0 0 1-1.73v-4.91a2 2 0 0 0-1-1.73z"/></svg>
+          </div>
+          <h4>Azure</h4>
+          <p>Container Apps, AKS, or VMs</p>
+        </div>
+
+        <div class="cloud-card">
+          <div class="cloud-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 7h10M7 12h10M7 17h10" stroke="var(--background)" stroke-width="2"/></svg>
+          </div>
+          <h4>On-Premise</h4>
+          <p>Your servers, your control</p>
+        </div>
+      </div>
+
+      <div class="deployment-features">
+        <div class="deploy-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Docker & Kubernetes ready</span>
+        </div>
+        <div class="deploy-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Infrastructure as Code templates</span>
+        </div>
+        <div class="deploy-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Auto-scaling support</span>
+        </div>
+        <div class="deploy-feature">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Connect any LLM provider</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Try the App Section -->
+  <section id="getting-started" class="try-app">
+    <div class="container">
+      <div class="try-app-container">
+        <div class="try-app-content">
+          <span class="section-tag">// GET STARTED</span>
+          <h2 class="section-title">Try Ursly Now</h2>
+          <p class="try-app-description">
+            Experience the power of AI agent orchestration. 
+            Access the live platform and start creating, managing, 
+            and deploying intelligent agents in minutes.
+          </p>
+          <div class="try-app-features">
+            <div class="try-app-feature">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>No installation required</span>
+            </div>
+            <div class="try-app-feature">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Full-featured dashboard</span>
+            </div>
+            <div class="try-app-feature">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Secure authentication</span>
+            </div>
+          </div>
+          <div class="try-app-actions">
+            <a href="https://app.ursly.io" class="btn-launch" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              Try Demo
+            </a>
+            <a href="#self-hosted" class="btn-secondary">
+              Self-Host Instead
+            </a>
+          </div>
+        </div>
+        <div class="try-app-visual">
+          <div class="app-preview">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="preview-url">app.ursly.io</span>
+            </div>
+            <div class="preview-content">
+              <div class="preview-sidebar">
+                <div class="preview-nav-item active"></div>
+                <div class="preview-nav-item"></div>
+                <div class="preview-nav-item"></div>
+                <div class="preview-nav-item"></div>
+              </div>
+              <div class="preview-main">
+                <div class="preview-card-row">
+                  <div class="preview-stat-card"></div>
+                  <div class="preview-stat-card"></div>
+                  <div class="preview-stat-card"></div>
+                </div>
+                <div class="preview-table">
+                  <div class="preview-table-row"></div>
+                  <div class="preview-table-row"></div>
+                  <div class="preview-table-row"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Integrations Section -->
+  <section id="integrations" class="integrations">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// INTEGRATIONS</span>
+        <h2 class="section-title">Extend Your Creative Workflow</h2>
+        <p class="section-description">
+          Connect Ursly to your favorite creative tools. Run AI agents directly in your workflow, powered by your local models.
+        </p>
+      </div>
+
+      <div class="integrations-grid">
+        <!-- Adobe Premiere Pro Integration Card -->
+        <div class="integration-card integration-featured">
+          <div class="integration-content">
+            <div class="integration-header">
+              <div class="integration-logo adobe-premiere">
+                <svg viewBox="0 0 240 234" width="48" height="48">
+                  <path fill="#00005B" d="M42.5 0h155C221 0 240 19 240 42.5v149c0 23.5-19 42.5-42.5 42.5h-155C19 234 0 215 0 191.5v-149C0 19 19 0 42.5 0z"/>
+                  <path fill="#9999FF" d="M99 164H79l-5-24H54l-5 24H30l24-104h20l25 104zm-28-42l-8-39h-1l-8 39h17zm85-62v104h-18v-12h-1c-4 8-11 14-22 14-17 0-28-13-28-33 0-21 12-35 30-35 10 0 17 5 20 12h1V60h18zm-18 71v-14c0-10-6-17-15-17-10 0-16 8-16 19s6 19 16 19c9 0 15-7 15-17zm77-26c0 21-12 35-30 35-10 0-18-5-21-12h-1v12h-18V60h18v44h1c4-8 11-13 21-13 18 0 30 14 30 34v2zm-19 0c0-11-6-19-16-19s-16 8-16 19 6 19 16 19 16-8 16-19z"/>
+                </svg>
+              </div>
+              <div class="integration-meta">
+                <span class="integration-badge">UXP Plugin</span>
+                <span class="integration-badge badge-new">Coming Soon</span>
+              </div>
+            </div>
+            <h3 class="integration-title">Adobe Premiere Pro</h3>
+            <p class="integration-description">
+              Bring AI-powered automation directly into your video editing workflow. 
+              Our UXP plugin connects Premiere Pro to your local Ursly instance, 
+              enabling real-time AI assistance without cloud dependencies.
+            </p>
+            
+            <div class="integration-features">
+              <div class="int-feature">
+                <div class="int-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="int-feature-text">
+                  <strong>Local Model Inference</strong>
+                  <span>Run LLMs on your hardware via Ollama</span>
+                </div>
+              </div>
+              <div class="int-feature">
+                <div class="int-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <div class="int-feature-text">
+                  <strong>Auto-Captions & Transcription</strong>
+                  <span>Generate accurate captions with local Whisper</span>
+                </div>
+              </div>
+              <div class="int-feature">
+                <div class="int-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                </div>
+                <div class="int-feature-text">
+                  <strong>Scene Analysis</strong>
+                  <span>Intelligent clip suggestions and metadata</span>
+                </div>
+              </div>
+              <div class="int-feature">
+                <div class="int-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="int-feature-text">
+                  <strong>Privacy First</strong>
+                  <span>Your footage never leaves your network</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="integration-code-preview">
+              <div class="code-header">
+                <span>manifest.json</span>
+              </div>
+              <div class="code-body">
+                <code>{
+  "id": "ursly.premiere.plugin",
+  "name": "Ursly AI Assistant",
+  "host": {
+    "app": "Premiere Pro",
+    "minVersion": "25.6"
+  },
+  "urslyEndpoint": "http://localhost:3000"
+}</code>
+              </div>
+            </div>
+
+            <div class="integration-actions">
+              <a href="https://developer.adobe.com/premiere-pro/uxp/introduction/" class="btn-integration" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                UXP Developer Docs
+              </a>
+              <a href="https://github.com/stonyp90/ursly" class="btn-secondary-sm">
+                View Integration
+              </a>
+            </div>
+          </div>
+
+          <div class="integration-visual">
+            <div class="premiere-mockup">
+              <div class="mockup-timeline">
+                <div class="timeline-track track-video">
+                  <div class="track-label">V1</div>
+                  <div class="track-clip clip-1"></div>
+                  <div class="track-clip clip-2"></div>
+                  <div class="track-clip clip-3"></div>
+                </div>
+                <div class="timeline-track track-audio">
+                  <div class="track-label">A1</div>
+                  <div class="audio-waveform"></div>
+                </div>
+                <div class="timeline-track track-captions">
+                  <div class="track-label">CC</div>
+                  <div class="caption-block">AI Generated</div>
+                </div>
+              </div>
+              <div class="ursly-panel">
+                <div class="panel-header">
+                  <span class="panel-logo">U</span>
+                  <span>Ursly AI</span>
+                  <span class="panel-status connected"></span>
+                </div>
+                <div class="panel-action active">
+                  <span class="action-icon"></span>
+                  <span>Generate Captions</span>
+                </div>
+                <div class="panel-action">
+                  <span class="action-icon"></span>
+                  <span>Analyze Scene</span>
+                </div>
+                <div class="panel-action">
+                  <span class="action-icon"></span>
+                  <span>Smart Cut</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- More Integrations Coming Soon -->
+        <div class="integration-card integration-coming">
+          <div class="integration-header">
+            <div class="integration-logo davinci">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 12l3 3 5-5" stroke="#000" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <div class="integration-content">
+            <h3 class="integration-title">DaVinci Resolve</h3>
+            <p class="integration-description">
+              Scripted automation for Resolve's powerful editing and color grading tools.
+            </p>
+            <span class="coming-soon-badge">Coming Soon</span>
+          </div>
+        </div>
+
+        <div class="integration-card integration-coming">
+          <div class="integration-header">
+            <div class="integration-logo aftereffects">
+              <svg viewBox="0 0 240 234" width="40" height="40">
+                <path fill="#00005B" d="M42.5 0h155C221 0 240 19 240 42.5v149c0 23.5-19 42.5-42.5 42.5h-155C19 234 0 215 0 191.5v-149C0 19 19 0 42.5 0z"/>
+                <path fill="#9999FF" d="M90 168H70l-5-26H44l-5 26H20l26-112h19l25 112zm-28-45l-9-42h-1l-9 42h19zm102-67h20l-35 112h-20l-35-112h21l24 85h1l24-85z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="integration-content">
+            <h3 class="integration-title">After Effects</h3>
+            <p class="integration-description">
+              AI-assisted motion graphics and visual effects automation.
+            </p>
+            <span class="coming-soon-badge">Coming Soon</span>
+          </div>
+        </div>
+
+        <div class="integration-card integration-coming">
+          <div class="integration-header">
+            <div class="integration-logo vscode">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="integration-content">
+            <h3 class="integration-title">VS Code Extension</h3>
+            <p class="integration-description">
+              Code generation and refactoring with your local models directly in your editor.
+            </p>
+            <span class="coming-soon-badge">Coming Soon</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="integration-cta">
+        <p>Want to build an integration?</p>
+        <a href="https://github.com/stonyp90/ursly" target="_blank" rel="noopener" class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          Explore the API
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Self-Hosted Section -->
+  <section id="self-hosted" class="getting-started">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">// SELF-HOSTED</span>
+        <h2 class="section-title">Or Run It Yourself</h2>
+      </div>
+
+      <div class="quick-start">
+        <div class="quick-start-code">
+          <div class="code-header">
+            <span>Quick Start</span>
+          </div>
+          <div class="code-body">
+            <code><span class="code-comment"># Clone the repository</span>
+git clone https://github.com/stonyp90/ursly.git
+
+<span class="code-comment"># Install and start</span>
+cd ursly
+docker-compose up -d
+
+<span class="code-comment"># Access the dashboard</span>
+open http://localhost:4200</code>
+          </div>
+        </div>
+        <div class="quick-start-info">
+          <h3>Full control, your infrastructure</h3>
+          <p>
+            Get Ursly running locally in under 5 minutes. 
+            The Docker Compose setup includes everything you need 
+            to start creating and managing AI agents.
+          </p>
+          <ul>
+            <li>Pre-configured with demo users and roles</li>
+            <li>Sample agents ready to test</li>
+            <li>Full documentation included</li>
+          </ul>
+          <a href="https://github.com/stonyp90/ursly" class="btn-primary" target="_blank" rel="noopener">
+            View on GitHub
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Automate Your Media Workflows?</h2>
+        <p>Join creative teams already using Ursly for AI-powered production.</p>
+        <div class="cta-actions">
+          <a href="https://github.com/stonyp90/ursly" class="btn-primary" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            Star on GitHub
+          </a>
+          <a href="https://discord.gg/cree8" class="btn-secondary" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+            Join Discord
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <span class="logo-icon">U</span>
+            <span class="logo-text">URSLY</span>
+          </a>
+          <p>AI Media Asset Orchestration</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h5>Product</h5>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#integrations">Integrations</a>
+            <a href="#deployment">Deployment</a>
+            <a href="https://app.ursly.io" target="_blank" rel="noopener">Try Demo</a>
+          </div>
+          <div class="footer-column">
+            <h5>Resources</h5>
+            <a href="https://github.com/stonyp90/ursly" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/stonyp90/ursly/blob/main/agents.md" target="_blank" rel="noopener">Documentation</a>
+            <a href="https://discord.gg/cree8" target="_blank" rel="noopener">Discord</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>MIT License. Open source and free to use.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.mobile-menu a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileBtn.classList.remove('active');
+        mobileMenu.classList.remove('active');
+      });
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Nav background on scroll
+    const nav = document.querySelector('.nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+  </script>
+</body>
+</html>

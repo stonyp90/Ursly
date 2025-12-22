@@ -1,0 +1,15 @@
+node_modules
+dist
+.nx
+.git
+.gitignore
+README.md
+.env
+.env.local
+*.log
+coverage
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+

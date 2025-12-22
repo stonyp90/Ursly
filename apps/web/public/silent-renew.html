@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Silent Renew</title>
+</head>
+<body>
+  <script>
+    // This page handles silent token renewal in an iframe
+    parent.postMessage(location.href, location.origin);
+  </script>
+</body>
+</html>
+
