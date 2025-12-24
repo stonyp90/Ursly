@@ -981,14 +981,22 @@ pub async fn vfs_clipboard_paste_to_vfs(
                 copy_native_to_vfs(&vfs_service, path, &dest_source_id, dest).await
             }
             ClipboardSource::Vfs { source_id } => {
-                // VFS -> VFS: use VFS copy
-                let opts = crate::vfs::ports::CopyOptions {
-                    recursive: true,
-                    ..Default::default()
-                };
-                vfs_service.copy(source_id, path, &dest_file_path, opts)
-                    .await
-                    .map(|_| dest_file_path.clone())
+                // VFS -> VFS: check if same source or different
+                if source_id == &dest_source_id {
+                    // Same source - use internal copy
+                    let opts = crate::vfs::ports::CopyOptions {
+                        recursive: true,
+                        ..Default::default()
+                    };
+                    vfs_service.copy(source_id, path, &dest_file_path, opts)
+                        .await
+                        .map(|_| dest_file_path.clone())
+                } else {
+                    // Different sources - use cross-storage copy
+                    vfs_service.copy_to_source(source_id, path, &dest_source_id, &dest_file_path)
+                        .await
+                        .map(|_| dest_file_path.clone())
+                }
             }
         };
         
