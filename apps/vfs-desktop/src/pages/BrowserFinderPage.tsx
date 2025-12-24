@@ -37,10 +37,6 @@ import {
   getFileIcon as getFileIconComponent,
 } from '../components/CyberpunkIcons';
 import { InfoModal } from '../components/InfoModal';
-import {
-  KeyboardShortcutHelper,
-  useKeyboardShortcutHelper,
-} from '../components/KeyboardShortcutHelper';
 import '../styles/finder.css';
 
 type ViewMode = 'icon' | 'list';
@@ -93,9 +89,6 @@ export function BrowserFinderPage() {
     visible: false,
     file: null,
   });
-
-  // Keyboard shortcuts
-  const shortcutHelper = useKeyboardShortcutHelper();
 
   // ============================================================================
   // Load Data
@@ -935,37 +928,6 @@ export function BrowserFinderPage() {
         />
       )}
 
-      {/* Keyboard Shortcut Helper */}
-      <KeyboardShortcutHelper
-        isOpen={shortcutHelper.isOpen}
-        onClose={shortcutHelper.close}
-      />
-
-      {/* Shortcut Hint Button */}
-      <button
-        className="shortcut-hint-button"
-        onClick={shortcutHelper.toggle}
-        title="Keyboard Shortcuts"
-      >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-          <line x1="6" y1="8" x2="6.01" y2="8" />
-          <line x1="10" y1="8" x2="10.01" y2="8" />
-          <line x1="14" y1="8" x2="14.01" y2="8" />
-          <line x1="18" y1="8" x2="18.01" y2="8" />
-          <line x1="8" y1="12" x2="8.01" y2="12" />
-          <line x1="12" y1="12" x2="12.01" y2="12" />
-          <line x1="16" y1="12" x2="16.01" y2="12" />
-          <line x1="7" y1="16" x2="17" y2="16" />
-        </svg>
-      </button>
     </div>
   );
 }
