@@ -152,17 +152,21 @@ body::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   min-height: 100vh;
-  padding: 120px 20px 30px 20px;
+  max-height: 100vh;
+  padding: 24px 32px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Header with logo */
 #kc-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 #kc-header-wrapper {
@@ -181,8 +185,8 @@ body::after {
 #kc-header-wrapper::before {
   content: '';
   display: block;
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   background: linear-gradient(
     135deg,
     var(--cyber-cyan) 0%,
@@ -192,7 +196,7 @@ body::after {
   box-shadow:
     0 0 30px var(--glow-cyan),
     0 0 60px var(--glow-magenta);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 #kc-header-wrapper {
@@ -223,13 +227,14 @@ body::after {
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
     0 0 40px rgba(0, 245, 255, 0.05),
     inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
-  padding: 48px 64px !important;
+  padding: 32px 48px !important;
   width: 100%;
-  max-width: 520px !important;
-  min-width: 380px !important;
-  margin: 20px auto !important;
+  max-width: 460px !important;
+  min-width: 340px !important;
+  margin: 0 auto !important;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 /* Corner accents - Top Left */
@@ -293,7 +298,7 @@ h1#kc-page-title {
 /* Form groups */
 .pf-c-form__group,
 .form-group {
-  margin-bottom: 20px !important;
+  margin-bottom: 16px !important;
 }
 
 /* Labels */
@@ -319,7 +324,7 @@ input[type='email'] {
   border: 1px solid var(--cyber-border) !important;
   border-radius: 2px !important;
   color: var(--cyber-text) !important;
-  padding: 14px 16px !important;
+  padding: 12px 14px !important;
   font-size: 14px !important;
   font-family: 'Inter', sans-serif !important;
   transition: all 0.15s ease !important;
@@ -401,14 +406,14 @@ input[type='submit'],
   font-size: 12px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
-  padding: 16px 24px !important;
+  padding: 14px 20px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   width: 100% !important;
   box-shadow:
     0 0 20px var(--glow-cyan),
     0 0 40px var(--glow-magenta) !important;
-  margin-top: 8px !important;
+  margin-top: 4px !important;
   position: relative;
   overflow: hidden;
 }
@@ -469,7 +474,7 @@ a:hover,
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  margin-bottom: 16px !important;
+  margin-bottom: 12px !important;
   flex-wrap: wrap !important;
   gap: 8px !important;
 }
@@ -528,11 +533,11 @@ input[type='checkbox']:checked::after {
 #kc-registration,
 #kc-info {
   text-align: center !important;
-  margin-top: 24px !important;
-  padding-top: 24px !important;
+  margin-top: 16px !important;
+  padding-top: 16px !important;
   border-top: 1px solid var(--cyber-border) !important;
   color: var(--cyber-text-muted) !important;
-  font-size: 0.9rem !important;
+  font-size: 0.85rem !important;
   position: relative;
 }
 
@@ -550,8 +555,8 @@ input[type='checkbox']:checked::after {
 
 /* Social providers */
 #kc-social-providers {
-  margin-top: 24px !important;
-  padding-top: 24px !important;
+  margin-top: 16px !important;
+  padding-top: 16px !important;
   border-top: 1px solid var(--cyber-border) !important;
   position: relative;
 }
@@ -606,15 +611,15 @@ input[type='checkbox']:checked::after {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   width: 100% !important;
-  padding: 14px 16px !important;
+  padding: 10px 14px !important;
   background: var(--cyber-surface) !important;
   border: 1px solid var(--cyber-border) !important;
   border-radius: 2px !important;
   color: var(--cyber-text) !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 500 !important;
   transition: all 0.15s ease !important;
   text-decoration: none !important;
@@ -759,7 +764,7 @@ input[type='checkbox']:checked::after {
 .social-divider {
   display: flex !important;
   align-items: center !important;
-  margin: 24px 0 16px !important;
+  margin: 16px 0 12px !important;
 }
 
 .social-divider::before,
@@ -897,17 +902,26 @@ input[aria-invalid='true'] {
   animation: fadeInUp 0.4s ease-out;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
+/* Responsive - Smaller screens */
+@media (max-width: 520px) {
+  .login-pf-page {
+    padding: 16px !important;
+  }
+
   .card-pf,
   #kc-content {
-    padding: 28px 20px !important;
-    margin: 0 16px !important;
+    padding: 24px 20px !important;
     min-width: auto !important;
+    max-width: 100% !important;
   }
 
   #kc-header-wrapper {
     font-size: 1.25rem !important;
+  }
+
+  #kc-header-wrapper::before {
+    width: 36px;
+    height: 36px;
   }
 
   #kc-form-options {
@@ -919,6 +933,53 @@ input[aria-invalid='true'] {
   .social-links li {
     flex: 1 1 100% !important;
     max-width: none !important;
+  }
+}
+
+/* Ensure no scroll on tall screens */
+@media (max-height: 800px) {
+  .login-pf-page {
+    padding: 16px 24px !important;
+  }
+
+  .card-pf,
+  #kc-content {
+    padding: 24px 36px !important;
+  }
+
+  #kc-header {
+    margin-bottom: 12px !important;
+  }
+
+  #kc-header-wrapper::before {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pf-c-form__group,
+  .form-group {
+    margin-bottom: 12px !important;
+  }
+
+  .pf-c-form-control,
+  input[type='text'],
+  input[type='password'],
+  input[type='email'] {
+    padding: 10px 12px !important;
+  }
+
+  .pf-c-button.pf-m-primary,
+  .btn-primary,
+  input[type='submit'],
+  #kc-login {
+    padding: 12px 16px !important;
+  }
+
+  #kc-registration,
+  #kc-info,
+  #kc-social-providers {
+    margin-top: 12px !important;
+    padding-top: 12px !important;
   }
 }
 
