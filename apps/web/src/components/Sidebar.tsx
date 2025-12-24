@@ -1,35 +1,6 @@
-import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useUser } from '../contexts';
+import { useUser, useAppType } from '../contexts';
 import './Sidebar.css';
-
-// Check if running in Tauri Agent Desktop (should hide Storage section)
-function useIsAgentDesktop(): boolean {
-  const [isAgent, setIsAgent] = useState(false);
-
-  useEffect(() => {
-    const checkAgentDesktop = async () => {
-      // Check if running in Tauri
-      const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
-      if (!isTauri) return;
-
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        
-        // Try to call get_app_type - only exists in Agent Desktop
-        const appType = await invoke<string>('get_app_type');
-        setIsAgent(appType === 'agent');
-      } catch {
-        // get_app_type doesn't exist, we're in VFS Desktop or web
-        setIsAgent(false);
-      }
-    };
-
-    checkAgentDesktop();
-  }, []);
-
-  return isAgent;
-}
 
 const mainMenuItems = [
   { path: '/', label: 'Dashboard', icon: 'dashboard' },
@@ -172,7 +143,7 @@ const icons: Record<string, JSX.Element> = {
 export function Sidebar() {
   const location = useLocation();
   const { currentOrg } = useUser();
-  const isAgentDesktop = useIsAgentDesktop();
+  const { isAgentDesktop } = useAppType();
 
   return (
     <aside className="sidebar">

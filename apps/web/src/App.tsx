@@ -18,6 +18,44 @@ import {
 } from './pages/Metrics';
 import { OpenApi } from './pages/OpenApi';
 import { StoragePage } from './pages/Storage';
+import { useAppType } from './contexts';
+
+// Inner routes component that uses the AppType context
+function AppRoutes() {
+  const { isAgentDesktop } = useAppType();
+
+  return (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/agents" element={<Agents />} />
+      <Route path="/models" element={<Models />} />
+      <Route path="/tasks" element={<Tasks />} />
+      <Route path="/audit" element={<AuditLogs />} />
+      <Route path="/permissions" element={<Permissions />} />
+      <Route path="/groups" element={<Groups />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/open-api" element={<OpenApi />} />
+
+      {/* Storage route - hidden in Agent Desktop (VFS has its own file browser) */}
+      {!isAgentDesktop && <Route path="/storage" element={<StoragePage />} />}
+
+      {/* Redirect /storage to dashboard in Agent Desktop */}
+      {isAgentDesktop && (
+        <Route path="/storage" element={<Navigate to="/" replace />} />
+      )}
+
+      {/* Metrics section with nested routes */}
+      <Route path="/metrics" element={<MetricsLayout />}>
+        <Route index element={<Navigate to="/metrics/gpu" replace />} />
+        <Route path="gpu" element={<GpuMetricsPage />} />
+        <Route path="timeline" element={<PerformanceTimelinePage />} />
+        <Route path="system" element={<SystemResourcesPage />} />
+      </Route>
+    </Routes>
+  );
+}
 
 function App() {
   return (
@@ -31,34 +69,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/models" element={<Models />} />
-                <Route path="/tasks" element={<Tasks />} />
-                <Route path="/audit" element={<AuditLogs />} />
-                <Route path="/permissions" element={<Permissions />} />
-                <Route path="/groups" element={<Groups />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/open-api" element={<OpenApi />} />
-                <Route path="/storage" element={<StoragePage />} />
-
-                {/* Metrics section with nested routes */}
-                <Route path="/metrics" element={<MetricsLayout />}>
-                  <Route
-                    index
-                    element={<Navigate to="/metrics/gpu" replace />}
-                  />
-                  <Route path="gpu" element={<GpuMetricsPage />} />
-                  <Route
-                    path="timeline"
-                    element={<PerformanceTimelinePage />}
-                  />
-                  <Route path="system" element={<SystemResourcesPage />} />
-                </Route>
-              </Routes>
+              <AppRoutes />
             </Layout>
           </ProtectedRoute>
         }
