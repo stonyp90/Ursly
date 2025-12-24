@@ -1085,20 +1085,33 @@ export function FinderPage() {
       // Refresh file list and wait for it to complete
       await loadFilesList(selectedSource.id, currentPath);
 
-      // Use a longer delay to ensure React re-renders with new files
-      // Then start inline rename
-      setTimeout(() => {
-        setRenamingFile(newPath);
-        setRenameValue(folderName);
-        setSelectedFiles(new Set([newPath]));
+      // Set state for renaming immediately
+      setRenamingFile(newPath);
+      setRenameValue(folderName);
+      setSelectedFiles(new Set([newPath]));
 
-        setTimeout(() => {
+      // Use requestAnimationFrame for proper DOM timing
+      // This ensures React has re-rendered with the new folder
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Scroll the new folder into view
+          const folderElement = document.querySelector(
+            `[data-path="${CSS.escape(newPath)}"]`,
+          );
+          if (folderElement) {
+            folderElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }
+
+          // Focus and select the rename input
           if (renameInputRef.current) {
             renameInputRef.current.focus();
             renameInputRef.current.select();
           }
-        }, 50);
-      }, 150);
+        });
+      });
     } catch (err) {
       console.error('Create folder failed:', err);
       DialogService.error(`Create folder failed: ${err}`, 'Folder Error');
@@ -2314,6 +2327,7 @@ export function FinderPage() {
                     return (
                       <div
                         key={file.path}
+                        data-path={file.path}
                         className={`file-item ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${cutFilePaths.has(file.path) ? 'is-cut' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
                         onClick={(e) => handleFileClick(file, e)}
                         onDoubleClick={() => handleFileDoubleClick(file)}
@@ -2420,6 +2434,7 @@ export function FinderPage() {
                       return (
                         <div
                           key={file.path}
+                          data-path={file.path}
                           className={`list-row ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${cutFilePaths.has(file.path) ? 'is-cut' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
                           onClick={(e) => handleFileClick(file, e)}
                           onDoubleClick={() => handleFileDoubleClick(file)}
