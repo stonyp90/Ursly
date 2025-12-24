@@ -3,9 +3,18 @@
  * Clean 2-column layout with essential metrics only
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { invoke } from '@tauri-apps/api/core';
 import { useToast } from '../components/Toast';
+import { isTauriAvailable } from '../hooks';
 import './MetricsPage.css';
+
+// Dynamic import for Tauri
+const invokeTauri = async <T,>(command: string): Promise<T> => {
+  if (!isTauriAvailable()) {
+    throw new Error('Metrics are only available in the desktop app');
+  }
+  const { invoke } = await import('@tauri-apps/api/core');
+  return invoke<T>(command);
+};
 
 // Types matching Rust backend
 interface GpuInfo {
@@ -295,7 +304,7 @@ export function MetricsPage() {
 
   const fetchMetrics = useCallback(async () => {
     try {
-      const data = await invoke<AllMetrics>('get_all_metrics');
+      const data = await invokeTauri<AllMetrics>('get_all_metrics');
       setMetrics(data);
       setError(null);
       setUptime((prev) => prev + 2);
@@ -326,6 +335,10 @@ export function MetricsPage() {
   }, [checkThresholds]);
 
   useEffect(() => {
+    if (!isTauriAvailable()) {
+      setError('Metrics are only available in the desktop app');
+      return;
+    }
     fetchMetrics();
     const interval = setInterval(fetchMetrics, 2000);
     return () => clearInterval(interval);
