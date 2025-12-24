@@ -11,10 +11,10 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-brand">
-        <Logo size={28} />
+        <Logo size={22} />
         <div className="brand-text">
           <h1>Ursly</h1>
-          <span className="brand-tagline">VIRTUAL CLOUD FILE SYSTEM</span>
+          <span className="brand-tagline">VFS</span>
         </div>
       </div>
 

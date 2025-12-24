@@ -1,26 +1,26 @@
 /**
  * Ursly Logo Styles
- * Uses global CSS variables for consistent theming
+ * Clean, minimal styling using global CSS variables
  */
 
 /* =========================================
-   LOGO SVG ELEMENTS
+   MAIN LOGO (WITH BACKGROUND)
    ========================================= */
 .ursly-logo {
   display: block;
   flex-shrink: 0;
   vertical-align: middle;
+  transition: transform 0.2s ease;
 }
 
-/* Logo letter "U" - uses CSS variable for color */
-.ursly-logo .logo-letter {
-  stroke: var(--logo-text-color, #ffffff);
+.ursly-logo:hover {
+  transform: scale(1.05);
 }
 
-/* Accent dot */
-.ursly-logo .logo-accent {
-  fill: var(--logo-text-color, #ffffff);
-  opacity: 0.9;
+/* Glyph elements inherit white color */
+.ursly-logo .logo-glyph path,
+.ursly-logo .logo-glyph circle {
+  transition: opacity 0.2s ease;
 }
 
 /* =========================================
@@ -30,7 +30,15 @@
   display: block;
   flex-shrink: 0;
   vertical-align: middle;
-  color: var(--logo-gradient-mid, var(--vfs-primary, #8b5cf6));
+  color: var(--primary, #0a84ff);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ursly-logo-icon:hover {
+  color: var(--secondary, #5e5ce6);
+  transform: scale(1.05);
 }
 
 /* =========================================
@@ -39,20 +47,20 @@
 .logo-with-text {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .logo-text {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 1px;
   justify-content: center;
 }
 
 .logo-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--vfs-text-primary, var(--text-primary, #f5f5f7));
+  color: var(--text-primary, #f5f5f7);
   line-height: 1.2;
   margin: 0;
 }
@@ -60,9 +68,9 @@
 .logo-tagline {
   font-size: 9px;
   font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--vfs-text-secondary, var(--text-secondary, #8e8e93));
+  letter-spacing: 0.08em;
+  color: var(--text-secondary, #8e8e93);
   text-transform: uppercase;
-  line-height: 1.3;
-  margin: 0;
+  line-height: 1.2;
+  opacity: 0.8;
 }
