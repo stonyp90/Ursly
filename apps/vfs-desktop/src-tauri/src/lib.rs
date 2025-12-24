@@ -4,8 +4,39 @@
 
 pub mod vfs;
 
-use tauri::Manager;
+use tauri::{Manager, tray::TrayIconEvent};
 use vfs::commands::VfsStateWrapper;
+
+// ============================================================================
+// Window Commands
+// ============================================================================
+
+#[tauri::command]
+fn show_window(window: tauri::Window) {
+    if let Some(webview_window) = window.get_webview_window("main") {
+        let _ = webview_window.show();
+        let _ = webview_window.set_focus();
+    }
+}
+
+#[tauri::command]
+fn hide_window(window: tauri::Window) {
+    if let Some(webview_window) = window.get_webview_window("main") {
+        let _ = webview_window.hide();
+    }
+}
+
+#[tauri::command]
+fn toggle_window(window: tauri::Window) {
+    if let Some(webview_window) = window.get_webview_window("main") {
+        if webview_window.is_visible().unwrap_or(false) {
+            let _ = webview_window.hide();
+        } else {
+            let _ = webview_window.show();
+            let _ = webview_window.set_focus();
+        }
+    }
+}
 
 // ============================================================================
 // Developer Tools Toggle
@@ -45,7 +76,36 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(vfs_state)
+        .setup(|app| {
+            // Setup tray icon click handler
+            let app_handle = app.handle().clone();
+            if let Some(tray) = app.tray_by_id("main") {
+                tray.on_tray_icon_event(move |_tray, event| {
+                    if let TrayIconEvent::Click { .. } = event {
+                        if let Some(window) = app_handle.get_webview_window("main") {
+                            if window.is_visible().unwrap_or(false) {
+                                let _ = window.hide();
+                            } else {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Show window on startup for dev mode
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+            
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
+            show_window,
+            hide_window,
+            toggle_window,
             toggle_devtools,
             open_devtools,
             close_devtools,

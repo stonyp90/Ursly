@@ -13,6 +13,7 @@
     "windows": [
       {
         "title": "Ursly VFS",
+        "label": "main",
         "width": 1600,
         "height": 1000,
         "minWidth": 1200,
@@ -24,13 +25,16 @@
         "center": true,
         "zoomHotkeysEnabled": true,
         "url": "index.html",
-        "devtools": true
+        "devtools": true,
+        "visible": false,
+        "skipTaskbar": true
       }
     ],
     "security": {
       "csp": "default-src 'self' tauri: asset: http://localhost:* https://app.ursly.io https://api.ursly.io https://auth.ursly.io https://grpc.ursly.io https://*.ursly.io; connect-src 'self' tauri: http://localhost:* ws://localhost:* https://app.ursly.io https://api.ursly.io https://auth.ursly.io https://grpc.ursly.io https://*.ursly.io wss://*.ursly.io wss://api.ursly.io; script-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: http://localhost:* https://app.ursly.io https://*.ursly.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com http://localhost:* https://app.ursly.io; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob: tauri: asset:; frame-src 'self' http://localhost:* https://auth.ursly.io"
     },
     "trayIcon": {
+      "id": "main",
       "iconPath": "icons/tray-icon.png",
       "iconAsTemplate": true
     }
@@ -71,4 +75,3 @@
     }
   }
 }
-

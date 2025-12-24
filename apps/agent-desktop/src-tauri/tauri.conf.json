@@ -13,6 +13,7 @@
     "windows": [
       {
         "title": "Ursly Agent",
+        "label": "main",
         "width": 1400,
         "height": 900,
         "minWidth": 1000,
@@ -24,13 +25,16 @@
         "center": true,
         "zoomHotkeysEnabled": true,
         "url": "index.html",
-        "devtools": true
+        "devtools": true,
+        "visible": false,
+        "skipTaskbar": true
       }
     ],
     "security": {
       "csp": "default-src 'self' tauri: asset: http://localhost:*; script-src 'self' 'unsafe-inline' 'unsafe-eval' tauri: http://localhost:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com http://localhost:*; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob: tauri: asset:"
     },
     "trayIcon": {
+      "id": "main",
       "iconPath": "icons/tray-icon.png",
       "iconAsTemplate": true
     }
@@ -71,4 +75,3 @@
     }
   }
 }
-
