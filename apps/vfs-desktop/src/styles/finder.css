@@ -711,29 +711,31 @@
   transition: all 0.15s ease;
 }
 
+/* 3 Tier System: Hot, Cold, Nearline */
 .storage-tier-dot.hot {
   background: var(--tier-hot, #10b981);
-  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
-}
-
-.storage-tier-dot.warm {
-  background: var(--tier-warm, #f59e0b);
-  box-shadow: 0 0 4px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
 }
 
 .storage-tier-dot.cold {
   background: var(--tier-cold, #3b82f6);
-  box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
 }
 
 .storage-tier-dot.nearline {
   background: var(--tier-nearline, #8b5cf6);
-  box-shadow: 0 0 4px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.6);
+}
+
+/* Legacy tiers map to 3-tier system */
+.storage-tier-dot.warm {
+  background: var(--tier-hot, #10b981);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
 }
 
 .storage-tier-dot.archive {
-  background: var(--tier-archive, #6b7280);
-  box-shadow: 0 0 4px rgba(107, 114, 128, 0.5);
+  background: var(--tier-cold, #3b82f6);
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
 }
 
 /* =========================================
@@ -1491,10 +1493,11 @@
   border: 1px solid rgba(16, 185, 129, 0.6);
 }
 
+/* Legacy warm tier -> maps to hot */
 .grid-tier-badge.warm {
-  background: rgba(245, 158, 11, 0.9);
-  color: #1a1a1a;
-  border: 1px solid rgba(245, 158, 11, 0.6);
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+  border: 1px solid rgba(16, 185, 129, 0.6);
 }
 
 .grid-tier-badge.cold {
@@ -1509,10 +1512,11 @@
   border: 1px solid rgba(191, 90, 242, 0.6);
 }
 
+/* Legacy archive tier -> maps to cold */
 .grid-tier-badge.archive {
-  background: rgba(107, 114, 128, 0.9);
+  background: rgba(59, 130, 246, 0.9);
   color: white;
-  border: 1px solid rgba(107, 114, 128, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.6);
 }
 
 /* Subtle glow effect on hover */
@@ -1536,8 +1540,8 @@
 
 .file-item:hover .grid-tier-badge.archive {
   box-shadow:
-    0 4px 12px rgba(107, 114, 128, 0.4),
-    0 0 20px rgba(107, 114, 128, 0.2);
+    0 4px 12px rgba(59, 130, 246, 0.4),
+    0 0 20px rgba(59, 130, 246, 0.2);
 }
 
 .tier-progress {

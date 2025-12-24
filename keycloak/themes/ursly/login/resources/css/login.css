@@ -583,7 +583,7 @@ input[type='checkbox']:checked::after {
   margin-bottom: 16px !important;
 }
 
-/* Social providers - side by side layout */
+/* Social providers - all 3 on same line */
 #kc-social-providers ul,
 .social-links {
   list-style: none !important;
@@ -591,35 +591,35 @@ input[type='checkbox']:checked::after {
   margin: 0 !important;
   display: flex !important;
   flex-direction: row !important;
-  flex-wrap: wrap !important;
-  gap: 12px !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
   justify-content: center !important;
 }
 
 #kc-social-providers ul li,
 .social-links li {
-  flex: 1 1 calc(50% - 6px) !important;
-  min-width: 120px !important;
-  max-width: 180px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: 100px !important;
 }
 
-/* Social provider buttons */
+/* Social provider buttons - compact */
 .pf-c-login__main-footer-links-item a,
 #kc-social-providers a,
 .social-link {
   display: flex !important;
-  flex-direction: row !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;
+  gap: 4px !important;
   width: 100% !important;
-  padding: 10px 14px !important;
+  padding: 10px 8px !important;
   background: var(--cyber-surface) !important;
   border: 1px solid var(--cyber-border) !important;
-  border-radius: 2px !important;
+  border-radius: 4px !important;
   color: var(--cyber-text) !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 12px !important;
+  font-size: 10px !important;
   font-weight: 500 !important;
   transition: all 0.15s ease !important;
   text-decoration: none !important;
@@ -642,8 +642,8 @@ input[type='checkbox']:checked::after {
 
 .social-link svg,
 #kc-social-providers a svg {
-  width: 20px !important;
-  height: 20px !important;
+  width: 18px !important;
+  height: 18px !important;
   flex-shrink: 0 !important;
 }
 
@@ -652,6 +652,8 @@ input[type='checkbox']:checked::after {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  font-size: 9px !important;
+  letter-spacing: 0.02em !important;
 }
 
 .pf-c-login__main-footer-links-item a:hover,
@@ -931,8 +933,8 @@ input[aria-invalid='true'] {
 
   #kc-social-providers ul li,
   .social-links li {
-    flex: 1 1 100% !important;
-    max-width: none !important;
+    flex: 1 1 auto !important;
+    max-width: 80px !important;
   }
 }
 
