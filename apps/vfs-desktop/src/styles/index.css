@@ -207,13 +207,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   -webkit-app-region: drag;
-  overflow: hidden;
-  max-width: 100%;
   box-sizing: border-box;
+  min-height: 52px;
+  gap: 12px;
 }
 
 .header-brand {
@@ -221,6 +221,7 @@ body {
   align-items: center;
   gap: 8px;
   -webkit-app-region: no-drag;
+  flex-shrink: 0;
 }
 
 /* Logo alignment in header */
@@ -255,10 +256,10 @@ body {
 .header-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   -webkit-app-region: no-drag;
   flex-shrink: 0;
-  margin-right: 4px;
+  min-width: fit-content;
 }
 
 .info-item {
