@@ -111,7 +111,11 @@ describe('Toast Component', () => {
     });
 
     it('should handle toast without shortcut', () => {
-      const toast = { id: 'test-1', type: 'success' as const, message: 'Done' };
+      const toast: { id: string; type: 'success'; message: string; shortcut?: string } = { 
+        id: 'test-1', 
+        type: 'success', 
+        message: 'Done' 
+      };
 
       expect(toast.shortcut).toBeUndefined();
     });

@@ -6,11 +6,13 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeCustomizer } from './components/ThemeCustomizer';
 import { ToastProvider } from './components/Toast';
 import { ErrorDialogProvider } from './components/ErrorDialog';
+import { MetricsPanel } from './components/MetricsPanel';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isThemeCustomizerOpen, setIsThemeCustomizerOpen] = useState(false);
+  const [isMetricsPanelVisible, setIsMetricsPanelVisible] = useState(true);
 
   useEffect(() => {
     const initVfs = async () => {
@@ -75,10 +77,16 @@ function App() {
       <ToastProvider>
         <ErrorDialogProvider>
           <div className="app">
-            <Header appName="Ursly VFS" tagline="VIRTUAL CLOUD FILE SYSTEM" />
+            <Header />
 
-            <main className="main-content full-height">
-              <FinderPage />
+            <main className="main-content full-height with-metrics-panel">
+              <div className="content-area">
+                <FinderPage />
+              </div>
+              <MetricsPanel
+                isCollapsed={!isMetricsPanelVisible}
+                onToggle={() => setIsMetricsPanelVisible(!isMetricsPanelVisible)}
+              />
             </main>
 
             <button
@@ -104,4 +112,5 @@ function App() {
 }
 
 export default App;
+
 

@@ -419,11 +419,9 @@ export function BrowserFinderPage() {
 
     const items: BreadcrumbItem[] = [
       {
-        label: selectedSource.name,
+        name: selectedSource.name,
         path: '',
-        icon: (
-          <IconCloud className="cyber-icon" style={{ width: 16, height: 16 }} />
-        ),
+        icon: <IconCloud size={16} className="cyber-icon" />,
       },
     ];
 
@@ -434,14 +432,9 @@ export function BrowserFinderPage() {
       for (const part of parts) {
         accPath += `/${part}`;
         items.push({
-          label: part,
+          name: part,
           path: accPath,
-          icon: (
-            <IconFolder
-              className="cyber-icon"
-              style={{ width: 16, height: 16 }}
-            />
-          ),
+          icon: <IconFolder size={16} className="cyber-icon" />,
         });
       }
     }

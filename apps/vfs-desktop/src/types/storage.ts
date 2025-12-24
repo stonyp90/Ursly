@@ -486,6 +486,9 @@ export interface StorageSource {
   /** Last connected timestamp */
   lastConnected?: string;
 
+  /** Storage tier status */
+  tierStatus?: 'hot' | 'warm' | 'cold' | 'archive';
+
   // =========================================================================
   // Backward compatibility properties
   // =========================================================================

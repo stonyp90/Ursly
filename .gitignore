@@ -67,10 +67,11 @@ node_modules/
 # ============================================================================
 # Tauri / Rust
 # ============================================================================
-apps/desktop/src-tauri/target/
+**/src-tauri/target/
+**/src-tauri/gen/
 **/*.rs.bk
-Cargo.lock
-!apps/desktop/src-tauri/Cargo.lock
+**/Cargo.lock
+!apps/*/src-tauri/Cargo.lock
 
 # ============================================================================
 # Desktop Builds / Installers

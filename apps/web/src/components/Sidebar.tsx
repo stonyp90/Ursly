@@ -1,6 +1,25 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../contexts';
 import './Sidebar.css';
+
+// Check if running in Tauri Agent Desktop (should hide Storage section)
+function useIsAgentDesktop(): boolean {
+  const [isAgent, setIsAgent] = useState(false);
+
+  useEffect(() => {
+    // Check if running in Tauri by looking at window.__TAURI__
+    const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
+    if (isTauri) {
+      // Check document title or app identifier set by Tauri
+      // Agent Desktop sets title to "Ursly Agent"
+      const title = document.title.toLowerCase();
+      setIsAgent(title.includes('agent') || title.includes('ursly agent'));
+    }
+  }, []);
+
+  return isAgent;
+}
 
 const mainMenuItems = [
   { path: '/', label: 'Dashboard', icon: 'dashboard' },
@@ -143,6 +162,7 @@ const icons: Record<string, JSX.Element> = {
 export function Sidebar() {
   const location = useLocation();
   const { currentOrg } = useUser();
+  const isAgentDesktop = useIsAgentDesktop();
 
   return (
     <aside className="sidebar">
@@ -175,20 +195,22 @@ export function Sidebar() {
           ))}
         </div>
 
-        {/* Storage section */}
-        <div className="nav-section">
-          <span className="nav-section-title">Storage</span>
-          {storageMenuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`sidebar-item ${location.pathname === item.path || location.pathname.startsWith(item.path) ? 'active' : ''}`}
-            >
-              <span className="sidebar-icon">{icons[item.icon]}</span>
-              <span className="sidebar-label">{item.label}</span>
-            </Link>
-          ))}
-        </div>
+        {/* Storage section - hidden in Agent Desktop (VFS has its own file browser) */}
+        {!isAgentDesktop && (
+          <div className="nav-section">
+            <span className="nav-section-title">Storage</span>
+            {storageMenuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`sidebar-item ${location.pathname === item.path || location.pathname.startsWith(item.path) ? 'active' : ''}`}
+              >
+                <span className="sidebar-icon">{icons[item.icon]}</span>
+                <span className="sidebar-label">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Metrics section */}
         <div className="nav-section">
