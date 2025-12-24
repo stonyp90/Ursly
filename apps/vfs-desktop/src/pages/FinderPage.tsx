@@ -1972,27 +1972,30 @@ export function FinderPage() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              width="16"
-              height="16"
+              strokeWidth="1.75"
+              width="20"
+              height="20"
             >
               {showHiddenFiles ? (
-                // Eye open
+                // Eye open - visible
                 <>
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
+                  <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z" />
+                  <circle cx="12" cy="12" r="3.5" />
+                  <circle cx="12" cy="12" r="1" fill="currentColor" />
                 </>
               ) : (
-                // Eye closed
+                // Eye closed - hidden
                 <>
-                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" />
-                  <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
-                  <path d="M1 1l22 22" />
+                  <path d="M2 2l20 20" strokeWidth="2" />
+                  <path d="M6.7 6.7C4.2 8.5 2.5 12 2.5 12s3.5 7 9.5 7c2 0 3.8-.6 5.3-1.5" />
+                  <path d="M17.3 14.3c1.3-1.2 2.2-2.3 2.2-2.3s-3.5-7-9.5-7c-.7 0-1.4.1-2 .2" />
+                  <circle cx="12" cy="12" r="3.5" />
                 </>
               )}
             </svg>
           </button>
 
+          {/* Toggle Info Panel */}
           <button
             className={`toolbar-btn ${showInfoPanel ? 'active' : ''}`}
             onClick={() => setShowInfoPanel(!showInfoPanel)}
@@ -2002,10 +2005,14 @@ export function FinderPage() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.75"
+              width="20"
+              height="20"
             >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M9 3v18" />
+              <rect x="3" y="3" width="18" height="18" rx="2.5" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+              <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+              <line x1="15" y1="13" x2="15" y2="17" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>

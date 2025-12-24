@@ -2,6 +2,7 @@
  * Theme Customizer Component
  * Allows users to customize the app's appearance
  */
+import { useEffect } from 'react';
 import {
   useTheme,
   themeColors,
@@ -29,6 +30,21 @@ const colorDisplayNames: Record<ThemeColorKey, string> = {
 
 export function ThemeCustomizer({ isOpen, onClose }: ThemeCustomizerProps) {
   const { mode, toggleMode, colorKey, setColorKey } = useTheme();
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

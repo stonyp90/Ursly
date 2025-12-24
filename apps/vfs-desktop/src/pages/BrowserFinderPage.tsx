@@ -588,13 +588,24 @@ export function BrowserFinderPage() {
             {search.isSearching && <span className="search-spinner" />}
           </div>
 
+          {/* Toggle Info Panel */}
           <button
             className={`toolbar-btn ${showInfoPanel ? 'active' : ''}`}
             onClick={() => setShowInfoPanel(!showInfoPanel)}
             title="Toggle Info Panel"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 1a7 7 0 100 14A7 7 0 008 1zM7 5a1 1 0 112 0 1 1 0 01-2 0zm1 3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 8z" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              width="20"
+              height="20"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2.5" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+              <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+              <line x1="15" y1="13" x2="15" y2="17" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>

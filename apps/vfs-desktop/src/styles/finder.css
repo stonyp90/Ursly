@@ -172,30 +172,37 @@
   max-width: 600px;
 }
 
+/* Toolbar Buttons - Redesigned with better visibility */
 .toolbar-btn {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: var(--finder-surface);
   border: 1px solid var(--finder-border);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--finder-text-secondary);
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 /* Native-like hover */
 .toolbar-btn:hover:not(:disabled) {
-  background: var(--finder-hover);
+  background: var(--finder-surface-elevated);
   color: var(--finder-text-primary);
+  border-color: var(--finder-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
 .toolbar-btn:active:not(:disabled) {
   background: var(--finder-selection);
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .toolbar-btn:disabled {
@@ -203,21 +210,22 @@
   cursor: not-allowed;
 }
 
+/* Active state with gradient background */
 .toolbar-btn.active {
-  background: var(--finder-selection);
+  background: linear-gradient(135deg, rgba(var(--finder-accent-rgb), 0.2), rgba(var(--finder-secondary-rgb), 0.2));
   border-color: var(--finder-accent);
   color: var(--finder-accent);
+  box-shadow: 0 0 0 2px rgba(var(--finder-accent-rgb), 0.15);
 }
 
-.toolbar-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+.toolbar-btn.active:hover {
+  background: linear-gradient(135deg, rgba(var(--finder-accent-rgb), 0.3), rgba(var(--finder-secondary-rgb), 0.3));
 }
 
 .toolbar-btn svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 2;
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.75;
 }
 
 /* Navigation buttons */
