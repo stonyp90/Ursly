@@ -13,7 +13,7 @@ export type AppTab = 'files' | 'metrics';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<AppTab>('files');
   const [isThemeCustomizerOpen, setIsThemeCustomizerOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
@@ -24,7 +24,9 @@ function App() {
         await invoke('vfs_init');
         setIsLoading(false);
       } catch (err) {
+        // VFS init can fail gracefully - the app still works
         console.warn('VFS init warning:', err);
+        setError(null); // Clear any previous error - VFS init failure is non-fatal
         setIsLoading(false);
       }
     };
