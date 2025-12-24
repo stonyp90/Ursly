@@ -2439,7 +2439,7 @@ export function FinderPage() {
                           )}
                           {getTierIndicator(file, warmProgress[file.path])}
                         </div>
-                        <div className="file-name">
+                        <div className="file-name" title={file.name}>
                           {renamingFile === file.path ? (
                             <input
                               ref={renameInputRef}
@@ -2530,7 +2530,7 @@ export function FinderPage() {
                             }
                           }}
                         >
-                          <div className="col-name">
+                          <div className="col-name" title={file.name}>
                             <span className="row-icon">
                               {getFileIcon(file, 18)}
                             </span>

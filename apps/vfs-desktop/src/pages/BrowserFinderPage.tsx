@@ -780,7 +780,9 @@ export function BrowserFinderPage() {
                     onDoubleClick={() => handleFileDoubleClick(file)}
                   >
                     <div className="icon-placeholder">{getFileIcon(file)}</div>
-                    <span className="file-name">{file.name}</span>
+                    <span className="file-name" title={file.name}>
+                      {file.name}
+                    </span>
                     {file.tierStatus && file.tierStatus !== 'hot' && (
                       <span className={`tier-indicator ${file.tierStatus}`}>
                         {file.tierStatus}
@@ -804,7 +806,7 @@ export function BrowserFinderPage() {
                     onClick={(e) => handleFileClick(file, e)}
                     onDoubleClick={() => handleFileDoubleClick(file)}
                   >
-                    <span className="col-name">
+                    <span className="col-name" title={file.name}>
                       <span className="file-icon">{getFileIcon(file)}</span>
                       {file.name}
                     </span>
