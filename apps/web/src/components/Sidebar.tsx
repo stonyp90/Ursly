@@ -14,27 +14,14 @@ function useIsAgentDesktop(): boolean {
       if (!isTauri) return;
 
       try {
-        // Try to get the window label from Tauri
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
-        const win = getCurrentWindow();
-        const label = win.label;
-
-        // Agent Desktop uses "main" window but we can check the app name
-        // by trying to invoke a command that only exists in Agent Desktop
-        // For now, check if we're NOT in VFS by checking for vfs_init command
-        try {
-          const { invoke } = await import('@tauri-apps/api/core');
-          await invoke('vfs_list_sources');
-          // If vfs_list_sources exists, we're in VFS Desktop, not Agent
-          setIsAgent(false);
-        } catch {
-          // vfs_list_sources doesn't exist, we're in Agent Desktop
-          setIsAgent(true);
-        }
+        const { invoke } = await import('@tauri-apps/api/core');
+        
+        // Try to call get_app_type - only exists in Agent Desktop
+        const appType = await invoke<string>('get_app_type');
+        setIsAgent(appType === 'agent');
       } catch {
-        // Fallback: check document title
-        const title = document.title.toLowerCase();
-        setIsAgent(title.includes('agent'));
+        // get_app_type doesn't exist, we're in VFS Desktop or web
+        setIsAgent(false);
       }
     };
 

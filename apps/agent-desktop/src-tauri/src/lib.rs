@@ -43,6 +43,12 @@ fn toggle_window(window: tauri::Window) {
 // Developer Tools Toggle
 // ============================================================================
 
+/// Returns the app type for frontend detection
+#[tauri::command]
+fn get_app_type() -> &'static str {
+    "agent"
+}
+
 #[tauri::command]
 fn toggle_devtools(window: tauri::Window) {
     #[cfg(debug_assertions)]
@@ -106,6 +112,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_app_type,
             show_window,
             hide_window,
             toggle_window,
