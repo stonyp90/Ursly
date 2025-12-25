@@ -1,11 +1,12 @@
 /**
  * MetricsPreview - Compact sidebar metrics widget
+ * Follows global VFS design patterns from finder.css
  */
 
 .metrics-preview {
   margin-top: auto;
   border-top: 1px solid var(--vfs-border);
-  background: var(--vfs-bg-tertiary);
+  background: transparent;
 }
 
 .metrics-preview-header {
@@ -73,7 +74,7 @@
   gap: 6px;
 }
 
-/* Metric Tile */
+/* Metric Tile - Uses global VFS surface colors */
 .metric-tile {
   position: relative;
   display: flex;
@@ -81,7 +82,7 @@
   align-items: center;
   justify-content: center;
   padding: 6px 4px;
-  background: var(--vfs-bg-primary);
+  background: var(--vfs-bg-secondary);
   border: 1px solid var(--vfs-border);
   border-radius: 6px;
   min-height: 52px;
@@ -246,7 +247,7 @@
 
 /* Light Theme - Uses CSS variables which auto-switch with theme */
 [data-theme='light'] .metrics-preview {
-  background: var(--vfs-bg-tertiary);
+  background: transparent;
   border-top-color: var(--vfs-border);
 }
 
@@ -255,7 +256,7 @@
 }
 
 [data-theme='light'] .metric-tile {
-  background: var(--vfs-bg-secondary);
+  background: var(--vfs-bg-tertiary);
   border-color: var(--vfs-border);
   box-shadow: var(--vfs-shadow-sm);
 }
