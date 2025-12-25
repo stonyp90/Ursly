@@ -291,6 +291,11 @@ ul {
   gap: 32px;
 }
 
+/* Social icons should be closer together */
+.nav-links .btn-nav-icon + .btn-nav-icon {
+  margin-left: -20px;
+}
+
 .nav-links a {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -3229,11 +3234,16 @@ ul {
 
   .nav-links {
     display: flex;
-    gap: 12px;
+    gap: 8px;
   }
 
   .nav-links a:not(.btn-nav-icon) {
     display: none;
+  }
+
+  /* Social icons closer on mobile too */
+  .nav-links .btn-nav-icon + .btn-nav-icon {
+    margin-left: -12px;
   }
 
   .btn-nav-icon {
