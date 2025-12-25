@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useUser, useAppType } from '../contexts';
+import { Logo } from './Logo';
 import './Sidebar.css';
 
 const mainMenuItems = [
@@ -149,9 +150,7 @@ export function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <div className="logo-icon">
-            <span className="logo-letter">U</span>
-          </div>
+          <Logo size={32} />
           <div className="logo-text">
             <span className="logo-brand">URSLY</span>
             <span className="logo-subtitle">
