@@ -226,6 +226,8 @@ Built with amazing open source projects:
 
 <div align="center">
 
-**[ursly.io](https://ursly.io)** &bull; [Download](https://github.com/stonyp90/Ursly/releases/latest) &bull; [Discord](https://discord.gg/cree8) &bull; [GitHub](https://github.com/stonyp90/Ursly)
+**[ursly.io](https://ursly.io)** &bull; [Download](https://github.com/stonyp90/Ursly/releases/latest) &bull; [Discord](https://discord.gg/cree8) &bull; [GitHub](https://github.com/stonyp90/Ursly) &bull; [LinkedIn](https://www.linkedin.com/in/anthony-paquet-94a31085/)
+
+Created by **[Anthony Paquet](https://www.linkedin.com/in/anthony-paquet-94a31085/)**
 
 </div>
