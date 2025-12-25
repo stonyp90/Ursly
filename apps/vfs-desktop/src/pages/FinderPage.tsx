@@ -38,6 +38,7 @@ import {
 import { useToast } from '../components/Toast';
 import { ShortcutSettings } from '../components/ShortcutSettings';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { SearchBox } from '../components/SearchBox';
 import '../styles/finder.css';
 
 type ViewMode = 'icon' | 'list';
@@ -1726,7 +1727,7 @@ export function FinderPage() {
   };
 
   // Parse search query for DAM/MAM search operators
-  // Supports: tag:keyword, type:video, tier:hot, name:filename
+  // Supports: tag:, type:, tier:, ext:, is:, size:, modified:
   const parseSearchQuery = (
     query: string,
   ): {
@@ -1734,11 +1735,19 @@ export function FinderPage() {
     tagFilter?: string;
     typeFilter?: string;
     tierFilter?: string;
+    extFilter?: string;
+    isFilter?: string;
+    sizeFilter?: string;
+    modifiedFilter?: string;
   } => {
     let textSearch = query;
     let tagFilter: string | undefined;
     let typeFilter: string | undefined;
     let tierFilter: string | undefined;
+    let extFilter: string | undefined;
+    let isFilter: string | undefined;
+    let sizeFilter: string | undefined;
+    let modifiedFilter: string | undefined;
 
     // Extract tag: operator
     const tagMatch = query.match(/tag:(\S+)/i);
@@ -1761,7 +1770,115 @@ export function FinderPage() {
       textSearch = textSearch.replace(tierMatch[0], '').trim();
     }
 
-    return { textSearch, tagFilter, typeFilter, tierFilter };
+    // Extract ext: operator
+    const extMatch = query.match(/ext:(\S+)/i);
+    if (extMatch) {
+      extFilter = extMatch[1].toLowerCase().replace(/^\./, ''); // Remove leading dot
+      textSearch = textSearch.replace(extMatch[0], '').trim();
+    }
+
+    // Extract is: operator
+    const isMatch = query.match(/is:(\S+)/i);
+    if (isMatch) {
+      isFilter = isMatch[1].toLowerCase();
+      textSearch = textSearch.replace(isMatch[0], '').trim();
+    }
+
+    // Extract size: operator
+    const sizeMatch = query.match(/size:(\S+)/i);
+    if (sizeMatch) {
+      sizeFilter = sizeMatch[1].toLowerCase();
+      textSearch = textSearch.replace(sizeMatch[0], '').trim();
+    }
+
+    // Extract modified: operator
+    const modifiedMatch = query.match(/modified:(\S+)/i);
+    if (modifiedMatch) {
+      modifiedFilter = modifiedMatch[1].toLowerCase();
+      textSearch = textSearch.replace(modifiedMatch[0], '').trim();
+    }
+
+    return {
+      textSearch,
+      tagFilter,
+      typeFilter,
+      tierFilter,
+      extFilter,
+      isFilter,
+      sizeFilter,
+      modifiedFilter,
+    };
+  };
+
+  // Helper to parse size filter (e.g., ">10mb", "<1gb")
+  const matchesSizeFilter = (size: number, filter: string): boolean => {
+    const match = filter.match(/^([<>]=?)(\d+(?:\.\d+)?)(kb|mb|gb|tb)?$/i);
+    if (!match) return true;
+
+    const [, op, numStr, unit = 'b'] = match;
+    const num = parseFloat(numStr);
+    const multipliers: Record<string, number> = {
+      b: 1,
+      kb: 1024,
+      mb: 1024 * 1024,
+      gb: 1024 * 1024 * 1024,
+      tb: 1024 * 1024 * 1024 * 1024,
+    };
+    const threshold = num * (multipliers[unit.toLowerCase()] || 1);
+
+    switch (op) {
+      case '>':
+        return size > threshold;
+      case '>=':
+        return size >= threshold;
+      case '<':
+        return size < threshold;
+      case '<=':
+        return size <= threshold;
+      default:
+        return size > threshold;
+    }
+  };
+
+  // Helper to check modified date filter
+  const matchesModifiedFilter = (
+    modifiedDate: string | undefined,
+    filter: string,
+  ): boolean => {
+    if (!modifiedDate) return false;
+
+    const fileDate = new Date(modifiedDate);
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const startOfYesterday = new Date(
+      startOfToday.getTime() - 24 * 60 * 60 * 1000,
+    );
+    const startOfWeek = new Date(
+      startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000,
+    );
+    const startOfMonth = new Date(
+      startOfToday.getTime() - 30 * 24 * 60 * 60 * 1000,
+    );
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    switch (filter) {
+      case 'today':
+        return fileDate >= startOfToday;
+      case 'yesterday':
+        return fileDate >= startOfYesterday && fileDate < startOfToday;
+      case 'week':
+        return fileDate >= startOfWeek;
+      case 'month':
+        return fileDate >= startOfMonth;
+      case 'year':
+        return fileDate >= startOfYear;
+      default:
+        return true;
+    }
   };
 
   // Filter files based on search query, tags, and hidden files toggle
@@ -1771,6 +1888,10 @@ export function FinderPage() {
       tagFilter: searchTagFilter,
       typeFilter,
       tierFilter,
+      extFilter,
+      isFilter,
+      sizeFilter,
+      modifiedFilter,
     } = parseSearchQuery(searchQuery);
 
     // Filter by text search (name)
@@ -1794,7 +1915,7 @@ export function FinderPage() {
       return false;
     }
 
-    // Filter by type: operator (video, image, audio, document)
+    // Filter by type: operator (video, image, audio, document, folder, archive)
     if (typeFilter) {
       const mimeType = f.mimeType?.toLowerCase() || '';
       const isMatch =
@@ -1805,12 +1926,58 @@ export function FinderPage() {
           (mimeType.includes('pdf') ||
             mimeType.includes('document') ||
             mimeType.includes('text/'))) ||
-        (typeFilter === 'folder' && mimeType === 'folder');
+        (typeFilter === 'folder' && (mimeType === 'folder' || f.isDirectory)) ||
+        (typeFilter === 'archive' &&
+          (mimeType.includes('zip') ||
+            mimeType.includes('tar') ||
+            mimeType.includes('rar') ||
+            mimeType.includes('7z') ||
+            f.name.match(/\.(zip|tar|gz|rar|7z|bz2)$/i)));
       if (!isMatch) return false;
     }
 
     // Filter by tier: operator
     if (tierFilter && f.tierStatus?.toLowerCase() !== tierFilter) {
+      return false;
+    }
+
+    // Filter by ext: operator
+    if (extFilter) {
+      const fileExt = f.name.split('.').pop()?.toLowerCase();
+      if (fileExt !== extFilter) return false;
+    }
+
+    // Filter by is: operator (folder, file, hidden, cached, tagged)
+    if (isFilter) {
+      switch (isFilter) {
+        case 'folder':
+          if (!f.isDirectory) return false;
+          break;
+        case 'file':
+          if (f.isDirectory) return false;
+          break;
+        case 'hidden':
+          if (!(f.isHidden ?? f.name.startsWith('.'))) return false;
+          break;
+        case 'cached':
+          if (!f.isCached) return false;
+          break;
+        case 'tagged':
+          if (!(f.tags && f.tags.length > 0)) return false;
+          break;
+      }
+    }
+
+    // Filter by size: operator
+    if (sizeFilter && !matchesSizeFilter(f.size || 0, sizeFilter)) {
+      return false;
+    }
+
+    // Filter by modified: operator
+    if (
+      modifiedFilter &&
+      !matchesModifiedFilter(f.lastModified, modifiedFilter)
+    ) {
       return false;
     }
 
@@ -2000,24 +2167,12 @@ export function FinderPage() {
             </button>
           </div>
 
-          <div className="search-box">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search (tag: type: tier:)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              title="Search by name, or use operators: tag:keyword type:video tier:hot"
-            />
-          </div>
+          <SearchBox
+            value={searchQuery}
+            onChange={setSearchQuery}
+            files={files}
+            placeholder="Search files..."
+          />
 
           {/* Toggle hidden files */}
           <button
