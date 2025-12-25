@@ -233,7 +233,7 @@ fn set_windows_attributes(path: &Path, hidden: bool, system: bool) -> Result<()>
     use std::os::windows::ffi::OsStrExt;
     use windows::core::PCWSTR;
     use windows::Win32::Storage::FileSystem::{
-        GetFileAttributesW, SetFileAttributesW,
+        GetFileAttributesW, SetFileAttributesW, FILE_FLAGS_AND_ATTRIBUTES,
         FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM,
     };
     
@@ -243,25 +243,32 @@ fn set_windows_attributes(path: &Path, hidden: bool, system: bool) -> Result<()>
         .collect();
     
     unsafe {
-        let mut attrs = GetFileAttributesW(PCWSTR::from_raw(wide.as_ptr()));
+        let attrs = GetFileAttributesW(PCWSTR::from_raw(wide.as_ptr()));
         
+        // INVALID_FILE_ATTRIBUTES is 0xFFFFFFFF
         if attrs.0 == 0xFFFFFFFF {
             return Err(anyhow::anyhow!("Failed to get file attributes"));
         }
         
+        // Work with the inner u32 value
+        let mut attr_value = attrs.0;
+        
         if hidden {
-            attrs |= FILE_ATTRIBUTE_HIDDEN;
+            attr_value |= FILE_ATTRIBUTE_HIDDEN.0;
         } else {
-            attrs &= !FILE_ATTRIBUTE_HIDDEN;
+            attr_value &= !FILE_ATTRIBUTE_HIDDEN.0;
         }
         
         if system {
-            attrs |= FILE_ATTRIBUTE_SYSTEM;
+            attr_value |= FILE_ATTRIBUTE_SYSTEM.0;
         } else {
-            attrs &= !FILE_ATTRIBUTE_SYSTEM;
+            attr_value &= !FILE_ATTRIBUTE_SYSTEM.0;
         }
         
-        SetFileAttributesW(PCWSTR::from_raw(wide.as_ptr()), attrs)?;
+        SetFileAttributesW(
+            PCWSTR::from_raw(wide.as_ptr()),
+            FILE_FLAGS_AND_ATTRIBUTES(attr_value),
+        )?;
     }
     
     Ok(())

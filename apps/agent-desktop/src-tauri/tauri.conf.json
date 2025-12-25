@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "identifier": "io.ursly.agent",
   "build": {
-    "beforeDevCommand": "npx nx serve web",
+    "beforeDevCommand": "cd ../../.. && npx nx serve web",
     "devUrl": "http://localhost:4200",
-    "beforeBuildCommand": "npx nx build web",
+    "beforeBuildCommand": "cd ../../.. && npx nx build web",
     "frontendDist": "../../../dist/apps/web"
   },
   "app": {

@@ -75,7 +75,7 @@ jobs:
       - name: Install Tauri dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -108,7 +108,7 @@ jobs:
       - name: Install Tauri dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
@@ -251,7 +251,7 @@ jobs:
       - name: Install Tauri dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -284,7 +284,7 @@ jobs:
       - name: Install Tauri dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2

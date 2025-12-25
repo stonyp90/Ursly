@@ -2917,8 +2917,8 @@ fn get_windows_preferences() -> Result<OsPreferences, String> {
             
             RegKey::predef(HKEY_CURRENT_USER)
                 .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced")
-                .and_then(|key| key.get_value::<u32, _>("Hidden"))
-                .map(|v| v == 1) // 1 = show, 2 = hide
+                .and_then(|key: RegKey| key.get_value::<u32, _>("Hidden"))
+                .map(|v: u32| v == 1) // 1 = show, 2 = hide
                 .unwrap_or(false)
         }
         #[cfg(not(windows))]
@@ -2933,8 +2933,8 @@ fn get_windows_preferences() -> Result<OsPreferences, String> {
             
             RegKey::predef(HKEY_CURRENT_USER)
                 .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced")
-                .and_then(|key| key.get_value::<u32, _>("HideFileExt"))
-                .map(|v| v == 0) // 0 = show, 1 = hide
+                .and_then(|key: RegKey| key.get_value::<u32, _>("HideFileExt"))
+                .map(|v: u32| v == 0) // 0 = show, 1 = hide
                 .unwrap_or(true)
         }
         #[cfg(not(windows))]
