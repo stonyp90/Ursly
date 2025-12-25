@@ -11,7 +11,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-brand">
-        <Logo size={20} />
+        <Logo size={28} />
         <span className="brand-name">Ursly</span>
       </div>
 
@@ -52,6 +52,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
 
       <div className="header-status">
         <span className="status-dot"></span>
+        <span className="status-text">Connected</span>
       </div>
     </header>
   );

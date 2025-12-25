@@ -112,14 +112,6 @@ export const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
     defaultModifiers: ['meta'],
   },
   {
-    id: 'cut',
-    name: 'Cut',
-    description: 'Cut selected items',
-    category: 'clipboard',
-    defaultKey: 'x',
-    defaultModifiers: ['meta'],
-  },
-  {
     id: 'paste',
     name: 'Paste',
     description: 'Paste items',

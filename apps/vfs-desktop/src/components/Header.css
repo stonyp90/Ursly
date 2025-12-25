@@ -1,14 +1,66 @@
-/* Header Tabs - Modern pill-style navigation */
+/* Header Styles - Modern macOS-inspired design */
 /* Uses global CSS variables from ThemeContext */
 
+/* =========================================
+   HEADER CONTAINER
+   ========================================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--surface, #2c2c2e);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  -webkit-app-region: drag;
+  height: 52px;
+  gap: 16px;
+}
+
+/* =========================================
+   BRAND SECTION
+   ========================================= */
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  -webkit-app-region: no-drag;
+  cursor: pointer;
+  padding: 4px 8px 4px 4px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.header-brand:hover {
+  background: var(--surface-elevated, rgba(255, 255, 255, 0.06));
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #f5f5f7);
+  letter-spacing: -0.01em;
+  background: linear-gradient(
+    135deg,
+    var(--text-primary, #f5f5f7) 0%,
+    rgba(255, 255, 255, 0.85) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =========================================
+   NAVIGATION TABS
+   ========================================= */
 .header-tabs {
   display: flex;
   gap: 2px;
   padding: 3px;
-  background: var(--surface, #2c2c2e);
+  background: var(--background, #1c1c1e);
   border-radius: 10px;
   border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
   flex-shrink: 0;
+  -webkit-app-region: no-drag;
 }
 
 .header-tab {
@@ -32,7 +84,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 9px;
+  border-radius: 8px;
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -50,14 +102,13 @@
 .header-tab.active {
   background: linear-gradient(
     135deg,
-    var(--primary, #0a84ff) 0%,
-    color-mix(in srgb, var(--primary, #0a84ff) 80%, var(--secondary, #5e5ce6))
-      100%
+    var(--primary, #6366f1) 0%,
+    var(--secondary, #a855f7) 100%
   );
   color: white;
   font-weight: 600;
   box-shadow:
-    0 2px 8px color-mix(in srgb, var(--primary, #0a84ff) 40%, transparent),
+    0 2px 8px rgba(99, 102, 241, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -65,7 +116,7 @@
   filter: brightness(1.1);
   transform: translateY(-1px);
   box-shadow:
-    0 4px 16px color-mix(in srgb, var(--primary, #0a84ff) 50%, transparent),
+    0 4px 16px rgba(99, 102, 241, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
@@ -85,18 +136,83 @@
 
 .header-tab:hover svg {
   opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .header-tab.active svg {
   opacity: 1;
 }
 
-.header-tab:hover svg {
-  transform: scale(1.05);
-}
-
 /* Text styling */
 .header-tab span {
   position: relative;
   z-index: 1;
+}
+
+/* =========================================
+   STATUS SECTION
+   ========================================= */
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.2);
+  border-radius: 100px;
+  -webkit-app-region: no-drag;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: #34c759;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 8px rgba(52, 199, 89, 0.6);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+}
+
+.status-text {
+  font-size: 10px;
+  font-weight: 600;
+  color: #34c759;
+  letter-spacing: 0.02em;
+}
+
+/* =========================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================= */
+@media (max-width: 600px) {
+  .header {
+    padding: 6px 12px;
+    gap: 8px;
+  }
+
+  .brand-name {
+    display: none;
+  }
+
+  .status-text {
+    display: none;
+  }
+
+  .header-tab span {
+    display: none;
+  }
+
+  .header-tab {
+    padding: 8px 12px;
+  }
 }

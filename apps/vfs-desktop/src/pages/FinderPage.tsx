@@ -77,7 +77,6 @@ export function FinderPage() {
   });
   const [clipboardHasFiles, setClipboardHasFiles] = useState(false);
   const [nativeClipboardCount, setNativeClipboardCount] = useState(0);
-  const [cutFilePaths, setCutFilePaths] = useState<Set<string>>(new Set());
   const [favorites, setFavorites] = useState<GlobalFavorite[]>([]);
   const [allTags, setAllTags] = useState<{ name: string; color?: string }[]>(
     [],
@@ -111,6 +110,9 @@ export function FinderPage() {
 
   // Drag and drop state
   const [draggedFiles, setDraggedFiles] = useState<string[]>([]);
+  const [draggedFileObjects, setDraggedFileObjects] = useState<FileMetadata[]>(
+    [],
+  );
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [dragSourceId, setDragSourceId] = useState<string | null>(null);
@@ -145,14 +147,6 @@ export function FinderPage() {
         e.preventDefault();
         if (renamingFile) {
           cancelRename();
-          return;
-        }
-        // If we have cut files pending, cancel the cut operation (macOS Finder behavior)
-        if (cutFilePaths.size > 0) {
-          setCutFilePaths(new Set());
-          setIsCutOperation(false);
-          // Clear VFS clipboard to cancel cut
-          StorageService.clearClipboard().catch(console.error);
           return;
         }
         setSelectedFiles(new Set());
@@ -275,16 +269,6 @@ export function FinderPage() {
           shortcuts.formatShortcut('copy'),
         );
         await handleCopy();
-      } else if (
-        shortcuts.matchesShortcut(e, 'cut') &&
-        selectedFiles.size > 0
-      ) {
-        e.preventDefault();
-        toast.showActionToast(
-          `Cut ${selectedFiles.size} item(s)`,
-          shortcuts.formatShortcut('cut'),
-        );
-        await handleCut();
       } else if (shortcuts.matchesShortcut(e, 'paste')) {
         e.preventDefault();
         toast.showActionToast('Paste', shortcuts.formatShortcut('paste'));
@@ -315,14 +299,7 @@ export function FinderPage() {
       unlisten.then((fn) => fn());
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [
-    selectedSource,
-    selectedFiles,
-    currentPath,
-    files,
-    cutFilePaths,
-    renamingFile,
-  ]);
+  }, [selectedSource, selectedFiles, currentPath, files, renamingFile]);
 
   // Refresh clipboard state when window gains focus (detect native clipboard changes)
   useEffect(() => {
@@ -496,7 +473,6 @@ export function FinderPage() {
     // Clear state first
     setSelectedFiles(new Set());
     setFiles([]); // Clear files immediately to show loading
-    setCutFilePaths(new Set());
 
     // Reset navigation history when switching sources
     setNavigationHistory(['']);
@@ -738,19 +714,10 @@ export function FinderPage() {
       // Check native clipboard for files from Finder
       const nativeFiles = await StorageService.readNativeClipboard();
       setNativeClipboardCount(nativeFiles.length);
-
-      // If VFS clipboard is empty but we have cut files displayed, clear them
-      // (Backend clears clipboard after cut-paste, so cutFilePaths should sync)
-      if (!hasVfsFiles && cutFilePaths.size > 0) {
-        setCutFilePaths(new Set());
-      }
     } catch (err) {
       console.error('Failed to refresh clipboard state:', err);
     }
   };
-
-  // Track if current clipboard operation was a cut
-  const [isCutOperation, setIsCutOperation] = useState(false);
 
   const handleCopy = async () => {
     if (!selectedSource || selectedFiles.size === 0) return;
@@ -761,15 +728,16 @@ export function FinderPage() {
       const { invoke } = await import('@tauri-apps/api/core');
       const paths = Array.from(selectedFiles);
 
+      console.log('[VFS Copy] Copying paths:', paths);
+      console.log('[VFS Copy] Source:', selectedSource.id);
+
       // Copy to VFS clipboard AND export to native clipboard for Finder/Explorer
-      await invoke('vfs_clipboard_copy_for_native', {
+      const result = await invoke('vfs_clipboard_copy_for_native', {
         sourceId: selectedSource.id,
         paths,
       });
+      console.log('[VFS Copy] Result:', result);
 
-      // macOS behavior: Copy clears previous cut state
-      setCutFilePaths(new Set());
-      setIsCutOperation(false);
       setClipboardHasFiles(true);
 
       // Brief visual feedback
@@ -779,110 +747,77 @@ export function FinderPage() {
       });
       setTimeout(() => setFileOperation(null), 1500);
     } catch (err) {
-      console.error('Copy failed:', err);
+      console.error('[VFS Copy] Failed:', err);
       setFileOperation(null);
     }
   };
 
-  const handleCut = async () => {
-    if (!selectedSource || selectedFiles.size === 0) return;
-
-    setFileOperation({ type: 'Preparing to move...', inProgress: true });
-
-    try {
-      const paths = Array.from(selectedFiles);
-      await StorageService.cutFiles(selectedSource.id, paths);
-
-      // Mark files as cut (show with reduced opacity - macOS style)
-      setCutFilePaths(new Set(paths));
-      setIsCutOperation(true);
-      setClipboardHasFiles(true);
-
-      // Brief visual feedback
-      setFileOperation({
-        type: `${paths.length} item(s) ready to move`,
-        inProgress: false,
-      });
-      setTimeout(() => setFileOperation(null), 1500);
-    } catch (err) {
-      console.error('Cut failed:', err);
-      setFileOperation(null);
-    }
-  };
+  // Cut operation removed - keeping it simple like macOS Finder (copy/paste only)
 
   const handlePaste = async (targetPath?: string) => {
     if (!selectedSource) return;
 
     const destination = targetPath || currentPath || '/';
-    const operationType = isCutOperation ? 'Moving' : 'Pasting';
 
-    setFileOperation({ type: `${operationType}...`, inProgress: true });
+    console.log('[VFS Paste] Starting paste to:', destination);
+    setFileOperation({ type: 'Pasting...', inProgress: true });
 
     try {
-      // First check if we have files in VFS clipboard
+      // Check if we have files in VFS clipboard
       let hasFiles = await StorageService.hasClipboardFiles();
+      console.log('[VFS Paste] hasClipboardFiles:', hasFiles);
 
       // If not, check native clipboard (files copied from Finder)
       if (!hasFiles) {
         const nativeFiles = await StorageService.readNativeClipboard();
+        console.log('[VFS Paste] Native clipboard files:', nativeFiles);
         if (nativeFiles.length > 0) {
-          // Import native files to our clipboard (as copy, not cut)
           await StorageService.copyNativeToClipboard(nativeFiles);
           hasFiles = true;
-          setIsCutOperation(false); // Native files are always copied, not cut
         }
       }
 
       if (!hasFiles) {
+        console.log('[VFS Paste] No files to paste, aborting');
         setFileOperation(null);
         return;
       }
 
+      console.log(
+        '[VFS Paste] Calling pasteFiles:',
+        selectedSource.id,
+        destination,
+      );
       const result = await StorageService.pasteFiles(
         selectedSource.id,
         destination,
       );
+      console.log('[VFS Paste] Result:', result);
 
-      // Always refresh UI after paste attempt
+      // Refresh UI after paste
       await loadFilesList(selectedSource.id, currentPath);
 
       if (result.files_pasted > 0) {
-        // macOS behavior: After cut-paste, source files are deleted and clipboard is cleared
-        // After copy-paste, clipboard remains (can paste again)
-        if (isCutOperation) {
-          // Backend already cleared clipboard for cut operations
-          setCutFilePaths(new Set());
-          setClipboardHasFiles(false);
-          setIsCutOperation(false);
-          setFileOperation({
-            type: `${result.files_pasted} item(s) moved`,
-            inProgress: false,
-          });
-        } else {
-          // For copy, clipboard persists - can paste again
-          setFileOperation({
-            type: `${result.files_pasted} item(s) pasted`,
-            inProgress: false,
-          });
-        }
-
-        // Visual feedback timeout
+        setFileOperation({
+          type: `${result.files_pasted} item(s) pasted`,
+          inProgress: false,
+        });
         setTimeout(() => setFileOperation(null), 1500);
       } else if (result.errors && result.errors.length > 0) {
-        // Show error
+        console.error('[VFS Paste] Errors:', result.errors);
         setFileOperation({
           type: `Paste failed: ${result.errors[0]}`,
           inProgress: false,
         });
         setTimeout(() => setFileOperation(null), 3000);
       } else {
+        console.log('[VFS Paste] No files pasted and no errors');
         setFileOperation(null);
       }
 
-      // Refresh clipboard state to sync with backend
       await refreshClipboardState();
     } catch (err) {
-      console.error('Paste failed:', err);
+      console.error('[VFS Paste] Failed:', err);
       setFileOperation({ type: `Paste failed: ${err}`, inProgress: false });
       setTimeout(() => setFileOperation(null), 3000);
     }
@@ -1182,14 +1117,28 @@ export function FinderPage() {
       ? Array.from(selectedFiles)
       : [file.path];
 
+    // Get full file objects for the dragged files
+    const fileObjects = filesToDrag
+      .map((path) => files.find((f) => f.path === path))
+      .filter((f): f is FileMetadata => f !== undefined);
+
+    // If dragging a single non-selected file, use that file directly
+    if (!selectedFiles.has(file.path)) {
+      fileObjects.length = 0;
+      fileObjects.push(file);
+    }
+
     console.log(
       '[VFS DnD] Drag start:',
       filesToDrag,
+      'objects:',
+      fileObjects.length,
       'from source:',
       selectedSource?.id,
     );
 
     setDraggedFiles(filesToDrag);
+    setDraggedFileObjects(fileObjects);
     setDragSourceId(selectedSource?.id || null);
 
     // Set drag data for native drop targets (Finder/Explorer)
@@ -1362,11 +1311,6 @@ export function FinderPage() {
           }
         }
 
-        // Clear cut state if files were moved
-        if (isMove && cutFilePaths.size > 0) {
-          setCutFilePaths(new Set());
-        }
-
         // Refresh file list
         console.log('[VFS DnD] Refreshing files');
         await loadFilesList(selectedSource.id, currentPath);
@@ -1418,12 +1362,14 @@ export function FinderPage() {
 
     // Clean up drag state
     setDraggedFiles([]);
+    setDraggedFileObjects([]);
     setDragSourceId(null);
   };
 
   // Drag ends (cleanup)
   const handleDragEnd = () => {
     setDraggedFiles([]);
+    setDraggedFileObjects([]);
     setDragSourceId(null);
     setDropTarget(null);
     setIsDraggingOver(false);
@@ -1478,6 +1424,7 @@ export function FinderPage() {
     }
 
     setDraggedFiles([]);
+    setDraggedFileObjects([]);
     setDragSourceId(null);
     setDropTarget(null);
     setIsDraggingOver(false);
@@ -2070,17 +2017,39 @@ export function FinderPage() {
               e.stopPropagation();
               setDropTarget(null);
 
-              // Add dragged files to global favorites
-              if (selectedSource && draggedFiles.length > 0) {
+              // Get the source for the dragged files
+              const dropSourceId = dragSourceId || selectedSource?.id;
+              const dropSource =
+                sources.find((s) => s.id === dropSourceId) || selectedSource;
+
+              // Add dragged files to global favorites using stored file objects
+              if (dropSource && draggedFileObjects.length > 0) {
+                console.log(
+                  '[VFS DnD] Dropping to favorites:',
+                  draggedFileObjects.length,
+                  'files from',
+                  dropSource.name,
+                );
+                for (const file of draggedFileObjects) {
+                  addToGlobalFavorites(file, dropSource);
+                }
+              } else if (dropSource && draggedFiles.length > 0) {
+                // Fallback: try to find files in current directory
+                console.log(
+                  '[VFS DnD] Fallback: looking for',
+                  draggedFiles.length,
+                  'files in current directory',
+                );
                 for (const filePath of draggedFiles) {
                   const file = files.find((f) => f.path === filePath);
                   if (file) {
-                    addToGlobalFavorites(file, selectedSource);
+                    addToGlobalFavorites(file, dropSource);
                   }
                 }
               }
 
               setDraggedFiles([]);
+              setDraggedFileObjects([]);
               setDragSourceId(null);
             }}
           >
@@ -2328,7 +2297,7 @@ export function FinderPage() {
                       <div
                         key={file.path}
                         data-path={file.path}
-                        className={`file-item ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${cutFilePaths.has(file.path) ? 'is-cut' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
+                        className={`file-item ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
                         onClick={(e) => handleFileClick(file, e)}
                         onDoubleClick={() => handleFileDoubleClick(file)}
                         onContextMenu={(e) => handleContextMenu(e, file)}
@@ -2435,7 +2404,7 @@ export function FinderPage() {
                         <div
                           key={file.path}
                           data-path={file.path}
-                          className={`list-row ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${cutFilePaths.has(file.path) ? 'is-cut' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
+                          className={`list-row ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
                           onClick={(e) => handleFileClick(file, e)}
                           onDoubleClick={() => handleFileDoubleClick(file)}
                           onContextMenu={(e) => handleContextMenu(e, file)}
@@ -2927,23 +2896,6 @@ export function FinderPage() {
                 Copy
                 <span className="context-shortcut">⌘C</span>
               </button>
-              <button
-                className="context-item"
-                onClick={() => {
-                  handleCut();
-                  closeContextMenu();
-                }}
-              >
-                <svg
-                  className="context-icon"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                >
-                  <path d="M3.5 3.5c-.614-.884-.074-1.962.858-2.5L8 7.226 11.642 1c.932.538 1.472 1.616.858 2.5L8.81 8.61l1.556 2.661a2.5 2.5 0 1 1-.794.637L8 9.73l-1.572 2.177a2.5 2.5 0 1 1-.794-.637L7.19 8.61 3.5 3.5zm2.5 10a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0zm7 0a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0z" />
-                </svg>
-                Cut
-                <span className="context-shortcut">⌘X</span>
-              </button>
             </>
           )}
 
@@ -2964,11 +2916,9 @@ export function FinderPage() {
             >
               <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z" />
             </svg>
-            {isCutOperation
-              ? 'Move Item'
-              : nativeClipboardCount > 0
-                ? `Paste ${nativeClipboardCount} items`
-                : 'Paste'}
+            {nativeClipboardCount > 0
+              ? `Paste ${nativeClipboardCount} items`
+              : 'Paste'}
             <span className="context-shortcut">⌘V</span>
           </button>
 
@@ -2993,7 +2943,7 @@ export function FinderPage() {
                 >
                   <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3H13.5a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2.5a2 2 0 0 1-2-2V3.87z" />
                 </svg>
-                {isCutOperation ? 'Move into folder' : 'Paste into folder'}
+                Paste into folder
               </button>
             )}
 

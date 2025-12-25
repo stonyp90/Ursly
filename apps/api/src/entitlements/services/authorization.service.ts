@@ -4,7 +4,6 @@ import {
   AuthorizationResponse,
   ComputedUserPermissions,
   UserEntitlement,
-  Permission,
   PermissionGroup,
   DefaultGroupAssignment,
   UserEntitlementStatus,
@@ -59,8 +58,8 @@ export class AuthorizationService implements IAuthorizationService {
       organizationId,
       resource,
       action,
-      resourceId,
-      context,
+      resourceId: _resourceId,
+      context: _context,
     } = request;
     const permissionCode = `${resource}:${action}`;
 

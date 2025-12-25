@@ -75,10 +75,15 @@
 
   /* Tier status colors - inherit from global theme */
   --tier-hot: var(--vfs-tier-hot, var(--color-success, #30d158));
+  --tier-hot-rgb: 48, 209, 88;
   --tier-warm: var(--vfs-tier-warm, var(--color-warning, #ff9f0a));
+  --tier-warm-rgb: 255, 159, 10;
   --tier-cold: var(--vfs-tier-cold, var(--color-info, #64d2ff));
+  --tier-cold-rgb: 100, 210, 255;
   --tier-nearline: var(--vfs-tier-nearline, var(--secondary, #bf5af2));
+  --tier-nearline-rgb: 191, 90, 242;
   --tier-archive: var(--vfs-tier-archive, var(--text-muted, #8e8e93));
+  --tier-archive-rgb: 142, 142, 147;
 
   /* Shadows - inherit from global theme */
   --shadow-sm: var(--vfs-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.2));
@@ -314,7 +319,7 @@
 
 .breadcrumb-btn:hover {
   background: var(--finder-hover);
-  color: var(--finder-accent);
+  /* Keep text color unchanged on hover - macOS style */
 }
 
 .breadcrumb-btn:last-child {
@@ -1110,43 +1115,33 @@
   transition: opacity 0.3s var(--ease-out-expo);
 }
 
-/* Modern hover with glassmorphism */
+/* Hover - subtle macOS-like background, no color change */
 .file-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
+  background: var(--finder-hover, rgba(255, 255, 255, 0.04));
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .file-item:hover::before {
-  opacity: 1;
+  opacity: 0.5;
 }
 
-.file-item:hover .icon-placeholder {
-  transform: scale(1.05);
-}
-
-/* Selected state with accent glow */
+/* Selected state - cyberpunk accent glow */
 .file-item.selected {
-  background: rgba(var(--primary-rgb, 10, 132, 255), 0.12);
-  border-color: rgba(var(--primary-rgb, 10, 132, 255), 0.3);
-  box-shadow:
-    0 0 20px rgba(var(--primary-rgb, 10, 132, 255), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(var(--primary-rgb, 10, 132, 255), 0.1);
+  border-color: rgba(var(--primary-rgb, 10, 132, 255), 0.25);
+  box-shadow: 0 0 12px rgba(var(--primary-rgb, 10, 132, 255), 0.1);
 }
 
 .file-item.selected::before {
   opacity: 1;
 }
 
+/* Selected file name - macOS-style highlight pill */
 .file-item.selected .file-name {
-  background: linear-gradient(
-    135deg,
-    var(--finder-accent) 0%,
-    rgba(var(--primary-rgb, 10, 132, 255), 0.8) 100%
-  );
+  background: var(--finder-accent);
   color: #fff;
-  border-radius: 5px;
-  padding: 2px 8px;
+  border-radius: 4px;
+  padding: 2px 6px;
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(var(--primary-rgb, 10, 132, 255), 0.3);
 }
@@ -1380,6 +1375,7 @@
   color: var(--finder-text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  transition: all 0.15s ease;
   -webkit-box-orient: vertical;
   overflow: hidden;
   padding: 4px 6px;
@@ -1387,16 +1383,32 @@
   transition: all 0.2s ease;
 }
 
+/* Show full file name on hover - expand from truncated */
 .file-item:hover .file-name {
-  /* Keep text unchanged - native-like */
+  -webkit-line-clamp: unset;
+  display: block;
+  max-height: none;
+  background: var(--finder-bg-elevated, rgba(30, 30, 30, 0.95));
+  border-radius: 4px;
+  padding: 4px 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 5;
 }
 
+/* Selected file name - accent highlight pill with full name */
 .file-item.selected .file-name {
+  -webkit-line-clamp: unset;
+  display: block;
+  max-height: none;
   background: var(--finder-accent);
   color: #fff;
   font-weight: 500;
-  border-radius: 3px;
-  padding: 1px 5px;
+  border-radius: 4px;
+  padding: 4px 6px;
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb, 10, 132, 255), 0.3);
+  position: relative;
+  z-index: 5;
 }
 
 /* =========================================
@@ -1457,18 +1469,17 @@
   background: var(--tier-archive);
 }
 
-/* Grid View Tier Badge - Appears on hover */
+/* Grid View Tier Badge - Subtle macOS-like indicator */
 .grid-tier-badge {
   position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 9px;
-  font-weight: 700;
+  bottom: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   font-family: var(--font-mono);
   white-space: nowrap;
   opacity: 0;
@@ -1483,65 +1494,57 @@
 .file-item.selected .grid-tier-badge {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
 }
 
-/* Tier-specific badge colors */
+/* Tier-specific badge colors - subtle, macOS-inspired with cyberpunk accent */
 .grid-tier-badge.hot {
-  background: rgba(16, 185, 129, 0.9);
-  color: white;
-  border: 1px solid rgba(16, 185, 129, 0.6);
+  background: rgba(var(--tier-hot-rgb, 48, 209, 88), 0.15);
+  color: var(--tier-hot, #30d158);
+  border: 1px solid rgba(var(--tier-hot-rgb, 48, 209, 88), 0.3);
 }
 
 /* Legacy warm tier -> maps to hot */
 .grid-tier-badge.warm {
-  background: rgba(16, 185, 129, 0.9);
-  color: white;
-  border: 1px solid rgba(16, 185, 129, 0.6);
+  background: rgba(var(--tier-hot-rgb, 48, 209, 88), 0.15);
+  color: var(--tier-hot, #30d158);
+  border: 1px solid rgba(var(--tier-hot-rgb, 48, 209, 88), 0.3);
 }
 
 .grid-tier-badge.cold {
-  background: rgba(59, 130, 246, 0.9);
-  color: white;
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  background: rgba(var(--tier-cold-rgb, 59, 130, 246), 0.15);
+  color: var(--tier-cold, #3b82f6);
+  border: 1px solid rgba(var(--tier-cold-rgb, 59, 130, 246), 0.3);
 }
 
 .grid-tier-badge.nearline {
-  background: rgba(191, 90, 242, 0.9);
-  color: white;
-  border: 1px solid rgba(191, 90, 242, 0.6);
+  background: rgba(var(--tier-nearline-rgb, 191, 90, 242), 0.15);
+  color: var(--tier-nearline, #bf5af2);
+  border: 1px solid rgba(var(--tier-nearline-rgb, 191, 90, 242), 0.3);
 }
 
 /* Legacy archive tier -> maps to cold */
 .grid-tier-badge.archive {
-  background: rgba(59, 130, 246, 0.9);
-  color: white;
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  background: rgba(var(--tier-cold-rgb, 59, 130, 246), 0.15);
+  color: var(--tier-cold, #3b82f6);
+  border: 1px solid rgba(var(--tier-cold-rgb, 59, 130, 246), 0.3);
 }
 
-/* Subtle glow effect on hover */
-.file-item:hover .grid-tier-badge.hot {
-  box-shadow:
-    0 4px 12px rgba(16, 185, 129, 0.4),
-    0 0 20px rgba(16, 185, 129, 0.2);
+/* Subtle glow effect on hover - no over-the-top effects */
+.file-item:hover .grid-tier-badge.hot,
+.file-item:hover .grid-tier-badge.warm {
+  background: rgba(var(--tier-hot-rgb, 48, 209, 88), 0.2);
+  border-color: rgba(var(--tier-hot-rgb, 48, 209, 88), 0.5);
 }
 
-.file-item:hover .grid-tier-badge.cold {
-  box-shadow:
-    0 4px 12px rgba(59, 130, 246, 0.4),
-    0 0 20px rgba(59, 130, 246, 0.2);
+.file-item:hover .grid-tier-badge.cold,
+.file-item:hover .grid-tier-badge.archive {
+  background: rgba(var(--tier-cold-rgb, 59, 130, 246), 0.2);
+  border-color: rgba(var(--tier-cold-rgb, 59, 130, 246), 0.5);
 }
 
 .file-item:hover .grid-tier-badge.nearline {
-  box-shadow:
-    0 4px 12px rgba(191, 90, 242, 0.4),
-    0 0 20px rgba(191, 90, 242, 0.2);
-}
-
-.file-item:hover .grid-tier-badge.archive {
-  box-shadow:
-    0 4px 12px rgba(59, 130, 246, 0.4),
-    0 0 20px rgba(59, 130, 246, 0.2);
+  background: rgba(var(--tier-nearline-rgb, 191, 90, 242), 0.2);
+  border-color: rgba(var(--tier-nearline-rgb, 191, 90, 242), 0.5);
 }
 
 .tier-progress {
@@ -2314,13 +2317,14 @@
     color 0.1s ease;
 }
 
-/* Hover - accent highlight */
+/* Hover - subtle background highlight like macOS */
 .context-item:hover:not(:disabled) {
   background: var(--finder-selection);
 }
 
 .context-item:hover:not(:disabled) .context-icon {
-  color: var(--finder-accent);
+  /* Keep icon color unchanged - macOS style */
+  opacity: 1;
 }
 
 .context-item:active:not(:disabled) {
@@ -2369,8 +2373,8 @@
 }
 
 .context-item:hover:not(:disabled) .context-shortcut {
-  background: rgba(var(--primary-rgb, 10, 132, 255), 0.15);
-  color: var(--finder-accent);
+  /* Keep shortcut badge subtle - macOS style */
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .context-divider {

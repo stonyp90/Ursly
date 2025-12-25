@@ -48,7 +48,6 @@ const SHORTCUT_CATEGORIES: ShortcutCategory[] = [
     name: 'Clipboard',
     shortcuts: [
       { keys: [modKey, 'C'], description: 'Copy' },
-      { keys: [modKey, 'X'], description: 'Cut' },
       { keys: [modKey, 'V'], description: 'Paste' },
       { keys: [modKey, 'D'], description: 'Duplicate' },
     ],

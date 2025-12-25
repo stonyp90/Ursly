@@ -12,7 +12,12 @@ import {
   HttpCode,
   Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import {
   IPermissionRepository,
@@ -26,7 +31,11 @@ import {
   DEFAULT_GROUP_ASSIGNMENT_REPOSITORY,
   AUTHORIZATION_SERVICE,
 } from '../ports/entitlement.port';
-import { RequirePermissions, RequireAllPermissions, SkipEntitlementCheck } from '../guards/entitlement.guard';
+import {
+  RequirePermissions,
+  RequireAllPermissions,
+  SkipEntitlementCheck,
+} from '../guards/entitlement.guard';
 
 // =============================================================================
 // DTOs
@@ -145,7 +154,9 @@ export class PermissionsController {
   async createPermission(@Body() dto: CreatePermissionDto) {
     // Validate code format
     if (!/^[a-z]+:[a-z]+$/.test(dto.code)) {
-      throw new Error('Permission code must be in format: resource:action (lowercase)');
+      throw new Error(
+        'Permission code must be in format: resource:action (lowercase)',
+      );
     }
 
     // Check if code already exists
@@ -170,7 +181,10 @@ export class PermissionsController {
   @ApiOperation({ summary: 'Update a permission' })
   @ApiResponse({ status: 200, description: 'Permission updated successfully' })
   @RequirePermissions('permissions:manage')
-  async updatePermission(@Param('id') id: string, @Body() dto: UpdatePermissionDto) {
+  async updatePermission(
+    @Param('id') id: string,
+    @Body() dto: UpdatePermissionDto,
+  ) {
     const permission = await this.permissionRepository.findById(id);
     if (!permission) {
       throw new Error('Permission not found');
@@ -236,8 +250,10 @@ export class GroupsController {
     if (!group) return null;
 
     // Fetch permission details
-    const permissions = await this.permissionRepository.findByIds(group.permissions);
-    
+    const permissions = await this.permissionRepository.findByIds(
+      group.permissions,
+    );
+
     return {
       ...group,
       permissionDetails: permissions,
@@ -289,21 +305,33 @@ export class GroupsController {
   @Post(':id/permissions')
   @ApiOperation({ summary: 'Add permissions to a group' })
   @RequirePermissions('groups:update')
-  async addPermissions(@Param('id') id: string, @Body() body: { permissionIds: string[] }) {
-    const group = await this.groupRepository.addPermissions(id, body.permissionIds);
-    
+  async addPermissions(
+    @Param('id') id: string,
+    @Body() body: { permissionIds: string[] },
+  ) {
+    const group = await this.groupRepository.addPermissions(
+      id,
+      body.permissionIds,
+    );
+
     // Invalidate cache for all users in this group
     if (group) {
-      await this.authorizationService.refreshPermissions(id, group.organizationId);
+      await this.authorizationService.refreshPermissions(
+        id,
+        group.organizationId,
+      );
     }
-    
+
     return group;
   }
 
   @Delete(':id/permissions')
   @ApiOperation({ summary: 'Remove permissions from a group' })
   @RequirePermissions('groups:update')
-  async removePermissions(@Param('id') id: string, @Body() body: { permissionIds: string[] }) {
+  async removePermissions(
+    @Param('id') id: string,
+    @Body() body: { permissionIds: string[] },
+  ) {
     return this.groupRepository.removePermissions(id, body.permissionIds);
   }
 }
@@ -333,15 +361,24 @@ export class UserEntitlementsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user entitlement' })
-  @ApiResponse({ status: 201, description: 'User entitlement created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'User entitlement created successfully',
+  })
   @HttpCode(HttpStatus.CREATED)
   @RequirePermissions('users:manage')
-  async createUserEntitlement(@Req() req: Request, @Body() dto: CreateUserEntitlementDto) {
+  async createUserEntitlement(
+    @Req() req: Request,
+    @Body() dto: CreateUserEntitlementDto,
+  ) {
     const organizationId = req.entitlementUser?.organizationId || 'default';
     const assignedBy = req.entitlementUser?.id;
 
     // Check if user already has entitlements in this organization
-    const existing = await this.entitlementRepository.findByUserId(dto.userId, organizationId);
+    const existing = await this.entitlementRepository.findByUserId(
+      dto.userId,
+      organizationId,
+    );
     if (existing) {
       throw new Error(`User already has entitlements in this organization`);
     }
@@ -360,7 +397,10 @@ export class UserEntitlementsController {
     });
 
     // Compute initial permissions
-    await this.authorizationService.refreshPermissions(dto.userId, organizationId);
+    await this.authorizationService.refreshPermissions(
+      dto.userId,
+      organizationId,
+    );
 
     return entitlement;
   }
@@ -379,7 +419,10 @@ export class UserEntitlementsController {
     );
 
     return {
-      entitlement: await this.entitlementRepository.findByUserId(user.id, user.organizationId),
+      entitlement: await this.entitlementRepository.findByUserId(
+        user.id,
+        user.organizationId,
+      ),
       computed,
     };
   }
@@ -394,7 +437,10 @@ export class UserEntitlementsController {
   @Get(':id/permissions')
   @ApiOperation({ summary: 'Get computed permissions for a user' })
   @RequirePermissions('users:read')
-  async getUserPermissions(@Param('id') id: string, @Query('organizationId') organizationId: string) {
+  async getUserPermissions(
+    @Param('id') id: string,
+    @Query('organizationId') organizationId: string,
+  ) {
     const entitlement = await this.entitlementRepository.findById(id);
     if (!entitlement) return null;
 
@@ -407,16 +453,22 @@ export class UserEntitlementsController {
   @Put(':id')
   @ApiOperation({ summary: 'Update user entitlement' })
   @RequirePermissions('users:manage')
-  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserEntitlementDto) {
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserEntitlementDto,
+  ) {
     const updates: any = {};
     if (dto.status) updates.status = dto.status;
     if (dto.expiresAt) updates.expiresAt = new Date(dto.expiresAt);
 
     const entitlement = await this.entitlementRepository.update(id, updates);
-    
+
     // Invalidate cache
     if (entitlement) {
-      this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -425,12 +477,21 @@ export class UserEntitlementsController {
   @Post(':id/groups')
   @ApiOperation({ summary: 'Add user to groups (additive)' })
   @RequirePermissions('groups:assign')
-  async assignToGroups(@Param('id') id: string, @Body() dto: AssignUserToGroupsDto) {
-    const entitlement = await this.entitlementRepository.assignToGroups(id, dto.groupIds);
-    
+  async assignToGroups(
+    @Param('id') id: string,
+    @Body() dto: AssignUserToGroupsDto,
+  ) {
+    const entitlement = await this.entitlementRepository.assignToGroups(
+      id,
+      dto.groupIds,
+    );
+
     // Invalidate cache
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -440,11 +501,17 @@ export class UserEntitlementsController {
   @ApiOperation({ summary: 'Set user groups (replaces all existing groups)' })
   @RequirePermissions('groups:assign')
   async setGroups(@Param('id') id: string, @Body() dto: AssignUserToGroupsDto) {
-    const entitlement = await this.entitlementRepository.setGroups(id, dto.groupIds);
-    
+    const entitlement = await this.entitlementRepository.setGroups(
+      id,
+      dto.groupIds,
+    );
+
     // Invalidate cache
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -453,12 +520,21 @@ export class UserEntitlementsController {
   @Delete(':id/groups')
   @ApiOperation({ summary: 'Remove user from groups' })
   @RequirePermissions('groups:assign')
-  async removeFromGroups(@Param('id') id: string, @Body() dto: AssignUserToGroupsDto) {
-    const entitlement = await this.entitlementRepository.removeFromGroups(id, dto.groupIds);
-    
+  async removeFromGroups(
+    @Param('id') id: string,
+    @Body() dto: AssignUserToGroupsDto,
+  ) {
+    const entitlement = await this.entitlementRepository.removeFromGroups(
+      id,
+      dto.groupIds,
+    );
+
     // Invalidate cache
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -482,7 +558,10 @@ export class UserEntitlementsController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user entitlement' })
-  @ApiResponse({ status: 204, description: 'User entitlement deleted successfully' })
+  @ApiResponse({
+    status: 204,
+    description: 'User entitlement deleted successfully',
+  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @RequirePermissions('users:manage')
   async deleteUserEntitlement(@Param('id') id: string) {
@@ -497,11 +576,20 @@ export class UserEntitlementsController {
   @ApiOperation({ summary: 'Add direct permissions to a user' })
   @ApiResponse({ status: 200, description: 'Permissions added successfully' })
   @RequirePermissions('users:manage')
-  async addDirectPermissions(@Param('id') id: string, @Body() dto: DirectPermissionsDto) {
-    const entitlement = await this.entitlementRepository.addDirectPermissions(id, dto.permissionIds);
-    
+  async addDirectPermissions(
+    @Param('id') id: string,
+    @Body() dto: DirectPermissionsDto,
+  ) {
+    const entitlement = await this.entitlementRepository.addDirectPermissions(
+      id,
+      dto.permissionIds,
+    );
+
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -511,25 +599,49 @@ export class UserEntitlementsController {
   @ApiOperation({ summary: 'Remove direct permissions from a user' })
   @ApiResponse({ status: 200, description: 'Permissions removed successfully' })
   @RequirePermissions('users:manage')
-  async removeDirectPermissions(@Param('id') id: string, @Body() dto: DirectPermissionsDto) {
-    const entitlement = await this.entitlementRepository.removeDirectPermissions(id, dto.permissionIds);
-    
+  async removeDirectPermissions(
+    @Param('id') id: string,
+    @Body() dto: DirectPermissionsDto,
+  ) {
+    const entitlement =
+      await this.entitlementRepository.removeDirectPermissions(
+        id,
+        dto.permissionIds,
+      );
+
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
   }
 
   @Post(':id/excluded-permissions')
-  @ApiOperation({ summary: 'Add excluded permissions to a user (deny specific permissions)' })
-  @ApiResponse({ status: 200, description: 'Excluded permissions added successfully' })
+  @ApiOperation({
+    summary: 'Add excluded permissions to a user (deny specific permissions)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Excluded permissions added successfully',
+  })
   @RequirePermissions('users:manage')
-  async addExcludedPermissions(@Param('id') id: string, @Body() dto: ExcludedPermissionsDto) {
-    const entitlement = await this.entitlementRepository.addExcludedPermissions(id, dto.permissionIds);
-    
+  async addExcludedPermissions(
+    @Param('id') id: string,
+    @Body() dto: ExcludedPermissionsDto,
+  ) {
+    const entitlement = await this.entitlementRepository.addExcludedPermissions(
+      id,
+      dto.permissionIds,
+    );
+
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -537,13 +649,26 @@ export class UserEntitlementsController {
 
   @Delete(':id/excluded-permissions')
   @ApiOperation({ summary: 'Remove excluded permissions from a user' })
-  @ApiResponse({ status: 200, description: 'Excluded permissions removed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Excluded permissions removed successfully',
+  })
   @RequirePermissions('users:manage')
-  async removeExcludedPermissions(@Param('id') id: string, @Body() dto: ExcludedPermissionsDto) {
-    const entitlement = await this.entitlementRepository.removeExcludedPermissions(id, dto.permissionIds);
-    
+  async removeExcludedPermissions(
+    @Param('id') id: string,
+    @Body() dto: ExcludedPermissionsDto,
+  ) {
+    const entitlement =
+      await this.entitlementRepository.removeExcludedPermissions(
+        id,
+        dto.permissionIds,
+      );
+
     if (entitlement) {
-      await this.authorizationService.refreshPermissions(entitlement.userId, entitlement.organizationId);
+      await this.authorizationService.refreshPermissions(
+        entitlement.userId,
+        entitlement.organizationId,
+      );
     }
 
     return entitlement;
@@ -575,7 +700,10 @@ export class DefaultGroupsController {
   @ApiOperation({ summary: 'Create a default group assignment' })
   @HttpCode(HttpStatus.CREATED)
   @RequireAllPermissions('groups:update', 'groups:assign')
-  async createDefaultGroup(@Req() req: Request, @Body() dto: CreateDefaultAssignmentDto) {
+  async createDefaultGroup(
+    @Req() req: Request,
+    @Body() dto: CreateDefaultAssignmentDto,
+  ) {
     const organizationId = req.entitlementUser?.organizationId || 'default';
     const createdBy = req.entitlementUser?.id;
 
@@ -593,7 +721,10 @@ export class DefaultGroupsController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a default group assignment' })
   @RequirePermissions('groups:update')
-  async updateDefaultGroup(@Param('id') id: string, @Body() dto: Partial<CreateDefaultAssignmentDto>) {
+  async updateDefaultGroup(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateDefaultAssignmentDto>,
+  ) {
     return this.defaultGroupRepository.update(id, dto);
   }
 
@@ -623,15 +754,18 @@ export class AuthorizationController {
   @ApiOperation({ summary: 'Authorization callback endpoint' })
   @ApiResponse({ status: 200, description: 'Authorization result' })
   @HttpCode(HttpStatus.OK)
-  async authorize(@Body() request: {
-    userId: string;
-    email: string;
-    organizationId: string;
-    resource: string;
-    action: string;
-    resourceId?: string;
-    context?: Record<string, unknown>;
-  }) {
+  async authorize(
+    @Body()
+    request: {
+      userId: string;
+      email: string;
+      organizationId: string;
+      resource: string;
+      action: string;
+      resourceId?: string;
+      context?: Record<string, unknown>;
+    },
+  ) {
     return this.authorizationService.authorize({
       userId: request.userId,
       email: request.email,
@@ -646,11 +780,9 @@ export class AuthorizationController {
   @Post('validate')
   @ApiOperation({ summary: 'Validate user entitlements' })
   @HttpCode(HttpStatus.OK)
-  async validateEntitlements(@Body() request: {
-    userId: string;
-    email: string;
-    organizationId: string;
-  }) {
+  async validateEntitlements(
+    @Body() request: { userId: string; email: string; organizationId: string },
+  ) {
     const isValid = await this.authorizationService.validateEntitlements(
       request.userId,
       request.email,
@@ -663,11 +795,9 @@ export class AuthorizationController {
   @Post('provision')
   @ApiOperation({ summary: 'Provision entitlements for a new user' })
   @HttpCode(HttpStatus.CREATED)
-  async provisionUser(@Body() request: {
-    userId: string;
-    email: string;
-    organizationId: string;
-  }) {
+  async provisionUser(
+    @Body() request: { userId: string; email: string; organizationId: string },
+  ) {
     return this.authorizationService.provisionNewUser(
       request.userId,
       request.email,
@@ -676,7 +806,9 @@ export class AuthorizationController {
   }
 
   @Post('bootstrap')
-  @ApiOperation({ summary: 'Bootstrap admin access for the current user (development only)' })
+  @ApiOperation({
+    summary: 'Bootstrap admin access for the current user (development only)',
+  })
   @HttpCode(HttpStatus.OK)
   @SkipEntitlementCheck()
   async bootstrapAdmin(@Req() req: Request) {
@@ -688,10 +820,14 @@ export class AuthorizationController {
 
     const userId = user.sub;
     const email = user.email;
-    const organizationId = user.organization || user.org_id || user.tenant_id || 'default';
+    const organizationId =
+      user.organization || user.org_id || user.tenant_id || 'default';
 
     // Force re-provision with admin group
-    return this.authorizationService.bootstrapAdminUser(userId, email, organizationId);
+    return this.authorizationService.bootstrapAdminUser(
+      userId,
+      email,
+      organizationId,
+    );
   }
 }
-

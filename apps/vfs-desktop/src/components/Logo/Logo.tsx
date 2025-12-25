@@ -1,8 +1,6 @@
 /**
- * Ursly Logo - Clean, modern design inspired by macOS native apps
- *
- * A sleek, geometric design with a stylized "U" that represents
- * connectivity and cloud storage. Uses theme-aware colors.
+ * Ursly Logo - Simple & Clean
+ * Minimalist "U" mark - instantly recognizable
  */
 
 import './Logo.css';
@@ -12,79 +10,64 @@ interface LogoProps {
   className?: string;
 }
 
-export function Logo({ size = 24, className = '' }: LogoProps) {
-  const gradientId = `ursly-grad-${Math.random().toString(36).substr(2, 6)}`;
+/**
+ * Main Logo - Simple U on gradient background
+ */
+export function Logo({ size = 32, className = '' }: LogoProps) {
+  const id = `u-${Math.random().toString(36).substr(2, 4)}`;
 
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       className={`ursly-logo ${className}`}
       role="img"
-      aria-label="Ursly Logo"
+      aria-label="Ursly"
     >
-      {/* Background - Subtle rounded square */}
-      <rect width="24" height="24" rx="6" fill={`url(#${gradientId})`} />
-
-      {/* Modern "U" with connected nodes - represents cloud connectivity */}
-      <g className="logo-glyph">
-        {/* Main U shape */}
-        <path
-          d="M7 6.5V13.5C7 16.5376 9.23858 19 12 19C14.7614 19 17 16.5376 17 13.5V6.5"
-          stroke="white"
-          strokeWidth="2.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Top connection nodes */}
-        <circle cx="7" cy="5.5" r="1.25" fill="white" opacity="0.9" />
-        <circle cx="17" cy="5.5" r="1.25" fill="white" opacity="0.9" />
-        {/* Bottom center node - data point */}
-        <circle cx="12" cy="14" r="1.5" fill="white" />
-      </g>
-
       <defs>
-        <linearGradient
-          id={gradientId}
-          x1="0"
-          y1="0"
-          x2="24"
-          y2="24"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--primary, #0a84ff)" />
-          <stop offset="1" stopColor="var(--secondary, #5e5ce6)" />
+        <linearGradient id={`${id}-g`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#6366f1" />
+          <stop offset="100%" stopColor="#8b5cf6" />
         </linearGradient>
       </defs>
+
+      {/* Background */}
+      <rect width="32" height="32" rx="8" fill={`url(#${id}-g)`} />
+
+      {/* Simple U */}
+      <path
+        d="M9 8 L9 20 C9 24 12 26 16 26 C20 26 23 24 23 20 L23 8"
+        stroke="white"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   );
 }
 
 /**
- * Logo with text variant
+ * Logo with text
  */
-export function LogoWithText({ size = 24, className = '' }: LogoProps) {
+export function LogoWithText({ size = 32, className = '' }: LogoProps) {
   return (
     <div className={`logo-with-text ${className}`}>
       <Logo size={size} />
-      <div className="logo-text">
-        <span className="logo-title">Ursly</span>
-        <span className="logo-tagline">VIRTUAL FILE SYSTEM</span>
-      </div>
+      <span className="logo-wordmark">Ursly</span>
     </div>
   );
 }
 
 /**
- * Minimal icon variant - just the glyph, no background
+ * Monochrome icon
  */
-export function LogoIcon({ size = 20, className = '' }: LogoProps) {
+export function LogoIcon({ size = 24, className = '' }: LogoProps) {
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       width={size}
@@ -94,14 +77,88 @@ export function LogoIcon({ size = 20, className = '' }: LogoProps) {
       aria-label="Ursly"
     >
       <path
-        d="M4 4V11C4 14.3137 6.68629 17 10 17C13.3137 17 16 14.3137 16 11V4"
+        d="M6 5 L6 15 C6 19 9 21 12 21 C15 21 18 19 18 15 L18 5"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeLinecap="round"
+        fill="none"
       />
-      <circle cx="4" cy="3" r="1.25" fill="currentColor" opacity="0.8" />
-      <circle cx="16" cy="3" r="1.25" fill="currentColor" opacity="0.8" />
-      <circle cx="10" cy="11" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+/**
+ * Glyph only
+ */
+export function LogoGlyph({ size = 24, className = '' }: LogoProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      className={`ursly-logo-glyph ${className}`}
+      role="img"
+      aria-label="Ursly"
+    >
+      <path
+        d="M6 4 L6 15 C6 19.5 8.5 22 12 22 C15.5 22 18 19.5 18 15 L18 4"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Animated variant
+ */
+export function LogoAnimated({ size = 48, className = '' }: LogoProps) {
+  const id = `ua-${Math.random().toString(36).substr(2, 4)}`;
+
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      className={`ursly-logo ursly-logo-animated ${className}`}
+      role="img"
+      aria-label="Ursly"
+    >
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#6366f1">
+            <animate
+              attributeName="stop-color"
+              values="#6366f1;#8b5cf6;#6366f1"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop offset="100%" stopColor="#8b5cf6">
+            <animate
+              attributeName="stop-color"
+              values="#8b5cf6;#6366f1;#8b5cf6"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </stop>
+        </linearGradient>
+      </defs>
+
+      <rect width="32" height="32" rx="8" fill={`url(#${id}-a)`} />
+      <path
+        d="M9 8 L9 20 C9 24 12 26 16 26 C20 26 23 24 23 20 L23 8"
+        stroke="white"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   );
 }

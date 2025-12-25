@@ -884,11 +884,12 @@ pub async fn vfs_clipboard_copy_for_native(
     paths: Vec<String>,
     state: State<'_, VfsStateWrapper>,
 ) -> Result<String, String> {
+    info!("vfs_clipboard_copy_for_native: source={}, paths={:?}", source_id, paths);
+    
     let clipboard = get_clipboard_with_vfs(&state)?;
+    info!("vfs_clipboard_copy_for_native: got clipboard adapter");
     
     let pathbufs: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
-    
-    info!("Copying {} VFS files to native clipboard from source {}", paths.len(), source_id);
     
     // Copy to VFS clipboard - this also exports to temp and writes to native clipboard
     clipboard.copy_files(
@@ -897,6 +898,14 @@ pub async fn vfs_clipboard_copy_for_native(
     )
         .await
         .map_err(|e| format!("Failed to copy to clipboard: {}", e))?;
+    
+    // Verify the clipboard was updated
+    let content = clipboard.get_clipboard().await.map_err(|e| format!("Failed to verify: {}", e))?;
+    if let Some(ref c) = content {
+        info!("vfs_clipboard_copy_for_native: verified {} paths in clipboard", c.paths.len());
+    } else {
+        warn!("vfs_clipboard_copy_for_native: clipboard appears empty after copy!");
+    }
     
     info!("Copied {} files to VFS and native clipboard from source {}", paths.len(), source_id);
     Ok(format!("Copied {} files to clipboard (native-compatible)", paths.len()))
@@ -925,13 +934,29 @@ pub async fn vfs_clipboard_get() -> Result<Option<ClipboardContentResponse>, Str
 /// Check if clipboard has files
 #[tauri::command]
 pub async fn vfs_clipboard_has_files() -> Result<bool, String> {
+    // Check if global clipboard is initialized
+    let is_initialized = {
+        let lock = CLIPBOARD.read();
+        lock.is_some()
+    };
+    info!("vfs_clipboard_has_files: global clipboard initialized={}", is_initialized);
+    
     let clipboard = get_clipboard_readonly();
     
-    let result = clipboard.has_files()
+    // Also log what's in the clipboard
+    let content = clipboard.get_clipboard()
         .await
-        .map_err(|e| format!("Failed to check clipboard: {}", e))?;
+        .map_err(|e| format!("Failed to get clipboard: {}", e))?;
     
-    info!("vfs_clipboard_has_files: {}", result);
+    if let Some(ref c) = content {
+        info!("vfs_clipboard_has_files: found {} paths in clipboard", c.paths.len());
+    } else {
+        info!("vfs_clipboard_has_files: clipboard is empty");
+    }
+    
+    let result = content.map(|c| !c.paths.is_empty()).unwrap_or(false);
+    
+    info!("vfs_clipboard_has_files: result={}", result);
     Ok(result)
 }
 
@@ -954,12 +979,17 @@ pub async fn vfs_clipboard_paste_to_vfs(
     dest_path: String,
     state: State<'_, VfsStateWrapper>,
 ) -> Result<PasteResponse, String> {
+    info!("vfs_clipboard_paste_to_vfs: dest_source_id={}, dest_path={}", dest_source_id, dest_path);
+    
     // Get clipboard with VFS service for paste operation
     let clipboard = get_clipboard_with_vfs(&state)?;
     let content = clipboard.get_clipboard()
         .await
         .map_err(|e| format!("Failed to get clipboard: {}", e))?
         .ok_or_else(|| "Clipboard is empty".to_string())?;
+    
+    info!("vfs_clipboard_paste_to_vfs: is_cut={}, source={:?}, paths={:?}", 
+          content.is_cut(), content.source, content.paths);
     
     // Get VFS service for actual paste operation
     let vfs_service = state.get_service()
@@ -1006,31 +1036,7 @@ pub async fn vfs_clipboard_paste_to_vfs(
         }
     }
     
-    // If cut operation and all succeeded, delete sources
-    if content.is_cut() && errors.is_empty() {
-        match &content.source {
-            ClipboardSource::Native => {
-                for path in &content.paths {
-                    if let Err(e) = tokio::fs::remove_file(path).await {
-                        // Try as directory
-                        if let Err(e2) = tokio::fs::remove_dir_all(path).await {
-                            warn!("Failed to delete cut source {:?}: {} / {}", path, e, e2);
-                        }
-                    }
-                }
-            }
-            ClipboardSource::Vfs { source_id } => {
-                for path in &content.paths {
-                    if let Err(e) = vfs_service.rm_rf(source_id, path).await {
-                        warn!("Failed to delete cut source {:?}: {}", path, e);
-                    }
-                }
-            }
-        }
-        
-        // Clear clipboard after cut
-        let _ = clipboard.clear_clipboard().await;
-    }
+    // Note: Cut operation removed - simple copy/paste only
     
     let files_pasted = pasted_paths.len();
     let files_failed = errors.len();
@@ -2170,14 +2176,29 @@ pub async fn vfs_get_apps_for_file(
 
 #[cfg(target_os = "macos")]
 fn get_macos_apps_for_extension(extension: &str) -> Vec<AppInfo> {
-    let mut apps = Vec::new();
-    let mut seen_paths = std::collections::HashSet::new();
+    use std::process::Command;
+    use std::collections::HashSet;
     
-    // Add common apps that exist on the system for this extension
+    let mut apps = Vec::new();
+    let mut seen_bundle_ids = HashSet::new();
+    
+    // First, try to get apps from macOS Launch Services using AppleScript
+    // This queries the actual system database of registered applications
+    if let Some(ls_apps) = get_apps_from_launch_services(extension) {
+        for app in ls_apps {
+            let bundle_key = app.bundle_id.clone().unwrap_or_else(|| app.path.clone());
+            if !seen_bundle_ids.contains(&bundle_key) {
+                seen_bundle_ids.insert(bundle_key);
+                apps.push(app);
+            }
+        }
+    }
+    
+    // Also add common apps that are known to handle this extension
     let common_apps = get_common_macos_apps_for_extension(extension);
     for (name, path) in common_apps {
-        if std::path::Path::new(path).exists() && !seen_paths.contains(path) {
-            seen_paths.insert(path.to_string());
+        if std::path::Path::new(path).exists() && !seen_bundle_ids.contains(&path.to_string()) {
+            seen_bundle_ids.insert(path.to_string());
             apps.push(AppInfo {
                 name: name.to_string(),
                 path: path.to_string(),
@@ -2187,34 +2208,303 @@ fn get_macos_apps_for_extension(extension: &str) -> Vec<AppInfo> {
         }
     }
     
-    // Also scan /Applications for common apps
+    // Scan /Applications for additional known apps
     let additional_apps = scan_applications_folder(extension);
     for app in additional_apps {
-        if !seen_paths.contains(&app.path) {
-            seen_paths.insert(app.path.clone());
+        let bundle_key = app.bundle_id.clone().unwrap_or_else(|| app.path.clone());
+        if !seen_bundle_ids.contains(&bundle_key) {
+            seen_bundle_ids.insert(bundle_key);
             apps.push(app);
         }
     }
     
     // Sort by name
-    apps.sort_by(|a, b| a.name.cmp(&b.name));
+    apps.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
     
-    // Limit to 15 apps
-    apps.truncate(15);
+    // Limit to 20 apps
+    apps.truncate(20);
     
-    // If still empty, add TextEdit
+    // If still empty, add TextEdit as fallback
     if apps.is_empty() {
         if std::path::Path::new("/System/Applications/TextEdit.app").exists() {
             apps.push(AppInfo {
                 name: "TextEdit".to_string(),
                 path: "/System/Applications/TextEdit.app".to_string(),
-                bundle_id: None,
+                bundle_id: Some("com.apple.TextEdit".to_string()),
                 icon: None,
             });
         }
     }
     
     apps
+}
+
+/// Query macOS Launch Services for apps that can open a specific file type
+#[cfg(target_os = "macos")]
+fn get_apps_from_launch_services(extension: &str) -> Option<Vec<AppInfo>> {
+    use std::process::Command;
+    
+    // Get UTI for the extension
+    let uti = extension_to_uti(extension);
+    
+    // Use AppleScript to query Launch Services for apps that handle this UTI
+    let script = format!(r#"
+use framework "AppKit"
+use scripting additions
+
+set theApps to {{}}
+set theUTI to "{}"
+
+try
+    -- Get all apps that can open this content type
+    set workspace to current application's NSWorkspace's sharedWorkspace()
+    set appURLs to workspace's URLsForApplicationsToOpenContentType:(current application's UTType's typeWithIdentifier:theUTI)
+    
+    if appURLs is not missing value then
+        repeat with appURL in appURLs
+            set appPath to (appURL's |path|()) as text
+            -- Get app name from bundle
+            set appBundle to current application's NSBundle's bundleWithPath:appPath
+            if appBundle is not missing value then
+                set appName to (appBundle's objectForInfoDictionaryKey:"CFBundleName") as text
+                set bundleId to (appBundle's bundleIdentifier()) as text
+                if appName is not missing value and appName is not "" then
+                    set end of theApps to appName & "|" & appPath & "|" & bundleId
+                end if
+            end if
+        end repeat
+    end if
+end try
+
+set AppleScript's text item delimiters to linefeed
+return theApps as text
+"#, uti);
+
+    let output = Command::new("osascript")
+        .arg("-e")
+        .arg(&script)
+        .output()
+        .ok()?;
+    
+    if !output.status.success() {
+        // Try fallback method using lsregister
+        return get_apps_from_lsregister(extension);
+    }
+    
+    let text = String::from_utf8_lossy(&output.stdout);
+    let mut apps = Vec::new();
+    
+    for line in text.lines() {
+        let parts: Vec<&str> = line.split('|').collect();
+        if parts.len() >= 2 {
+            let name = parts[0].trim();
+            let path = parts[1].trim();
+            let bundle_id = parts.get(2).map(|s| s.trim().to_string());
+            
+            if !name.is_empty() && std::path::Path::new(path).exists() {
+                apps.push(AppInfo {
+                    name: name.to_string(),
+                    path: path.to_string(),
+                    bundle_id,
+                    icon: None,
+                });
+            }
+        }
+    }
+    
+    if apps.is_empty() {
+        // Fallback to lsregister method
+        return get_apps_from_lsregister(extension);
+    }
+    
+    Some(apps)
+}
+
+/// Fallback: Query lsregister database for apps that handle a file type
+#[cfg(target_os = "macos")]
+fn get_apps_from_lsregister(extension: &str) -> Option<Vec<AppInfo>> {
+    use std::process::Command;
+    
+    // Use mdfind to find apps that can open this file type
+    let output = Command::new("mdfind")
+        .args([
+            "kMDItemContentType == 'com.apple.application-bundle'",
+        ])
+        .output()
+        .ok()?;
+    
+    if !output.status.success() {
+        return None;
+    }
+    
+    let text = String::from_utf8_lossy(&output.stdout);
+    let mut apps = Vec::new();
+    let ext_lower = extension.to_lowercase();
+    
+    // Get apps from common locations that exist
+    let app_dirs = ["/Applications", "/System/Applications", &format!("{}/Applications", std::env::var("HOME").unwrap_or_default())];
+    
+    for line in text.lines() {
+        let path = line.trim();
+        if path.ends_with(".app") && std::path::Path::new(path).exists() {
+            // Check if app might handle this extension by reading its Info.plist
+            if let Some(app_info) = check_app_handles_extension(path, &ext_lower) {
+                apps.push(app_info);
+            }
+        }
+    }
+    
+    // Limit results
+    apps.truncate(15);
+    
+    Some(apps)
+}
+
+/// Check if an app declares it can handle a specific file extension
+#[cfg(target_os = "macos")]
+fn check_app_handles_extension(app_path: &str, extension: &str) -> Option<AppInfo> {
+    use std::process::Command;
+    
+    // Use defaults to read Info.plist and check CFBundleDocumentTypes
+    let plist_path = format!("{}/Contents/Info.plist", app_path);
+    if !std::path::Path::new(&plist_path).exists() {
+        return None;
+    }
+    
+    // Quick check using plutil
+    let output = Command::new("plutil")
+        .args(["-convert", "json", "-o", "-", &plist_path])
+        .output()
+        .ok()?;
+    
+    if !output.status.success() {
+        return None;
+    }
+    
+    let json_str = String::from_utf8_lossy(&output.stdout);
+    
+    // Check if extension is mentioned in the plist
+    let ext_patterns = [
+        format!("\"{}\"", extension),
+        format!(".{}", extension),
+        extension.to_uppercase(),
+    ];
+    
+    let handles = ext_patterns.iter().any(|pattern| json_str.contains(pattern));
+    
+    if handles {
+        // Extract app name
+        let name = std::path::Path::new(app_path)
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .map(|s| s.replace(".app", ""))
+            .unwrap_or_else(|| "Unknown".to_string());
+        
+        // Try to get bundle ID from plist
+        let bundle_id = if let Ok(bid_output) = Command::new("defaults")
+            .args(["read", &plist_path, "CFBundleIdentifier"])
+            .output() {
+            if bid_output.status.success() {
+                Some(String::from_utf8_lossy(&bid_output.stdout).trim().to_string())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        
+        return Some(AppInfo {
+            name,
+            path: app_path.to_string(),
+            bundle_id,
+            icon: None,
+        });
+    }
+    
+    None
+}
+
+/// Map file extension to macOS UTI (Uniform Type Identifier)
+#[cfg(target_os = "macos")]
+fn extension_to_uti(extension: &str) -> String {
+    match extension.to_lowercase().as_str() {
+        // Images
+        "jpg" | "jpeg" => "public.jpeg",
+        "png" => "public.png",
+        "gif" => "com.compuserve.gif",
+        "tiff" | "tif" => "public.tiff",
+        "bmp" => "com.microsoft.bmp",
+        "heic" | "heif" => "public.heic",
+        "webp" => "public.webp",
+        "svg" => "public.svg-image",
+        "ico" => "com.microsoft.ico",
+        "raw" => "public.camera-raw-image",
+        "psd" => "com.adobe.photoshop-image",
+        
+        // Videos
+        "mp4" => "public.mpeg-4",
+        "mov" => "com.apple.quicktime-movie",
+        "avi" => "public.avi",
+        "mkv" => "org.matroska.mkv",
+        "webm" => "org.webmproject.webm",
+        "m4v" => "com.apple.m4v-video",
+        "wmv" => "com.microsoft.windows-media-wmv",
+        "flv" => "com.adobe.flash.video",
+        
+        // Audio
+        "mp3" => "public.mp3",
+        "wav" => "com.microsoft.waveform-audio",
+        "aac" => "public.aac-audio",
+        "flac" => "org.xiph.flac",
+        "m4a" => "com.apple.m4a-audio",
+        "aiff" | "aif" => "public.aiff-audio",
+        "ogg" => "org.xiph.ogg-audio",
+        "wma" => "com.microsoft.windows-media-wma",
+        
+        // Documents
+        "pdf" => "com.adobe.pdf",
+        "doc" => "com.microsoft.word.doc",
+        "docx" => "org.openxmlformats.wordprocessingml.document",
+        "xls" => "com.microsoft.excel.xls",
+        "xlsx" => "org.openxmlformats.spreadsheetml.sheet",
+        "ppt" => "com.microsoft.powerpoint.ppt",
+        "pptx" => "org.openxmlformats.presentationml.presentation",
+        "rtf" => "public.rtf",
+        "txt" => "public.plain-text",
+        "csv" => "public.comma-separated-values-text",
+        
+        // Code/Text
+        "json" => "public.json",
+        "xml" => "public.xml",
+        "html" | "htm" => "public.html",
+        "css" => "public.css",
+        "js" => "com.netscape.javascript-source",
+        "ts" => "com.microsoft.typescript",
+        "md" => "net.daringfireball.markdown",
+        "py" => "public.python-script",
+        "rb" => "public.ruby-script",
+        "swift" => "public.swift-source",
+        "c" => "public.c-source",
+        "cpp" | "cc" => "public.c-plus-plus-source",
+        "h" => "public.c-header",
+        "java" => "com.sun.java-source",
+        "go" => "public.go-source",
+        "rs" => "public.rust-source",
+        "sh" => "public.shell-script",
+        "yaml" | "yml" => "public.yaml",
+        
+        // Archives
+        "zip" => "public.zip-archive",
+        "tar" => "public.tar-archive",
+        "gz" | "gzip" => "org.gnu.gnu-zip-archive",
+        "bz2" => "public.bzip2-archive",
+        "rar" => "com.rarlab.rar-archive",
+        "7z" => "org.7-zip.7-zip-archive",
+        "dmg" => "com.apple.disk-image-udif",
+        
+        // Default
+        _ => "public.data",
+    }.to_string()
 }
 
 #[cfg(target_os = "macos")]
