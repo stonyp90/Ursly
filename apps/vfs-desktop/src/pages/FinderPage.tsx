@@ -3268,10 +3268,10 @@ export function FinderPage() {
         </div>
       )}
 
-      {/* Storage Context Menu - Shows technical details on right-click */}
+      {/* Storage Context Menu - macOS Get Info style */}
       {storageContextMenu && (
         <div
-          className="context-menu storage-context-menu"
+          className="storage-info-popover"
           style={{
             position: 'fixed',
             left: storageContextMenu.x,
@@ -3279,50 +3279,119 @@ export function FinderPage() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="storage-info-header">
-            <span className="storage-info-title">
-              {storageContextMenu.source.name}
-            </span>
-            <span
-              className={`storage-info-status ${storageContextMenu.source.status}`}
+          {/* Header with icon and name */}
+          <div className="storage-info-hero">
+            <div
+              className={`storage-info-icon ${storageContextMenu.source.category}`}
             >
-              {storageContextMenu.source.status === 'connected'
-                ? 'Connected'
-                : 'Disconnected'}
-            </span>
+              {storageContextMenu.source.category === 'local' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="4" y="2" width="16" height="20" rx="2" />
+                  <line x1="8" y1="6" x2="16" y2="6" />
+                  <line x1="8" y1="10" x2="16" y2="10" />
+                  <circle cx="12" cy="17" r="2" />
+                </svg>
+              )}
+              {storageContextMenu.source.category === 'network' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              )}
+              {storageContextMenu.source.category === 'cloud' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+                </svg>
+              )}
+              {(storageContextMenu.source.category === 'block' ||
+                storageContextMenu.source.category === 'hybrid') && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="2" y="4" width="20" height="6" rx="1" />
+                  <rect x="2" y="14" width="20" height="6" rx="1" />
+                  <circle cx="6" cy="7" r="1" fill="currentColor" />
+                  <circle cx="6" cy="17" r="1" fill="currentColor" />
+                </svg>
+              )}
+            </div>
+            <div className="storage-info-title-area">
+              <h3 className="storage-info-name">
+                {storageContextMenu.source.name}
+              </h3>
+              <span
+                className={`storage-info-status ${storageContextMenu.source.status}`}
+              >
+                <span className="status-indicator" />
+                {storageContextMenu.source.status === 'connected'
+                  ? 'Connected'
+                  : 'Offline'}
+              </span>
+            </div>
           </div>
-          <div className="context-menu-divider" />
-          <div className="storage-info-details">
-            <div className="storage-info-row">
-              <span className="info-label">Type</span>
+
+          {/* Info Grid */}
+          <div className="storage-info-grid">
+            <div className="info-row">
+              <span className="info-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+                  <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
+                </svg>
+              </span>
+              <span className="info-label">Kind</span>
               <span className="info-value">
                 {storageContextMenu.source.category === 'local'
-                  ? 'Local Storage'
+                  ? 'Local Volume'
                   : storageContextMenu.source.category === 'cloud'
                     ? 'Cloud Storage'
                     : storageContextMenu.source.category === 'network'
-                      ? 'Network Share'
-                      : 'Hybrid Storage'}
+                      ? 'Network Volume'
+                      : storageContextMenu.source.category === 'block'
+                        ? 'Block Storage'
+                        : 'Hybrid Volume'}
               </span>
             </div>
-            <div className="storage-info-row">
+
+            <div className="info-row">
+              <span className="info-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                </svg>
+              </span>
               <span className="info-label">Tier</span>
               <span
-                className={`info-value tier-badge ${storageContextMenu.source.tierStatus || 'hot'}`}
+                className={`info-value tier-pill ${storageContextMenu.source.tierStatus || 'hot'}`}
               >
-                {storageContextMenu.source.tierStatus || 'Hot'}
+                {(storageContextMenu.source.tierStatus || 'hot')
+                  .charAt(0)
+                  .toUpperCase() +
+                  (storageContextMenu.source.tierStatus || 'hot').slice(1)}
               </span>
             </div>
+
             {storageContextMenu.source.path && (
-              <div className="storage-info-row">
+              <div className="info-row path-row">
+                <span className="info-icon">
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z" />
+                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z" />
+                  </svg>
+                </span>
                 <span className="info-label">Path</span>
-                <span className="info-value mono">
+                <span className="info-value path-value">
                   {storageContextMenu.source.path}
                 </span>
               </div>
             )}
+
             {storageContextMenu.source.providerId && (
-              <div className="storage-info-row">
+              <div className="info-row">
+                <span className="info-icon">
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5v-1H1V1h5V0H1zm9 0v1h5v14h-5v1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5zM8 7a.5.5 0 0 0 0 1h3.793l-1.147 1.146a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L11.793 7H8z" />
+                  </svg>
+                </span>
                 <span className="info-label">Provider</span>
                 <span className="info-value">
                   {storageContextMenu.source.providerId.toUpperCase()}
@@ -3330,47 +3399,52 @@ export function FinderPage() {
               </div>
             )}
           </div>
-          <div className="context-menu-divider" />
-          <button
-            className="context-menu-item"
-            onClick={() => {
-              selectSource(storageContextMenu.source);
-              setStorageContextMenu(null);
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
-            </svg>
-            Browse Files
-          </button>
-          <button
-            className="context-menu-item"
-            onClick={() => {
-              // Copy path to clipboard
-              if (storageContextMenu.source.path) {
-                navigator.clipboard.writeText(storageContextMenu.source.path);
-              }
-              setStorageContextMenu(null);
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
-              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
-            </svg>
-            Copy Path
-          </button>
-          <button
-            className="context-menu-item"
-            onClick={() => {
-              // TODO: Eject/disconnect storage
-              setStorageContextMenu(null);
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M7.27 1.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3H1.654C.78 9.5.326 8.455.924 7.816L7.27 1.047zM14.346 8.5 8 1.731 1.654 8.5H4.5a1 1 0 0 1 1 1v3h5v-3a1 1 0 0 1 1-1h2.846z" />
-            </svg>
-            Eject
-          </button>
+
+          {/* Actions */}
+          <div className="storage-info-actions">
+            <button
+              className="storage-action-btn primary"
+              onClick={() => {
+                selectSource(storageContextMenu.source);
+                setStorageContextMenu(null);
+              }}
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9z" />
+              </svg>
+              Open
+            </button>
+            <button
+              className="storage-action-btn"
+              onClick={() => {
+                if (storageContextMenu.source.path) {
+                  navigator.clipboard.writeText(storageContextMenu.source.path);
+                  toast.showToast({
+                    type: 'success',
+                    message: 'Path copied to clipboard',
+                  });
+                }
+                setStorageContextMenu(null);
+              }}
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+              </svg>
+              Copy Path
+            </button>
+            <button
+              className="storage-action-btn eject"
+              onClick={() => {
+                setStorageContextMenu(null);
+              }}
+            >
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M7.27 1.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3H1.654C.78 9.5.326 8.455.924 7.816L7.27 1.047z" />
+              </svg>
+              Eject
+            </button>
+          </div>
         </div>
       )}
 
