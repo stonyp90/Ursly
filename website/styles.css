@@ -3607,17 +3607,78 @@ ul {
 
 .model-tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.tags-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.tags-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tags-list li {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.model-tags span {
-  font-size: 0.7rem;
-  padding: 4px 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--text-muted);
+.tags-list li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Primary color tags (cyan) */
+.tags-primary li::before {
+  background: var(--primary);
+  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.5);
+}
+
+.tags-primary li {
+  border-color: rgba(var(--primary-rgb), 0.2);
+}
+
+/* Accent color tags (pink/secondary) */
+.tags-accent li::before {
+  background: var(--secondary);
+  box-shadow: 0 0 8px rgba(var(--secondary-rgb), 0.5);
+}
+
+.tags-accent li {
+  border-color: rgba(var(--secondary-rgb), 0.2);
+}
+
+/* Success color tags (green) */
+.tags-success li::before {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(var(--success-rgb), 0.5);
+}
+
+.tags-success li {
+  border-color: rgba(var(--success-rgb), 0.2);
 }
 
 .open-source-cta {
