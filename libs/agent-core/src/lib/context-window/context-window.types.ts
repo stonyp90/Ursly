@@ -75,29 +75,37 @@ export interface TokenUsageStats {
  */
 export interface IContextWindowManager {
   /** Create a new context window for an agent */
-  createWindow(agentId: string, config?: Partial<ContextWindowConfig>): ContextWindowState;
-  
+  createWindow(
+    agentId: string,
+    config?: Partial<ContextWindowConfig>,
+  ): ContextWindowState;
+
   /** Get the current context window for an agent */
   getWindow(agentId: string): ContextWindowState | null;
-  
+
   /** Add a message to the context window */
-  addMessage(agentId: string, message: Omit<Message, 'timestamp' | 'tokenCount'>): Message;
-  
+  addMessage(
+    agentId: string,
+    message: Omit<Message, 'timestamp' | 'tokenCount'>,
+  ): Message;
+
   /** Get token usage statistics */
   getTokenUsage(agentId: string): TokenUsageStats;
-  
+
   /** Check if context should be rotated */
   shouldRotate(agentId: string): boolean;
-  
+
   /** Rotate the context window (summarize and create new) */
   rotateWindow(agentId: string): Promise<ContextRotationResult>;
-  
+
   /** Get all messages for context injection */
   getContextMessages(agentId: string): Message[];
-  
+
   /** Clear the context window */
   clearWindow(agentId: string): void;
+
+  /** Remove a context window entirely */
+  removeWindow(agentId: string): boolean;
 }
 
 export const CONTEXT_WINDOW_MANAGER = Symbol('IContextWindowManager');
-

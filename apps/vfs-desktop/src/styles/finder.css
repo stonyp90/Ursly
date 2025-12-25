@@ -659,8 +659,65 @@
   margin-top: 8px;
 }
 
+/* Storage Groups - Local, Network, Object */
+.storage-group {
+  margin-bottom: 8px;
+}
+
+.storage-group:last-child {
+  margin-bottom: 0;
+}
+
+.storage-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--finder-text-tertiary);
+  opacity: 0.7;
+}
+
+.group-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.group-icon.local {
+  color: var(--tier-hot, #10b981);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.group-icon.network {
+  color: var(--finder-accent, #0a84ff);
+  background: rgba(10, 132, 255, 0.15);
+}
+
+.group-icon.cloud {
+  color: var(--tier-nearline, #8b5cf6);
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.group-icon.block {
+  color: var(--tier-cold, #3b82f6);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.group-label {
+  flex: 1;
+}
+
 .storage-item {
   position: relative;
+  padding-left: 18px !important;
 }
 
 .storage-item .item-name {
@@ -687,27 +744,48 @@
   opacity: 1;
 }
 
-/* Storage type badge (local/network icon) */
-.storage-type-badge {
+/* Storage tier badge - letter indicator */
+.storage-tier-badge {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  color: var(--finder-text-tertiary);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
-.storage-type-badge.local {
+.storage-tier-badge.hot {
+  background: rgba(16, 185, 129, 0.2);
   color: var(--tier-hot, #10b981);
 }
 
-.storage-type-badge.network {
-  color: var(--finder-accent, #0a84ff);
+.storage-tier-badge.cold {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--tier-cold, #3b82f6);
 }
 
-/* Storage tier indicator dot */
+.storage-tier-badge.nearline {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--tier-nearline, #8b5cf6);
+}
+
+/* Legacy tier mappings */
+.storage-tier-badge.warm {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--tier-warn, #f59e0b);
+}
+
+.storage-tier-badge.archive {
+  background: rgba(107, 114, 128, 0.2);
+  color: #6b7280;
+}
+
+/* Storage tier indicator dot (fallback) */
 .storage-tier-dot {
   width: 8px;
   height: 8px;

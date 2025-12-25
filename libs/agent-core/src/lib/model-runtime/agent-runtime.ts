@@ -72,7 +72,7 @@ export interface AgentGenerationResult {
 
 /**
  * Agent Runtime
- * 
+ *
  * Unified interface for running AI agents with:
  * - Model lifecycle management (start/stop/switch)
  * - Context window management with auto-rotation
@@ -133,7 +133,10 @@ export class AgentRuntime {
   /**
    * Start the model for an agent
    */
-  async startModel(agentId: string, options?: ModelStartOptions): Promise<ModelInstance> {
+  async startModel(
+    agentId: string,
+    options?: ModelStartOptions,
+  ): Promise<ModelInstance> {
     const config = this.getAgentConfig(agentId);
     return this.modelRuntime.start(config.model, options);
   }
@@ -160,7 +163,9 @@ export class AgentRuntime {
     // Switch model runtime
     const instance = await this.modelRuntime.switchModel(oldModel, newModel);
 
-    this.logger.log(`Agent ${agentId} switched from ${oldModel} to ${newModel}`);
+    this.logger.log(
+      `Agent ${agentId} switched from ${oldModel} to ${newModel}`,
+    );
     return instance;
   }
 
@@ -170,7 +175,7 @@ export class AgentRuntime {
   async generate(
     agentId: string,
     userPrompt: string,
-    options: AgentGenerationOptions = {}
+    options: AgentGenerationOptions = {},
   ): Promise<AgentGenerationResult> {
     const config = this.getAgentConfig(agentId);
     let contextRotated = false;
@@ -188,7 +193,10 @@ export class AgentRuntime {
 
     // 1. Inject RAG context if enabled
     if ((config.enableRAG || options.useRAG) && this.ragService) {
-      const ragContext = await this.buildRAGContext(userPrompt, options.ragOptions);
+      const ragContext = await this.buildRAGContext(
+        userPrompt,
+        options.ragOptions,
+      );
       if (ragContext.documents.length > 0) {
         enhancedPrompt = `${ragContext.contextString}\n\n---\n\nUser: ${userPrompt}`;
         ragDocumentsUsed = ragContext.documents.length;
@@ -196,11 +204,14 @@ export class AgentRuntime {
     }
 
     // 2. Inject learned context if enabled
-    if ((config.enableLearning || options.includeLearnedContext) && this.learningService) {
+    if (
+      (config.enableLearning || options.includeLearnedContext) &&
+      this.learningService
+    ) {
       const learnedContext = await this.learningService.getLearnedContext(
         agentId,
         userPrompt,
-        { topK: 3 }
+        { topK: 3 },
       );
       if (learnedContext) {
         enhancedPrompt = `[Relevant learned context]\n${learnedContext}\n\n${enhancedPrompt}`;
@@ -211,7 +222,7 @@ export class AgentRuntime {
     // 3. Inject custom context sources
     if (options.contextSources && options.contextSources.length > 0) {
       const contextString = options.contextSources
-        .map(s => `[${s.type}: ${s.id}]\n${s.content}`)
+        .map((s) => `[${s.type}: ${s.id}]\n${s.content}`)
         .join('\n\n');
       enhancedPrompt = `${contextString}\n\n---\n\n${enhancedPrompt}`;
     }
@@ -227,7 +238,7 @@ export class AgentRuntime {
 
     // Apply system prompt override if provided
     if (options.systemPromptOverride) {
-      const sysIndex = contextMessages.findIndex(m => m.role === 'system');
+      const sysIndex = contextMessages.findIndex((m) => m.role === 'system');
       if (sysIndex >= 0) {
         contextMessages[sysIndex] = {
           ...contextMessages[sysIndex],
@@ -237,7 +248,7 @@ export class AgentRuntime {
     }
 
     // Generate response
-    const messages = contextMessages.map(m => ({
+    const messages = contextMessages.map((m) => ({
       role: m.role,
       content: m.content,
       images: options.images,
@@ -256,11 +267,17 @@ export class AgentRuntime {
 
     // Learn from conversation if enabled
     if (config.enableLearning && this.learningService) {
-      const recentMessages = contextMessages.slice(-10);
+      // Map messages to ensure required properties exist
+      const recentMessages = contextMessages
+        .slice(-10)
+        .filter((m) => m.role && m.content)
+        .map((m) => ({ role: m.role!, content: m.content! }));
       // Fire and forget - don't block response
-      this.learningService.learnFromConversation(agentId, recentMessages).catch(err => {
-        this.logger.warn(`Learning failed: ${err.message}`);
-      });
+      this.learningService
+        .learnFromConversation(agentId, recentMessages)
+        .catch((err) => {
+          this.logger.warn(`Learning failed: ${err.message}`);
+        });
     }
 
     const tokenUsage = this.contextManager.getTokenUsage(agentId);
@@ -283,7 +300,7 @@ export class AgentRuntime {
   async *generateStream(
     agentId: string,
     userPrompt: string,
-    options: AgentGenerationOptions = {}
+    options: AgentGenerationOptions = {},
   ): AsyncGenerator<{
     chunk: string;
     done: boolean;
@@ -304,15 +321,24 @@ export class AgentRuntime {
     let enhancedPrompt = userPrompt;
 
     if ((config.enableRAG || options.useRAG) && this.ragService) {
-      const ragContext = await this.buildRAGContext(userPrompt, options.ragOptions);
+      const ragContext = await this.buildRAGContext(
+        userPrompt,
+        options.ragOptions,
+      );
       if (ragContext.documents.length > 0) {
         enhancedPrompt = `${ragContext.contextString}\n\n---\n\nUser: ${userPrompt}`;
         ragDocumentsUsed = ragContext.documents.length;
       }
     }
 
-    if ((config.enableLearning || options.includeLearnedContext) && this.learningService) {
-      const learnedContext = await this.learningService.getLearnedContext(agentId, userPrompt);
+    if (
+      (config.enableLearning || options.includeLearnedContext) &&
+      this.learningService
+    ) {
+      const learnedContext = await this.learningService.getLearnedContext(
+        agentId,
+        userPrompt,
+      );
       if (learnedContext) {
         enhancedPrompt = `[Learned context]\n${learnedContext}\n\n${enhancedPrompt}`;
         learnedContextUsed = true;
@@ -326,7 +352,7 @@ export class AgentRuntime {
     });
 
     const contextMessages = this.contextManager.getContextMessages(agentId);
-    const messages = contextMessages.map(m => ({
+    const messages = contextMessages.map((m) => ({
       role: m.role,
       content: m.content,
     }));
@@ -350,8 +376,15 @@ export class AgentRuntime {
 
     // Learn from conversation
     if (config.enableLearning && this.learningService) {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      this.learningService.learnFromConversation(agentId, contextMessages.slice(-10)).catch(() => {});
+      const recentMsgs = contextMessages
+        .slice(-10)
+        .filter((m) => m.role && m.content)
+        .map((m) => ({ role: m.role!, content: m.content! }));
+      this.learningService
+        .learnFromConversation(agentId, recentMsgs)
+        .catch(() => {
+          /* ignore */
+        });
     }
 
     const tokenUsage = this.contextManager.getTokenUsage(agentId);
@@ -377,7 +410,7 @@ export class AgentRuntime {
    */
   private async buildRAGContext(
     query: string,
-    options?: RAGQueryOptions
+    options?: RAGQueryOptions,
   ): Promise<{ documents: RAGDocument[]; contextString: string }> {
     if (!this.ragService) {
       return { documents: [], contextString: '' };
@@ -393,9 +426,9 @@ export class AgentRuntime {
       return { documents: [], contextString: '' };
     }
 
-    const contextString = '[Relevant Context]\n' + documents
-      .map((d, i) => `[${i + 1}] ${d.content}`)
-      .join('\n\n');
+    const contextString =
+      '[Relevant Context]\n' +
+      documents.map((d, i) => `[${i + 1}] ${d.content}`).join('\n\n');
 
     return { documents, contextString };
   }
@@ -403,7 +436,11 @@ export class AgentRuntime {
   /**
    * Add context dynamically without generating
    */
-  addContext(agentId: string, role: 'user' | 'assistant' | 'system', content: string): Message {
+  addContext(
+    agentId: string,
+    role: 'user' | 'assistant' | 'system',
+    content: string,
+  ): Message {
     this.getAgentConfig(agentId); // Validate agent exists
     return this.contextManager.addMessage(agentId, { role, content });
   }
@@ -413,7 +450,7 @@ export class AgentRuntime {
    */
   async resetContext(agentId: string, keepSystemPrompt = true): Promise<void> {
     const config = this.getAgentConfig(agentId);
-    
+
     this.contextManager.clearWindow(agentId);
 
     if (keepSystemPrompt && config.systemPrompt) {
@@ -447,7 +484,10 @@ export class AgentRuntime {
   /**
    * Query RAG documents
    */
-  async queryRAG(query: string, options?: RAGQueryOptions): Promise<RAGDocument[]> {
+  async queryRAG(
+    query: string,
+    options?: RAGQueryOptions,
+  ): Promise<RAGDocument[]> {
     if (!this.ragService) {
       throw new Error('RAG service not available');
     }
@@ -495,7 +535,10 @@ export class AgentRuntime {
   /**
    * Import knowledge for agent
    */
-  async importKnowledge(agentId: string, documents: RAGDocument[]): Promise<void> {
+  async importKnowledge(
+    agentId: string,
+    documents: RAGDocument[],
+  ): Promise<void> {
     if (!this.learningService) {
       throw new Error('Learning service not available');
     }
@@ -508,7 +551,9 @@ export class AgentRuntime {
   private getAgentConfig(agentId: string): AgentRuntimeConfig {
     const config = this.agentConfigs.get(agentId);
     if (!config) {
-      throw new Error(`Agent ${agentId} not initialized. Call initializeAgent first.`);
+      throw new Error(
+        `Agent ${agentId} not initialized. Call initializeAgent first.`,
+      );
     }
     return config;
   }
@@ -566,16 +611,17 @@ export class AgentRuntime {
     return {
       agentId,
       config,
-      contextWindow: window ? {
-        id: window.id,
-        windowNumber: window.windowNumber,
-        messageCount: window.messages.length,
-        totalTokens: window.totalTokens,
-        hasSummary: !!window.previousSummary,
-      } : null,
+      contextWindow: window
+        ? {
+            id: window.id,
+            windowNumber: window.windowNumber,
+            messageCount: window.messages.length,
+            totalTokens: window.totalTokens,
+            hasSummary: !!window.previousSummary,
+          }
+        : null,
       modelInstance: instance,
       tokenUsage: this.contextManager.getTokenUsage(agentId),
     };
   }
 }
-

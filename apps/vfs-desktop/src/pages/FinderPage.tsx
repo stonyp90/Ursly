@@ -1812,6 +1812,77 @@ export function FinderPage() {
       ? files.find((f) => f.path === Array.from(selectedFiles)[0])
       : null;
 
+  // Helper to render a storage item in the sidebar
+  const renderStorageItem = (source: StorageSource) => {
+    const StorageIcon = getStorageIcon(source);
+    const isDropTarget = dropTarget === `source:${source.id}`;
+    const tierClass = source.tierStatus || 'hot';
+
+    // Determine storage type label
+    const getTypeLabel = (cat: string) => {
+      switch (cat) {
+        case 'local':
+          return 'Local';
+        case 'network':
+          return 'Network';
+        case 'cloud':
+          return 'Object';
+        case 'hybrid':
+          return 'Hybrid';
+        case 'block':
+          return 'Block';
+        default:
+          return cat;
+      }
+    };
+
+    return (
+      <button
+        key={source.id}
+        className={`sidebar-item storage-item ${selectedSource?.id === source.id ? 'active' : ''} ${isDropTarget ? 'drop-target' : ''}`}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectSource(source);
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setStorageContextMenu({
+            source,
+            x: e.clientX,
+            y: e.clientY,
+          });
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (dragSourceId !== source.id) {
+            setDropTarget(`source:${source.id}`);
+          }
+        }}
+        onDragLeave={() => setDropTarget(null)}
+        onDrop={(e) => handleDropOnSource(e, source)}
+      >
+        <span className="item-icon">
+          <StorageIcon size={16} />
+        </span>
+        <span className="item-name">{source.name}</span>
+        <span className="storage-badges">
+          {/* Tier indicator */}
+          <span
+            className={`storage-tier-badge ${tierClass}`}
+            title={`${tierClass.charAt(0).toUpperCase() + tierClass.slice(1)} Tier - ${getTypeLabel(source.category)}`}
+          >
+            {tierClass.charAt(0).toUpperCase()}
+          </span>
+        </span>
+        {source.status !== 'connected' && (
+          <span className="offline-dot" title="Disconnected" />
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="finder">
       {/* Toolbar */}
@@ -2097,91 +2168,108 @@ export function FinderPage() {
             )}
           </div>
 
-          {/* Unified Storage Section - Clean, minimal design */}
+          {/* Storage Section - Grouped by type */}
           <div className="sidebar-section storage-section">
             <div className="section-header">
               <IconDatabase size={14} glow={false} />
               <span>Storage</span>
               <span className="section-count">({sources.length})</span>
             </div>
-            {sources.map((source) => {
-              const StorageIcon = getStorageIcon(source);
-              const isDropTarget = dropTarget === `source:${source.id}`;
-              const isLocal = source.category === 'local';
-              const tierClass = source.tierStatus || 'hot';
 
-              return (
-                <button
-                  key={source.id}
-                  className={`sidebar-item storage-item ${selectedSource?.id === source.id ? 'active' : ''} ${isDropTarget ? 'drop-target' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    selectSource(source);
-                  }}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Show storage info context menu
-                    setStorageContextMenu({
-                      source,
-                      x: e.clientX,
-                      y: e.clientY,
-                    });
-                  }}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    if (dragSourceId !== source.id) {
-                      setDropTarget(`source:${source.id}`);
-                    }
-                  }}
-                  onDragLeave={() => setDropTarget(null)}
-                  onDrop={(e) => handleDropOnSource(e, source)}
-                >
-                  <span className="item-icon">
-                    <StorageIcon size={16} />
-                  </span>
-                  <span className="item-name">{source.name}</span>
-                  <span className="storage-badges">
-                    {/* Connection type badge */}
-                    <span
-                      className={`storage-type-badge ${isLocal ? 'local' : 'network'}`}
-                      title={isLocal ? 'Local Storage' : 'Network Storage'}
+            {/* Local Storage */}
+            {sources.filter((s) => s.category === 'local').length > 0 && (
+              <div className="storage-group">
+                <div className="storage-group-header">
+                  <span className="group-icon local">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      width="10"
+                      height="10"
                     >
-                      {isLocal ? (
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                        >
-                          <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                        </svg>
-                      ) : (
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                        >
-                          <path d="M0 8a4 4 0 0 1 4-4h8a4 4 0 0 1 0 8H4a4 4 0 0 1-4-4zm4-3a3 3 0 0 0 0 6h8a3 3 0 0 0 0-6H4z" />
-                          <path d="M8 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                        </svg>
-                      )}
-                    </span>
-                    {/* Tier indicator dot */}
-                    <span
-                      className={`storage-tier-dot ${tierClass}`}
-                      title={`${tierClass.charAt(0).toUpperCase() + tierClass.slice(1)} Tier`}
-                    />
+                      <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+                    </svg>
                   </span>
-                  {source.status !== 'connected' && (
-                    <span className="offline-dot" title="Disconnected" />
-                  )}
-                </button>
-              );
-            })}
+                  <span className="group-label">Local</span>
+                </div>
+                {sources
+                  .filter((s) => s.category === 'local')
+                  .map((source) => renderStorageItem(source))}
+              </div>
+            )}
+
+            {/* Network Storage (NFS, SMB, NAS) */}
+            {sources.filter(
+              (s) => s.category === 'network' || s.category === 'hybrid',
+            ).length > 0 && (
+              <div className="storage-group">
+                <div className="storage-group-header">
+                  <span className="group-icon network">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      width="10"
+                      height="10"
+                    >
+                      <path d="M0 8a4 4 0 0 1 4-4h8a4 4 0 0 1 0 8H4a4 4 0 0 1-4-4zm4-3a3 3 0 0 0 0 6h8a3 3 0 0 0 0-6H4z" />
+                      <path d="M8 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                    </svg>
+                  </span>
+                  <span className="group-label">Network</span>
+                </div>
+                {sources
+                  .filter(
+                    (s) => s.category === 'network' || s.category === 'hybrid',
+                  )
+                  .map((source) => renderStorageItem(source))}
+              </div>
+            )}
+
+            {/* Object Storage (S3, GCS, Azure) */}
+            {sources.filter((s) => s.category === 'cloud').length > 0 && (
+              <div className="storage-group">
+                <div className="storage-group-header">
+                  <span className="group-icon cloud">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      width="10"
+                      height="10"
+                    >
+                      <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z" />
+                    </svg>
+                  </span>
+                  <span className="group-label">Object</span>
+                </div>
+                {sources
+                  .filter((s) => s.category === 'cloud')
+                  .map((source) => renderStorageItem(source))}
+              </div>
+            )}
+
+            {/* Block Storage */}
+            {sources.filter((s) => s.category === 'block').length > 0 && (
+              <div className="storage-group">
+                <div className="storage-group-header">
+                  <span className="group-icon block">
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      width="10"
+                      height="10"
+                    >
+                      <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v2A1.5 1.5 0 0 1 14.5 5h-13A1.5 1.5 0 0 1 0 3.5v-2zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-13z" />
+                      <path d="M0 6.5A1.5 1.5 0 0 1 1.5 5h13A1.5 1.5 0 0 1 16 6.5v2A1.5 1.5 0 0 1 14.5 10h-13A1.5 1.5 0 0 1 0 8.5v-2z" />
+                    </svg>
+                  </span>
+                  <span className="group-label">Block</span>
+                </div>
+                {sources
+                  .filter((s) => s.category === 'block')
+                  .map((source) => renderStorageItem(source))}
+              </div>
+            )}
+
             {sources.length === 0 && (
               <div className="sidebar-empty">
                 <span className="empty-text">No storage connected</span>
@@ -3171,11 +3259,11 @@ export function FinderPage() {
                 </span>
               </div>
             )}
-            {storageContextMenu.source.protocol && (
+            {storageContextMenu.source.providerId && (
               <div className="storage-info-row">
-                <span className="info-label">Protocol</span>
+                <span className="info-label">Provider</span>
                 <span className="info-value">
-                  {storageContextMenu.source.protocol.toUpperCase()}
+                  {storageContextMenu.source.providerId.toUpperCase()}
                 </span>
               </div>
             )}

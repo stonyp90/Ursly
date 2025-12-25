@@ -797,6 +797,43 @@ fn get_clipboard_readonly() -> Arc<ClipboardAdapter> {
     clipboard_lock.as_ref().cloned().unwrap_or_else(|| Arc::new(ClipboardAdapter::new()))
 }
 
+/// Generate a copy name for files/folders (e.g., "file.txt" -> "file copy.txt")
+fn generate_copy_name(original_name: &str) -> String {
+    // Check if there's an extension
+    if let Some(dot_pos) = original_name.rfind('.') {
+        let name = &original_name[..dot_pos];
+        let ext = &original_name[dot_pos..];
+        
+        // Check if already has " copy" or " copy N" suffix
+        if let Some(copy_pos) = name.rfind(" copy") {
+            let after_copy = &name[copy_pos + 5..];
+            if after_copy.is_empty() {
+                // "file copy.txt" -> "file copy 2.txt"
+                return format!("{} 2{}", name, ext);
+            } else if after_copy.starts_with(' ') {
+                // "file copy 2.txt" -> "file copy 3.txt"
+                if let Ok(num) = after_copy.trim().parse::<u32>() {
+                    return format!("{}{}", &name[..copy_pos + 5], format!(" {}{}", num + 1, ext));
+                }
+            }
+        }
+        format!("{} copy{}", name, ext)
+    } else {
+        // No extension (probably a folder)
+        if let Some(copy_pos) = original_name.rfind(" copy") {
+            let after_copy = &original_name[copy_pos + 5..];
+            if after_copy.is_empty() {
+                return format!("{} 2", original_name);
+            } else if after_copy.starts_with(' ') {
+                if let Ok(num) = after_copy.trim().parse::<u32>() {
+                    return format!("{} {}", &original_name[..copy_pos + 5], num + 1);
+                }
+            }
+        }
+        format!("{} copy", original_name)
+    }
+}
+
 /// Response for clipboard content
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClipboardContentResponse {
@@ -1013,14 +1050,28 @@ pub async fn vfs_clipboard_paste_to_vfs(
             ClipboardSource::Vfs { source_id } => {
                 // VFS -> VFS: check if same source or different
                 if source_id == &dest_source_id {
-                    // Same source - use internal copy
-                    let opts = crate::vfs::ports::CopyOptions {
-                        recursive: true,
-                        ..Default::default()
-                    };
-                    vfs_service.copy(source_id, path, &dest_file_path, opts)
-                        .await
-                        .map(|_| dest_file_path.clone())
+                    // Same source - check if source and dest are the same
+                    if path == &dest_file_path {
+                        // Pasting to same location - create a copy with new name
+                        let new_name = generate_copy_name(&file_name);
+                        let new_dest = dest.join(&new_name);
+                        let opts = crate::vfs::ports::CopyOptions {
+                            recursive: true,
+                            ..Default::default()
+                        };
+                        vfs_service.copy(source_id, path, &new_dest, opts)
+                            .await
+                            .map(|_| new_dest)
+                    } else {
+                        // Different destination - normal copy
+                        let opts = crate::vfs::ports::CopyOptions {
+                            recursive: true,
+                            ..Default::default()
+                        };
+                        vfs_service.copy(source_id, path, &dest_file_path, opts)
+                            .await
+                            .map(|_| dest_file_path.clone())
+                    }
                 } else {
                     // Different sources - use cross-storage copy
                     vfs_service.copy_to_source(source_id, path, &dest_source_id, &dest_file_path)
