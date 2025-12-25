@@ -173,6 +173,25 @@ class StorageServiceClass {
   }
 
   /**
+   * Move a file or folder to a new location
+   */
+  async moveFile(
+    sourceId: string,
+    sourcePath: string,
+    destPath: string,
+  ): Promise<void> {
+    try {
+      await apiClient.post(`/vfs/sources/${sourceId}/move`, {
+        sourcePath,
+        destPath,
+      });
+    } catch {
+      // Fallback: use rename if move endpoint doesn't exist
+      await this.renameFile(sourceId, sourcePath, destPath);
+    }
+  }
+
+  /**
    * Copy files to clipboard
    */
   async copyFiles(sourceId: string, paths: string[]): Promise<void> {

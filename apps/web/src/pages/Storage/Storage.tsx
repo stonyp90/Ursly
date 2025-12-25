@@ -270,6 +270,10 @@ export function StoragePage() {
   const [navigationHistory, setNavigationHistory] = useState<string[]>(['/']);
   const [historyIndex, setHistoryIndex] = useState(0);
 
+  // Drag and drop state
+  const [draggedFiles, setDraggedFiles] = useState<FileMetadata[]>([]);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+
   // Dialogs
   const [newFolderDialog, setNewFolderDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
@@ -430,6 +434,97 @@ export function StoragePage() {
 
   const handleCloseContextMenu = () => {
     setContextMenu(null);
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, file: FileMetadata) => {
+    // If file is not in selection, select it
+    let filesToDrag: FileMetadata[];
+    if (selectedFiles.has(file.id)) {
+      filesToDrag = files.filter((f) => selectedFiles.has(f.id));
+    } else {
+      filesToDrag = [file];
+      setSelectedFiles(new Set([file.id]));
+    }
+
+    setDraggedFiles(filesToDrag);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData(
+      'application/json',
+      JSON.stringify(filesToDrag.map((f) => ({ path: f.path, name: f.name }))),
+    );
+
+    // Create custom drag image showing count
+    if (filesToDrag.length > 1) {
+      const dragEl = document.createElement('div');
+      dragEl.textContent = `${filesToDrag.length} items`;
+      dragEl.style.cssText =
+        'position: absolute; top: -1000px; padding: 8px 12px; background: var(--primary); color: white; border-radius: 6px; font-size: 12px;';
+      document.body.appendChild(dragEl);
+      e.dataTransfer.setDragImage(dragEl, 0, 0);
+      setTimeout(() => document.body.removeChild(dragEl), 0);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedFiles([]);
+    setDropTarget(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetPath: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Only directories can be drop targets
+    const targetFile = files.find((f) => f.path === targetPath);
+    if (!targetFile?.isDirectory) return;
+
+    // Can't drop onto itself or its children
+    const isDroppingOnSelf = draggedFiles.some(
+      (f) => f.path === targetPath || targetPath.startsWith(f.path + '/'),
+    );
+    if (isDroppingOnSelf) {
+      e.dataTransfer.dropEffect = 'none';
+      return;
+    }
+
+    e.dataTransfer.dropEffect = 'move';
+    setDropTarget(targetPath);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear if we're leaving the element entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDropTarget(null);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetPath: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTarget(null);
+
+    if (!selectedSource || draggedFiles.length === 0) return;
+
+    const targetFile = files.find((f) => f.path === targetPath);
+    if (!targetFile?.isDirectory) return;
+
+    try {
+      // Move each file to the target directory
+      for (const file of draggedFiles) {
+        const newPath = `${targetPath}/${file.name}`.replace(/\/+/g, '/');
+        await StorageService.moveFile(selectedSource.id, file.path, newPath);
+      }
+
+      // Refresh file list
+      await loadFiles(selectedSource.id, currentPath);
+      setSelectedFiles(new Set());
+    } catch (error) {
+      console.error('Move failed:', error);
+    }
+
+    setDraggedFiles([]);
   };
 
   // Clipboard operations
@@ -1029,10 +1124,18 @@ export function StoragePage() {
             {filteredFiles.map((file) => (
               <Card
                 key={file.id}
-                className={`file-card ${selectedFiles.has(file.id) ? 'selected' : ''}`}
+                className={`file-card ${selectedFiles.has(file.id) ? 'selected' : ''} ${dropTarget === file.path ? 'drop-target' : ''} ${draggedFiles.some((f) => f.id === file.id) ? 'dragging' : ''}`}
+                draggable
                 onClick={(e) => handleFileClick(file, e)}
                 onDoubleClick={() => handleFileDoubleClick(file)}
                 onContextMenu={(e) => handleContextMenu(e, file)}
+                onDragStart={(e) => handleDragStart(e, file)}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) =>
+                  file.isDirectory && handleDragOver(e, file.path)
+                }
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => file.isDirectory && handleDrop(e, file.path)}
               >
                 <CardContent className="file-card-content">
                   <Box className="file-icon-wrapper">

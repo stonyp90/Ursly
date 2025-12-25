@@ -315,6 +315,24 @@
   border-color: rgba(var(--primary-rgb), 0.3);
 }
 
+/* Drag and Drop States */
+.file-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.file-card.drop-target {
+  background: rgba(var(--primary-rgb), 0.2);
+  border-color: var(--primary);
+  border-style: dashed;
+  border-width: 2px;
+  transform: scale(1.02);
+}
+
+.file-card[draggable='true'] {
+  user-select: none;
+}
+
 .file-card-content {
   display: flex;
   flex-direction: column;
