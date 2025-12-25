@@ -79,8 +79,9 @@ const QUICK_ACTIONS: SearchResult[] = [
   },
 ];
 
-// Search operator hints
+// Search operator hints - matches SearchBox operators
 const OPERATOR_HINTS: SearchResult[] = [
+  // Basic Filters
   {
     type: 'operator',
     id: 'op-tag',
@@ -93,33 +94,93 @@ const OPERATOR_HINTS: SearchResult[] = [
     type: 'operator',
     id: 'op-type',
     title: 'type:',
-    subtitle: 'Filter by type (video, image, document)',
+    subtitle: 'Filter by type (video, image, audio, document, folder, archive)',
     icon: '📄',
-    keywords: ['type', 'kind'],
+    keywords: ['type', 'kind', 'video', 'image', 'audio', 'document'],
   },
   {
     type: 'operator',
     id: 'op-ext',
     title: 'ext:',
-    subtitle: 'Filter by extension (e.g., ext:mp4)',
+    subtitle: 'Filter by extension (e.g., ext:mp4, ext:jpg)',
     icon: '📎',
-    keywords: ['extension', 'format'],
+    keywords: ['extension', 'format', 'mp4', 'mov', 'jpg', 'png', 'pdf'],
   },
   {
     type: 'operator',
     id: 'op-size',
     title: 'size:',
-    subtitle: 'Filter by size (e.g., size:>10mb)',
+    subtitle: 'Filter by size (e.g., size:>10mb, size:<1gb)',
     icon: '📊',
-    keywords: ['size', 'bytes'],
+    keywords: ['size', 'bytes', 'megabyte', 'gigabyte'],
   },
   {
     type: 'operator',
     id: 'op-modified',
     title: 'modified:',
-    subtitle: 'Filter by date (today, week, month)',
+    subtitle: 'Filter by date (today, yesterday, week, month, year)',
     icon: '📅',
-    keywords: ['date', 'modified', 'time'],
+    keywords: ['date', 'modified', 'time', 'today', 'yesterday'],
+  },
+  // Advanced Filters
+  {
+    type: 'operator',
+    id: 'op-tier',
+    title: 'tier:',
+    subtitle: 'Filter by storage tier (hot, cold, nearline)',
+    icon: '🔥',
+    keywords: ['tier', 'storage', 'hot', 'cold', 'nearline', 'archive'],
+  },
+  {
+    type: 'operator',
+    id: 'op-is',
+    title: 'is:',
+    subtitle: 'Filter by property (folder, file, hidden, cached, tagged)',
+    icon: '✓',
+    keywords: ['is', 'property', 'folder', 'file', 'hidden', 'cached'],
+  },
+];
+
+// AI-powered search options
+const AI_SEARCH_OPTIONS: SearchResult[] = [
+  {
+    type: 'action',
+    id: 'ai-content',
+    title: 'Search by Content',
+    subtitle: "Find files by what's inside them (AI-powered)",
+    icon: '🔍',
+    keywords: ['content', 'ai', 'semantic', 'meaning', 'inside'],
+  },
+  {
+    type: 'action',
+    id: 'ai-transcription',
+    title: 'Search Video Transcripts',
+    subtitle: 'Find videos by spoken words (Whisper)',
+    icon: '🎬',
+    keywords: [
+      'transcription',
+      'speech',
+      'audio',
+      'whisper',
+      'video',
+      'spoken',
+    ],
+  },
+  {
+    type: 'action',
+    id: 'ai-similar',
+    title: 'Find Similar Files',
+    subtitle: 'Find visually or semantically similar files',
+    icon: '🔄',
+    keywords: ['similar', 'related', 'like', 'matching'],
+  },
+  {
+    type: 'action',
+    id: 'ai-tags',
+    title: 'Auto-Tag Files',
+    subtitle: 'Automatically tag selected files with AI',
+    icon: '🏷️',
+    keywords: ['auto', 'tag', 'ai', 'classify', 'label'],
   },
 ];
 
@@ -184,22 +245,27 @@ export function SpotlightSearch({
     const lowerQuery = query.toLowerCase().trim();
 
     if (!lowerQuery) {
-      // Show recent searches and operator hints when empty
-      recentSearches.slice(0, 3).forEach((search, i) => {
-        searchResults.push({
-          type: 'recent',
-          id: `recent-${i}`,
-          title: search,
-          subtitle: 'Recent search',
-          icon: '🕐',
+      // Show recent searches first
+      if (recentSearches.length > 0) {
+        recentSearches.slice(0, 3).forEach((search, i) => {
+          searchResults.push({
+            type: 'recent',
+            id: `recent-${i}`,
+            title: search,
+            subtitle: 'Recent search',
+            icon: '🕐',
+          });
         });
-      });
+      }
+
+      // Show AI search options
+      searchResults.push(...AI_SEARCH_OPTIONS.slice(0, 2));
 
       // Show operator hints
       searchResults.push(...OPERATOR_HINTS.slice(0, 4));
 
       // Show quick actions
-      searchResults.push(...QUICK_ACTIONS.slice(0, 3));
+      searchResults.push(...QUICK_ACTIONS.slice(0, 2));
 
       return searchResults;
     }

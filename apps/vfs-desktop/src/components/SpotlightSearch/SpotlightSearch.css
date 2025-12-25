@@ -1,5 +1,6 @@
 /**
  * SpotlightSearch - Spotlight-style overlay styles
+ * Uses VFS theme variables for consistent theming
  */
 
 .spotlight-overlay {
@@ -8,14 +9,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
   z-index: 10000;
-  animation: spotlightFadeIn 0.15s ease;
+  animation: spotlightFadeIn 0.15s var(--vfs-ease-out-quart, ease);
 }
 
 @keyframes spotlightFadeIn {
@@ -30,14 +32,15 @@
 .spotlight-container {
   width: 100%;
   max-width: 640px;
-  background: var(--vfs-bg-secondary);
+  background: var(--vfs-bg-vibrancy, var(--vfs-bg-secondary));
   border: 1px solid var(--vfs-border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg, 12px);
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.4),
+    var(--vfs-shadow-xl, 0 20px 60px rgba(0, 0, 0, 0.4)),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   overflow: hidden;
-  animation: spotlightSlideIn 0.2s ease;
+  animation: spotlightSlideIn 0.2s var(--vfs-ease-out-expo, ease);
+  font-family: var(--vfs-font-sans, inherit);
 }
 
 @keyframes spotlightSlideIn {
@@ -184,6 +187,17 @@
   color: var(--vfs-success);
 }
 
+/* AI search results get special styling */
+.spotlight-result.action[data-ai='true'] .result-icon,
+.spotlight-result.action .result-icon {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--vfs-primary-rgb), 0.15),
+    rgba(var(--vfs-secondary-rgb), 0.15)
+  );
+  border-radius: var(--radius-md, 8px);
+}
+
 .spotlight-result.recent .result-title {
   color: var(--vfs-text-secondary);
   font-style: italic;
@@ -280,4 +294,37 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+}
+
+/* ============================================
+   Light Theme Overrides
+   ============================================ */
+
+[data-theme='light'] .spotlight-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='light'] .spotlight-container {
+  background: var(--vfs-bg-vibrancy, var(--vfs-bg-secondary));
+  box-shadow:
+    var(--vfs-shadow-xl),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .spotlight-result.selected {
+  background: rgba(var(--vfs-primary-rgb), 0.1);
+}
+
+[data-theme='light'] .spotlight-footer {
+  background: var(--vfs-bg-tertiary);
+}
+
+[data-theme='light'] .spotlight-shortcut kbd,
+[data-theme='light'] .spotlight-footer kbd {
+  background: var(--vfs-bg-secondary);
+  border-color: var(--vfs-border);
+}
+
+[data-theme='light'] .result-hint {
+  background: var(--vfs-bg-secondary);
 }
