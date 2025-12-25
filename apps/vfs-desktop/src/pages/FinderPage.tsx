@@ -3101,7 +3101,14 @@ export function FinderPage() {
             className={`context-item ${!(clipboardHasFiles || nativeClipboardCount > 0) ? 'disabled' : ''}`}
             onClick={() => {
               if (clipboardHasFiles || nativeClipboardCount > 0) {
-                handlePaste();
+                // If right-clicking on a folder, paste into it; otherwise paste into current directory
+                const isTargetFolder =
+                  contextMenu.targetFile &&
+                  (contextMenu.targetFile.mimeType === 'folder' ||
+                    contextMenu.targetFile.isDirectory);
+                handlePaste(
+                  isTargetFolder ? contextMenu.targetFile?.path : undefined,
+                );
               }
               closeContextMenu();
             }}
@@ -3119,31 +3126,6 @@ export function FinderPage() {
               : 'Paste'}
             <span className="context-shortcut">⌘V</span>
           </button>
-
-          {/* Paste into folder */}
-          {contextMenu.targetFile &&
-            (contextMenu.targetFile.mimeType === 'folder' ||
-              contextMenu.targetFile.path.endsWith('/')) &&
-            (clipboardHasFiles || nativeClipboardCount > 0) && (
-              <button
-                className="context-item"
-                onClick={() => {
-                  if (contextMenu.targetFile) {
-                    handlePaste(contextMenu.targetFile.path);
-                  }
-                  closeContextMenu();
-                }}
-              >
-                <svg
-                  className="context-icon"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                >
-                  <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3H13.5a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2.5a2 2 0 0 1-2-2V3.87z" />
-                </svg>
-                Paste into folder
-              </button>
-            )}
 
           {selectedFiles.size > 0 && (
             <>
