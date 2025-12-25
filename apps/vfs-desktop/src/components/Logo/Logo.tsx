@@ -16,6 +16,21 @@ interface LogoProps {
 export function Logo({ size = 32, className = '' }: LogoProps) {
   const id = `u-${Math.random().toString(36).substr(2, 4)}`;
 
+  // Get CSS variables from computed styles
+  const getCSSVariable = (varName: string, fallback: string) => {
+    if (typeof window !== 'undefined') {
+      return (
+        getComputedStyle(document.documentElement)
+          .getPropertyValue(varName)
+          .trim() || fallback
+      );
+    }
+    return fallback;
+  };
+
+  const primaryColor = getCSSVariable('--primary', '#00d4ff');
+  const secondaryColor = getCSSVariable('--secondary', '#ff00ea');
+
   return (
     <svg
       viewBox="0 0 32 32"
@@ -29,8 +44,8 @@ export function Logo({ size = 32, className = '' }: LogoProps) {
     >
       <defs>
         <linearGradient id={`${id}-g`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#8b5cf6" />
+          <stop offset="0%" stopColor={primaryColor} />
+          <stop offset="100%" stopColor={secondaryColor} />
         </linearGradient>
       </defs>
 
@@ -119,6 +134,21 @@ export function LogoGlyph({ size = 24, className = '' }: LogoProps) {
 export function LogoAnimated({ size = 48, className = '' }: LogoProps) {
   const id = `ua-${Math.random().toString(36).substr(2, 4)}`;
 
+  // Get CSS variables from computed styles
+  const getCSSVariable = (varName: string, fallback: string) => {
+    if (typeof window !== 'undefined') {
+      return (
+        getComputedStyle(document.documentElement)
+          .getPropertyValue(varName)
+          .trim() || fallback
+      );
+    }
+    return fallback;
+  };
+
+  const primaryColor = getCSSVariable('--primary', '#00d4ff');
+  const secondaryColor = getCSSVariable('--secondary', '#ff00ea');
+
   return (
     <svg
       viewBox="0 0 32 32"
@@ -132,18 +162,18 @@ export function LogoAnimated({ size = 48, className = '' }: LogoProps) {
     >
       <defs>
         <linearGradient id={`${id}-a`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6366f1">
+          <stop offset="0%" stopColor={primaryColor}>
             <animate
               attributeName="stop-color"
-              values="#6366f1;#8b5cf6;#6366f1"
+              values={`${primaryColor};${secondaryColor};${primaryColor}`}
               dur="2s"
               repeatCount="indefinite"
             />
           </stop>
-          <stop offset="100%" stopColor="#8b5cf6">
+          <stop offset="100%" stopColor={secondaryColor}>
             <animate
               attributeName="stop-color"
-              values="#8b5cf6;#6366f1;#8b5cf6"
+              values={`${secondaryColor};${primaryColor};${secondaryColor}`}
               dur="2s"
               repeatCount="indefinite"
             />

@@ -27,12 +27,31 @@ export function Logo({ size = 32, className = '' }: LogoProps) {
       role="img"
       aria-label="Ursly"
     >
-      <defs>
-        <linearGradient id={`${id}-g`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#8b5cf6" />
-        </linearGradient>
-      </defs>
+      {/* Get CSS variables from computed styles */}
+      {(() => {
+        const getCSSVariable = (varName: string, fallback: string) => {
+          if (typeof window !== 'undefined') {
+            return (
+              getComputedStyle(document.documentElement)
+                .getPropertyValue(varName)
+                .trim() || fallback
+            );
+          }
+          return fallback;
+        };
+
+        const primaryColor = getCSSVariable('--primary', '#0a84ff');
+        const secondaryColor = getCSSVariable('--secondary', '#5e5ce6');
+
+        return (
+          <defs>
+            <linearGradient id={`${id}-g`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={primaryColor} />
+              <stop offset="100%" stopColor={secondaryColor} />
+            </linearGradient>
+          </defs>
+        );
+      })()}
 
       {/* Background */}
       <rect width="32" height="32" rx="8" fill={`url(#${id}-g)`} />
