@@ -3964,7 +3964,7 @@ export function FinderPage({
       {/* Spotlight Search */}
       <SpotlightSearch
         isOpen={spotlightOpen}
-        onClose={() => setSpotlightOpen(false)}
+        onClose={handleCloseSpotlight}
         files={files}
         sources={sources}
         currentSourceId={selectedSource?.id}
