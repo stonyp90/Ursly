@@ -252,6 +252,40 @@ const CoreBar = ({ value, index }: { value: number; index: number }) => {
   );
 };
 
+// Quick Stat - Compact horizontal stat with progress bar
+const QuickStat = ({
+  label,
+  value,
+  detail,
+  color,
+  showAsValue = false,
+}: {
+  label: string;
+  value: number;
+  detail?: string;
+  color: string;
+  showAsValue?: boolean;
+}) => (
+  <div className="quick-stat">
+    <div className="quick-stat-header">
+      <span className="quick-stat-label">{label}</span>
+      <span className="quick-stat-value" style={{ color }}>
+        {showAsValue ? value.toFixed(0) : `${value.toFixed(0)}%`}
+      </span>
+    </div>
+    <div className="quick-stat-bar">
+      <div
+        className="quick-stat-fill"
+        style={{
+          width: `${Math.min(showAsValue ? value : value, 100)}%`,
+          background: color,
+        }}
+      />
+    </div>
+    {detail && <span className="quick-stat-detail">{detail}</span>}
+  </div>
+);
+
 // Metric Card - Clean design with small status indicator
 const MetricCard = ({
   icon,
@@ -636,49 +670,54 @@ export function MetricsPage() {
         </button>
       </header>
 
-      {/* Main Rings */}
-      <section className="rings-section">
-        <Ring
-          value={sys.cpu_usage}
+      {/* Quick Stats Bar */}
+      <section className="quick-stats">
+        <QuickStat
           label="CPU"
-          subLabel={`${sys.per_core_usage.length} cores`}
+          value={sys.cpu_usage}
+          detail={`${sys.per_core_usage.length} cores`}
           color={cpuColor}
         />
-        <Ring
+        <QuickStat
+          label="RAM"
           value={sys.memory_usage_percent}
-          label="Memory"
-          subLabel={`${(sys.memory_used_mb / 1024).toFixed(1)}/${(sys.memory_total_mb / 1024).toFixed(0)} GB`}
+          detail={`${(sys.memory_used_mb / 1024).toFixed(1)} / ${(sys.memory_total_mb / 1024).toFixed(0)} GB`}
           color={memColor}
         />
         {gpu && (
           <>
-            <Ring
-              value={gpu.current.gpu_utilization}
+            <QuickStat
               label="GPU"
-              subLabel={gpu.info.name.slice(0, 20)}
+              value={gpu.current.gpu_utilization}
+              detail={gpu.info.name.slice(0, 16)}
               color={gpuColor}
             />
-            <Ring
-              value={gpu.current.memory_utilization}
+            <QuickStat
               label="VRAM"
-              subLabel={`${(gpu.current.memory_used_mb / 1024).toFixed(1)}/${(gpu.info.memory_total_mb / 1024).toFixed(0)} GB`}
+              value={gpu.current.memory_utilization}
+              detail={`${(gpu.current.memory_used_mb / 1024).toFixed(1)} / ${(gpu.info.memory_total_mb / 1024).toFixed(0)} GB`}
               color={getColor(gpu.current.memory_utilization)}
             />
             {gpu.current.temperature_celsius && (
-              <Ring
-                value={gpu.current.temperature_celsius}
-                max={100}
+              <QuickStat
                 label="Temp"
-                subLabel="°C"
+                value={gpu.current.temperature_celsius}
+                detail="°C"
                 color={getColor(
                   gpu.current.temperature_celsius,
                   thresholds.temperature,
                 )}
-                size={100}
+                showAsValue
               />
             )}
           </>
         )}
+        <QuickStat
+          label="Load"
+          value={loadPercent}
+          detail={sys.load_average[0].toFixed(2)}
+          color={loadColor}
+        />
       </section>
 
       {/* Grid */}

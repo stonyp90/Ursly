@@ -78,100 +78,72 @@
 }
 
 /* ============================================================
-   Rings Section - Hero Area
+   Quick Stats Bar - Compact Overview
    ============================================================ */
-.rings-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-6, 24px);
-  padding: var(--space-6, 24px);
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3, 12px);
+  padding: var(--space-4, 16px);
   background: var(--vfs-bg-secondary);
-  border-radius: var(--radius-xl, 20px);
+  border-radius: var(--radius-lg, 12px);
   border: 1px solid var(--vfs-border);
-  flex-wrap: wrap;
 }
 
-/* Ring Component */
-.ring-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--vfs-bg-tertiary);
-  border-radius: 50%;
-  padding: var(--space-2, 8px);
-  box-shadow: var(--vfs-shadow-md);
-}
-
-.ring-container svg {
-  display: block;
-}
-
-.ring-bg {
-  fill: none;
-  stroke: var(--vfs-separator);
-  opacity: 0.5;
-}
-
-.ring-value {
-  fill: none;
-  stroke-linecap: round;
-  transition:
-    stroke-dashoffset 0.5s ease,
-    stroke 0.3s ease;
-  filter: drop-shadow(0 0 4px currentColor);
-}
-
-.ring-content {
-  position: absolute;
+.quick-stat {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  gap: var(--space-1, 4px);
+  padding: var(--space-3, 12px);
+  background: var(--vfs-bg-tertiary);
+  border-radius: var(--radius-md, 8px);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.ring-value-text {
-  font-size: 28px;
-  font-weight: 700;
-  font-family: var(--vfs-font-mono);
-  line-height: 1;
-  color: var(--vfs-text-primary);
+.quick-stat:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.ring-unit {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--vfs-text-secondary);
-}
-
-.ring-label-row {
+.quick-stat-header {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 2px;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
-.ring-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 6px currentColor;
-}
-
-.ring-label {
+.quick-stat-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--vfs-text-secondary);
+  color: var(--vfs-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
-.ring-sub {
-  font-size: 9px;
+.quick-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
+  line-height: 1;
+}
+
+.quick-stat-bar {
+  height: 4px;
+  background: var(--vfs-bg-primary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.quick-stat-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.quick-stat-detail {
+  font-size: 10px;
   color: var(--vfs-text-muted);
-  max-width: 80px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -719,13 +691,18 @@
     grid-template-columns: 1fr;
   }
 
-  .rings-section {
-    gap: var(--space-4, 16px);
-    padding: var(--space-4, 16px);
+  .quick-stats {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-2, 8px);
+    padding: var(--space-3, 12px);
   }
 
-  .ring-container {
-    transform: scale(0.9);
+  .quick-stat {
+    padding: var(--space-2, 8px);
+  }
+
+  .quick-stat-value {
+    font-size: 16px;
   }
 }
 
@@ -756,29 +733,24 @@
   background: var(--vfs-bg-primary);
 }
 
-/* Rings section - softer appearance in light mode */
-[data-theme='light'] .rings-section {
+/* Quick Stats - softer appearance in light mode */
+[data-theme='light'] .quick-stats {
   background: #ffffff;
-  border-color: var(--vfs-border);
+  border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-[data-theme='light'] .ring-container {
+[data-theme='light'] .quick-stat {
   background: #f8f9fa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme='light'] .ring-bg {
-  stroke: #dee2e6;
-  opacity: 1;
+[data-theme='light'] .quick-stat:hover {
+  background: #f0f1f2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme='light'] .ring-value {
-  filter: none;
-}
-
-[data-theme='light'] .ring-indicator {
-  box-shadow: none;
+[data-theme='light'] .quick-stat-bar {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 [data-theme='light'] .status-dot {
