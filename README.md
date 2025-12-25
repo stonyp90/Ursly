@@ -22,7 +22,7 @@
 
 <br />
 
-[**Download**](https://github.com/stonyp90/Ursly/releases/latest) · [Website](https://ursly.io) · [Discord](https://discord.gg/cree8) · [Report Bug](https://github.com/stonyp90/Ursly/issues/new)
+[**Download**](https://github.com/stonyp90/Ursly/releases/latest) · [Website](https://ursly.io) · [Report Bug](https://github.com/stonyp90/Ursly/issues/new)
 
 </div>
 
@@ -164,7 +164,7 @@ cd apps/vfs-desktop && npm run tauri dev
 
 <div align="center">
 
-**[ursly.io](https://ursly.io)** · [Download](https://github.com/stonyp90/Ursly/releases/latest) · [Discord](https://discord.gg/cree8) · [GitHub](https://github.com/stonyp90/Ursly)
+**[ursly.io](https://ursly.io)** · [Download](https://github.com/stonyp90/Ursly/releases/latest) · [GitHub](https://github.com/stonyp90/Ursly)
 
 <br />
 
