@@ -2,8 +2,8 @@ import { WebStorageStateStore } from 'oidc-client-ts';
 import { env } from '../config';
 
 /**
- * Get the appropriate base URL for auth redirects
- * Uses VITE_REDIRECT_URL if set, otherwise falls back to window.location.origin
+ * Get the appropriate base URL for auth redirects.
+ * Uses window.location.origin by default.
  *
  * For Tauri apps, the Keycloak client must have these redirect URIs registered:
  * - tauri://localhost/* (macOS/Linux production)
@@ -11,12 +11,7 @@ import { env } from '../config';
  * - http://localhost:1420/* (development)
  */
 const getRedirectBase = (): string => {
-  // Allow override via environment variable
-  const envRedirectUrl = import.meta.env.VITE_REDIRECT_URL;
-  if (envRedirectUrl) {
-    return envRedirectUrl;
-  }
-  return window.location.origin;
+  return typeof window !== 'undefined' ? window.location.origin : '';
 };
 
 const redirectBase = getRedirectBase();
