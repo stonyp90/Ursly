@@ -317,6 +317,17 @@ ul {
   box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.15);
 }
 
+.btn-linkedin {
+  background: linear-gradient(135deg, #0077b5 0%, #005582 100%);
+  border-color: rgba(0, 119, 181, 0.5);
+}
+
+.btn-linkedin:hover {
+  background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+  border-color: #0077b5;
+  box-shadow: 0 0 20px rgba(0, 119, 181, 0.4);
+}
+
 .btn-nav-app {
   display: flex !important;
   align-items: center;
