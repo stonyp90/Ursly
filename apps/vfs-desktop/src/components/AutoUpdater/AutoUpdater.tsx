@@ -5,31 +5,51 @@
 import { useState, useEffect, useCallback } from 'react';
 import './AutoUpdater.css';
 
+// Check if Tauri is available
+const isTauriAvailable = (): boolean => {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+};
+
 // Lazy load updater plugin to avoid crashes in dev mode
 let updaterModule: any = null;
 let processModule: any = null;
+let modulesLoaded = false;
 
-const loadUpdaterModule = async () => {
-  if (updaterModule && processModule) return;
-
-  // Check if we're in a Tauri environment
-  if (typeof window === 'undefined' || !('__TAURI_INTERNALS__' in window)) {
-    return;
+const loadUpdaterModule = async (): Promise<boolean> => {
+  if (modulesLoaded) {
+    return updaterModule !== null && updaterModule !== false;
   }
 
+  // Check if we're in a Tauri environment first
+  if (!isTauriAvailable()) {
+    updaterModule = false;
+    processModule = false;
+    modulesLoaded = true;
+    return false;
+  }
+
+  // Dynamic import with string concatenation to prevent Vite analysis
+  const updaterPath = '@tauri-apps/plugin-updater';
+  const processPath = '@tauri-apps/api/process';
+
   try {
-    updaterModule = await import('@tauri-apps/plugin-updater');
+    updaterModule = await import(/* @vite-ignore */ updaterPath);
   } catch (err) {
     console.debug('Updater plugin not available (expected in dev mode):', err);
-    return;
+    updaterModule = false;
+    modulesLoaded = true;
+    return false;
   }
 
   try {
-    processModule = await import('@tauri-apps/api/process');
+    processModule = await import(/* @vite-ignore */ processPath);
   } catch (err) {
     console.debug('Process API not available:', err);
-    // Continue without process module - updater might still work
+    processModule = false;
   }
+
+  modulesLoaded = true;
+  return true;
 };
 
 // Type-safe UpdateManifest - only used if module is available
@@ -41,6 +61,11 @@ type UpdateManifest = {
 };
 
 export function AutoUpdater() {
+  // Early return if not in Tauri environment
+  if (!isTauriAvailable()) {
+    return null;
+  }
+
   const [isChecking, setIsChecking] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState<UpdateManifest | null>(
     null,
@@ -52,9 +77,8 @@ export function AutoUpdater() {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const checkForUpdates = useCallback(async () => {
-    await loadUpdaterModule();
-
-    if (!updaterModule) {
+    const loaded = await loadUpdaterModule();
+    if (!loaded) {
       setIsChecking(false);
       return;
     }
@@ -99,8 +123,8 @@ export function AutoUpdater() {
     let interval: NodeJS.Timeout | null = null;
     let unlistenPromise: Promise<() => void> | null = null;
 
-    loadUpdaterModule().then(() => {
-      if (!updaterModule) {
+    loadUpdaterModule().then((loaded) => {
+      if (!loaded) {
         setIsChecking(false); // Ensure checking state is cleared
         return; // Plugin not available, skip setup
       }
