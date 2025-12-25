@@ -30,7 +30,6 @@ jobs:
   deploy:
     name: Deploy to S3
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout code
@@ -61,11 +60,15 @@ jobs:
             --include "*.json"
 
       - name: Invalidate CloudFront cache
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' && (github.event.inputs.invalidate_cache != 'false' || github.event_name == 'push') }}
+        if: ${{ github.event.inputs.invalidate_cache != 'false' || github.event_name == 'push' }}
         run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            aws cloudfront create-invalidation \
+              --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+              --paths "/*"
+          else
+            echo "No CloudFront distribution configured, skipping invalidation"
+          fi
 
       - name: Deployment summary
         run: |
