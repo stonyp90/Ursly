@@ -331,12 +331,14 @@ export function SpotlightSearch({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
-      scrollToSelected(selectedIndex + 1);
+      const newIndex = Math.min(selectedIndex + 1, results.length - 1);
+      setSelectedIndex(newIndex);
+      scrollToSelected(newIndex);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
-      scrollToSelected(selectedIndex - 1);
+      const newIndex = Math.max(selectedIndex - 1, 0);
+      setSelectedIndex(newIndex);
+      scrollToSelected(newIndex);
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (results[selectedIndex]) {
@@ -345,12 +347,16 @@ export function SpotlightSearch({
         // Submit as search query
         handleSearchSubmit();
       }
-    } else if (e.key === 'Tab' && results[selectedIndex]) {
+    } else if (e.key === 'Tab' && !e.shiftKey && results[selectedIndex]) {
       e.preventDefault();
       const result = results[selectedIndex];
       if (result.type === 'operator') {
         setQuery(result.title);
+        inputRef.current?.focus();
       }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
     }
   };
 
