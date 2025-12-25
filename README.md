@@ -4,23 +4,21 @@
 
 # Ursly
 
-### One Interface. All Your Storage.
+### One App. All Your Files.
 
-**Cloud-native virtual file system built with Rust.<br>Connect S3, Azure, GCS, NAS — browse them all from one place.**
+**Stop juggling different apps for your cloud storage.<br>Connect Dropbox, Google Drive, AWS, Azure, your NAS, and more — browse everything from one beautiful interface.**
 
+<br />
+
+<img src="website/screenshots/vfs-main-dark.png" alt="Ursly - All your files in one place" width="800" />
+
+<br />
 <br />
 
 <!-- Primary Badges -->
 
 [![License](https://img.shields.io/badge/License-AGPL_v3-blue?style=for-the-badge)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub Stars](https://img.shields.io/github/stars/stonyp90/Ursly?style=for-the-badge&logo=github)](https://github.com/stonyp90/Ursly/stargazers)
-
-<!-- Tech Stack -->
-
-[![Rust](https://img.shields.io/badge/Rust-1.75+-dea584?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tauri](https://img.shields.io/badge/Tauri-2.0-ffc131?style=flat-square&logo=tauri&logoColor=black)](https://tauri.app/)
-[![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 
 <br />
 
@@ -32,145 +30,101 @@
 
 ## The Problem
 
-Your files are everywhere. S3 for archives. Azure for production. NAS for local renders. Four different tools. Four different UIs. Scattered files, wasted time.
+Your files are everywhere. Project files on your NAS. Archives in the cloud. Renders on your local drive. Different apps for each. Wasted time hunting for files.
 
-**Ursly fixes this.** One native app that connects to all your storage. Browse S3 buckets next to your local files. Drag files between providers. Search everything with AI. No cloud lock-in.
+**Ursly brings it all together.** One app that connects to all your storage. See everything in one place. Move files between any location with drag & drop. Find anything instantly with AI-powered search.
 
 ---
 
 ## Download
 
+Free for personal use. No account required.
+
 | Platform    | Download                                                                                            | Requirements                      |
 | ----------- | --------------------------------------------------------------------------------------------------- | --------------------------------- |
-| **macOS**   | [ursly-vfs.dmg](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.dmg)           | macOS 11+ (Apple Silicon & Intel) |
-| **Windows** | [ursly-vfs.msi](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.msi)           | Windows 10/11                     |
-| **Linux**   | [ursly-vfs.AppImage](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.AppImage) | glibc 2.31+                       |
+| **macOS**   | [Download .dmg](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.dmg)           | macOS 11+ (Apple Silicon & Intel) |
+| **Windows** | [Download .msi](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.msi)           | Windows 10/11                     |
+| **Linux**   | [Download .AppImage](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.AppImage) | glibc 2.31+                       |
+
+> **macOS users:** If you see "App is damaged", run this in Terminal: `xattr -cr /Applications/Ursly\ VFS.app`
+
+---
+
+## Features
+
+| Feature                 | Description                                                                |
+| ----------------------- | -------------------------------------------------------------------------- |
+| **15+ Connections**     | Dropbox, Google Drive, AWS S3, Azure, NAS, SFTP, WebDAV, and more          |
+| **AI-Powered Search**   | Find files by what's in them, not just their names                         |
+| **Video Transcription** | Automatically transcribe videos and search by what was said (99 languages) |
+| **Move Files Anywhere** | Drag and drop files between any storage — cloud to cloud, cloud to local   |
+| **Smart Tagging**       | Automatically tag photos and images with AI                                |
+| **Keyboard Shortcuts**  | Work faster with keyboard shortcuts for everything                         |
+| **System Monitor**      | See GPU, CPU, RAM, and network usage at a glance                           |
+| **Private AI**          | AI runs locally on your machine — your files never leave your computer     |
+
+---
+
+## Storage Connections
+
+Works with the storage you already use:
+
+| Cloud Storage        | Network & Local                | Enterprise                    |
+| -------------------- | ------------------------------ | ----------------------------- |
+| AWS S3               | Network Attached Storage (NAS) | AWS FSx for ONTAP             |
+| Google Cloud Storage | SMB/CIFS Shares                | Azure Blob (Hot/Cool/Archive) |
+| Azure Blob Storage   | NFS Mounts                     | Backblaze B2                  |
+| Dropbox              | SFTP Servers                   | Wasabi                        |
+| Google Drive         | WebDAV                         | MinIO                         |
+| OneDrive             | Local Drives                   | DigitalOcean Spaces           |
+
+_...and more coming soon!_
 
 ---
 
 ## Screenshots
 
 <p align="center">
-  <img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS - Unified File Browser" width="800" />
+  <img src="website/screenshots/vfs-theme-customizer-dark.png" alt="Keyboard Shortcuts" width="600" />
 </p>
 
-<p align="center"><em>All your storage in one view — S3, Azure, GCS, NAS, local drives</em></p>
+<p align="center"><em>Keyboard shortcuts — work faster without reaching for your mouse</em></p>
 
 <p align="center">
-  <img src="website/screenshots/vfs-shortcuts.png" alt="Ursly VFS - Keyboard Shortcuts" width="600" />
+  <img src="website/screenshots/ursly-deployed-lean.png" alt="System Metrics" width="600" />
 </p>
 
-<p align="center"><em>Keyboard-first design — every action has a shortcut</em></p>
+<p align="center"><em>System monitor — keep an eye on your GPU, CPU, RAM, and network</em></p>
 
 ---
 
-## Features
+## Getting Started
 
-| Feature                      | Description                                                          |
-| ---------------------------- | -------------------------------------------------------------------- |
-| **Multi-Cloud VFS**          | Connect S3, GCS, Azure Blob, SMB, NFS, SFTP, WebDAV, FSx for ONTAP   |
-| **AI-Powered Search**        | Semantic search with Ollama running locally — no API costs           |
-| **Cross-Provider Transfers** | Drag files between any storage provider                              |
-| **Seamless Tier Migration**  | Move files between hot/warm/cold tiers in one click                  |
-| **Keyboard-First**           | Full keyboard navigation, Vim-style bindings, customizable shortcuts |
-| **Whisper Transcription**    | Transcribe videos in 99 languages, search by what was said           |
-| **Live System Metrics**      | GPU, CPU, RAM monitoring with native Rust APIs                       |
-| **Fully Customizable**       | Dark/light modes, 10 accent colors, layout presets                   |
-
----
-
-## Quick Start
-
-### Download the App (Recommended)
+### Download (Recommended)
 
 1. Download from [Releases](https://github.com/stonyp90/Ursly/releases/latest)
 2. Install and launch
 3. Add your storage sources
-4. Start browsing
+4. Start browsing!
 
-### Build from Source
+### Build from Source (For Developers)
 
 ```bash
-# Clone the repository
 git clone https://github.com/stonyp90/Ursly.git
 cd ursly
-
-# Install dependencies
 npm install
-
-# Run the VFS desktop app
 cd apps/vfs-desktop
 npm run tauri dev
 ```
 
 ---
 
-## Storage Backends
+## Why Open Source?
 
-| Provider                 | Status    | Features                                     |
-| ------------------------ | --------- | -------------------------------------------- |
-| **AWS S3**               | Supported | Transfer acceleration, versioning, lifecycle |
-| **Google Cloud Storage** | Supported | Multi-region, bucket policies                |
-| **Azure Blob Storage**   | Supported | Hot/cool/archive tiers                       |
-| **FSx for ONTAP**        | Supported | NVMe cache, Fabric Pool tiering              |
-| **SMB/CIFS**             | Supported | Windows shares, Active Directory             |
-| **NFS**                  | Supported | NFSv3/v4, Unix permissions                   |
-| **SFTP**                 | Supported | Key-based authentication                     |
-| **WebDAV**               | Supported | HTTP-based file access                       |
-| **Local**                | Supported | Direct filesystem with caching               |
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                  Ursly VFS Desktop (Tauri + Rust)               │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │  React UI  │  File Browser  │  Search  │  System Metrics  │  │
-│  └───────────────────────────────────────────────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                    Rust Core (Native Performance)               │
-│  ┌─────────────┬─────────────┬─────────────┬─────────────────┐  │
-│  │ VFS Engine  │ Storage SDK │ AI Search   │ GPU Metrics     │  │
-│  └─────────────┴─────────────┴─────────────┴─────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                         Storage Layer                           │
-│  ┌───────┬───────┬───────┬───────┬───────┬───────┬───────────┐  │
-│  │  S3   │ Azure │  GCS  │  NFS  │  SMB  │ SFTP  │   Local   │  │
-│  └───────┴───────┴───────┴───────┴───────┴───────┴───────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Tech Stack
-
-| Layer        | Technologies                       |
-| ------------ | ---------------------------------- |
-| **Desktop**  | Tauri 2.0, Rust, wgpu              |
-| **Frontend** | React 18, TypeScript, Tailwind CSS |
-| **AI/ML**    | Ollama, Whisper, LLaMA 3           |
-| **Build**    | Nx Monorepo, Vite                  |
-
----
-
-## Project Structure
-
-```
-apps/
-├── vfs-desktop/      # Tauri VFS desktop app (main product)
-├── api/              # NestJS REST API (for team features)
-├── web/              # React web dashboard
-└── grpc/             # Ollama gRPC bridge
-
-libs/
-├── agent-core/       # Context window management
-├── audit-logger/     # Type-safe audit logging
-└── shared/           # Shared types and utilities
-
-website/              # Landing page (ursly.io)
-```
+- **Transparency** — See exactly how your files are handled
+- **Privacy** — Verify that your data stays private
+- **No Lock-in** — Your files, your choice, always
+- **Community** — Features driven by real users
 
 ---
 
@@ -185,21 +139,13 @@ We welcome contributions!
 5. Push: `git push origin feature/my-feature`
 6. Open a Pull Request
 
-### Development Guidelines
-
-- All new code requires tests
-- Follow [Conventional Commits](https://www.conventionalcommits.org/)
-- Run `npm run lint` before committing
-- Update documentation for new features
-
 ---
 
 ## Roadmap
 
-- [ ] Adobe Premiere Pro UXP plugin
+- [ ] Adobe Premiere Pro plugin
 - [ ] DaVinci Resolve integration
 - [ ] VS Code extension
-- [ ] S3 Glacier Deep Archive support
 - [ ] Real-time collaboration
 - [ ] Team sync features
 
@@ -209,18 +155,7 @@ We welcome contributions!
 
 This project is licensed under the **GNU Affero General Public License v3.0** (AGPL-3.0).
 
-This ensures the software remains open source and any modifications must also be open source. See [LICENSE](LICENSE) for details.
-
----
-
-## Acknowledgments
-
-Built with amazing open source projects:
-
-- [Tauri](https://tauri.app/) — Desktop app framework
-- [Ollama](https://ollama.ai/) — Local LLM inference
-- [Whisper](https://github.com/openai/whisper) — Speech recognition
-- [Rust](https://www.rust-lang.org/) — Systems programming
+Free for personal use. See [LICENSE](LICENSE) for details.
 
 ---
 
