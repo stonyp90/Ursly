@@ -820,6 +820,11 @@ ul {
   box-shadow: 0 0 10px var(--primary);
 }
 
+.card-icon.accent {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
 .card-1 {
   top: 20%;
   right: -20px;
@@ -836,6 +841,12 @@ ul {
   bottom: 10%;
   right: 10%;
   animation-delay: 2s;
+}
+
+.card-4 {
+  top: 50%;
+  left: 10%;
+  animation-delay: 1.5s;
 }
 
 @keyframes float {
