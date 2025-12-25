@@ -506,6 +506,54 @@ ul {
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.mobile-menu-social {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0 0 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 8px;
+}
+
+.mobile-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+  border-bottom: none;
+}
+
+.mobile-social-link:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.15);
+  transform: translateY(-1px);
+}
+
+.mobile-social-link.mobile-linkedin {
+  background: linear-gradient(135deg, #0077b5 0%, #005582 100%);
+  border-color: rgba(0, 119, 181, 0.5);
+  color: white;
+}
+
+.mobile-social-link.mobile-linkedin:hover {
+  background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+  border-color: #0077b5;
+  box-shadow: 0 0 20px rgba(0, 119, 181, 0.4);
+  color: white;
+}
+
+.mobile-social-link svg {
+  width: 20px;
+  height: 20px;
+}
+
 .mobile-menu a.mobile-app-link {
   color: #fff;
   font-weight: 700;
@@ -3180,8 +3228,24 @@ ul {
   }
 
   .nav-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .nav-links a:not(.btn-nav-icon) {
     display: none;
   }
+
+  .btn-nav-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-nav-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
   .mobile-menu-btn {
     display: flex;
   }
@@ -3193,6 +3257,21 @@ ul {
 
   .hero-title {
     font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
   }
 
   .hero-illustration {
@@ -3213,6 +3292,15 @@ ul {
   .stat-divider {
     width: 40px;
     height: 1px;
+  }
+
+  .product-showcase {
+    gap: 32px;
+  }
+
+  .product-features-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   /* Single column on mobile */
