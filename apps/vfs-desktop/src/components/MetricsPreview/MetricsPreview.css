@@ -1,0 +1,212 @@
+/**
+ * MetricsPreview - Compact sidebar metrics widget
+ */
+
+.metrics-preview {
+  margin-top: auto;
+  border-top: 1px solid var(--vfs-border);
+  background: var(--vfs-bg-tertiary);
+}
+
+.metrics-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--vfs-text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: background 0.15s;
+}
+
+.metrics-preview-header:hover {
+  background: rgba(var(--vfs-primary-rgb), 0.05);
+  color: var(--vfs-text-primary);
+}
+
+.metrics-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metrics-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--vfs-primary);
+}
+
+.metrics-chevron {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s;
+  transform: rotate(90deg);
+}
+
+.metrics-chevron.expanded {
+  transform: rotate(-90deg);
+}
+
+.metrics-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+.metrics-preview-content {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Metric Row */
+.metric-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--vfs-text-tertiary);
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.metric-value.good {
+  color: var(--vfs-success);
+}
+
+.metric-value.warning {
+  color: var(--vfs-warning);
+}
+
+.metric-value.critical {
+  color: var(--vfs-error);
+}
+
+.metric-value.network {
+  color: var(--vfs-primary);
+}
+
+/* Progress Bar */
+.metric-bar {
+  height: 4px;
+  background: var(--vfs-bg-primary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.metric-bar-fill.good {
+  background: var(--vfs-success);
+}
+
+.metric-bar-fill.warning {
+  background: var(--vfs-warning);
+}
+
+.metric-bar-fill.critical {
+  background: var(--vfs-error);
+}
+
+.metric-bar-fill.gpu {
+  background: linear-gradient(90deg, var(--vfs-success), var(--tier-hot));
+}
+
+.metric-bar-fill.gpu.warning {
+  background: linear-gradient(90deg, var(--vfs-warning), var(--tier-hot));
+}
+
+.metric-bar-fill.gpu.critical {
+  background: linear-gradient(90deg, var(--vfs-error), #ff4040);
+}
+
+/* Network Detail */
+.network-detail {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.net-up {
+  color: var(--vfs-success);
+}
+
+.net-down {
+  color: var(--vfs-primary);
+}
+
+/* Open Metrics Button */
+.open-metrics-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px;
+  background: rgba(var(--vfs-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--vfs-primary-rgb), 0.2);
+  border-radius: 6px;
+  color: var(--vfs-primary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.open-metrics-btn:hover {
+  background: rgba(var(--vfs-primary-rgb), 0.15);
+  border-color: var(--vfs-primary);
+}
+
+.open-metrics-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Light Theme */
+[data-theme='light'] .metrics-preview {
+  background: rgba(0, 0, 0, 0.02);
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .metrics-preview-header:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='light'] .metric-bar {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .open-metrics-btn {
+  background: rgba(0, 122, 255, 0.08);
+  border-color: rgba(0, 122, 255, 0.2);
+}
+
+[data-theme='light'] .open-metrics-btn:hover {
+  background: rgba(0, 122, 255, 0.12);
+}

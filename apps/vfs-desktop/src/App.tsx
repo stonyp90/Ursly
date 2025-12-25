@@ -86,7 +86,9 @@ function App() {
             <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
             <main className="main-content full-height">
-              {activeTab === 'files' && <FinderPage />}
+              {activeTab === 'files' && (
+                <FinderPage onOpenMetrics={() => setActiveTab('metrics')} />
+              )}
               {activeTab === 'metrics' && <MetricsPage />}
             </main>
 

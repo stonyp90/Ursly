@@ -40,6 +40,7 @@ import { ShortcutSettings } from '../components/ShortcutSettings';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { SearchBox } from '../components/SearchBox';
 import { SpotlightSearch } from '../components/SpotlightSearch';
+import { MetricsPreview } from '../components/MetricsPreview';
 import { truncateMiddle } from '../utils/file-utils';
 import '../styles/finder.css';
 
@@ -52,7 +53,11 @@ interface ContextMenuState {
   targetFile?: FileMetadata;
 }
 
-export function FinderPage() {
+interface FinderPageProps {
+  onOpenMetrics?: () => void;
+}
+
+export function FinderPage({ onOpenMetrics }: FinderPageProps) {
   const [sources, setSources] = useState<StorageSource[]>([]);
   const [selectedSource, setSelectedSource] = useState<StorageSource | null>(
     null,
@@ -419,7 +424,7 @@ export function FinderPage() {
 
   // Load thumbnails when switching to grid view
   useEffect(() => {
-    if (viewMode === 'grid' && selectedSource?.id && files.length > 0) {
+    if (viewMode === 'icon' && selectedSource?.id && files.length > 0) {
       // Check if any files need thumbnails
       const needsThumbnails = files.some(
         (f) => !f.isDirectory && !f.thumbnail && canHaveThumbnail(f.name),
@@ -477,7 +482,7 @@ export function FinderPage() {
       setFiles(list);
 
       // Load thumbnails for image/video files in the background
-      if (viewMode === 'grid') {
+      if (viewMode === 'icon') {
         loadThumbnailsForFiles(sourceId, list);
       }
     } catch (err) {
@@ -2746,6 +2751,9 @@ export function FinderPage() {
                 ))
             )}
           </div>
+
+          {/* Metrics Preview */}
+          {onOpenMetrics && <MetricsPreview onOpenMetrics={onOpenMetrics} />}
         </aside>
 
         {/* Main Content */}
