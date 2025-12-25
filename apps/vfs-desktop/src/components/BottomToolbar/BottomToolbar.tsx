@@ -8,6 +8,7 @@ import './BottomToolbar.css';
 interface BottomToolbarProps {
   onOpenSettings: () => void;
   onOpenShortcuts: () => void;
+  onOpenActions?: () => void;
   isShortcutsOpen: boolean;
   onCloseShortcuts: () => void;
 }
@@ -15,6 +16,7 @@ interface BottomToolbarProps {
 export function BottomToolbar({
   onOpenSettings,
   onOpenShortcuts,
+  onOpenActions,
   isShortcutsOpen,
   onCloseShortcuts,
 }: BottomToolbarProps) {
@@ -37,14 +39,56 @@ export function BottomToolbar({
             strokeWidth="1.5"
           >
             <rect x="2" y="4" width="20" height="16" rx="3" />
-            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M8 12h.01M12 12h.01M16 12h.01" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="7" y1="16" x2="17" y2="16" strokeWidth="2" strokeLinecap="round" />
+            <path
+              d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <path
+              d="M8 12h.01M12 12h.01M16 12h.01"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <line
+              x1="7"
+              y1="16"
+              x2="17"
+              y2="16"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
           <span className="pill-label">Shortcuts</span>
         </button>
 
         <div className="action-divider" />
+
+        {onOpenActions && (
+          <>
+            <button
+              className="action-pill actions"
+              onClick={onOpenActions}
+              title="Quick Actions"
+            >
+              <div className="pill-glow" />
+              <svg
+                className="pill-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              <span className="pill-label">Actions</span>
+            </button>
+
+            <div className="action-divider" />
+          </>
+        )}
 
         <button
           className="action-pill settings"
@@ -68,7 +112,10 @@ export function BottomToolbar({
         </button>
       </div>
 
-      <KeyboardShortcutHelper isOpen={isShortcutsOpen} onClose={onCloseShortcuts} />
+      <KeyboardShortcutHelper
+        isOpen={isShortcutsOpen}
+        onClose={onCloseShortcuts}
+      />
     </>
   );
 }

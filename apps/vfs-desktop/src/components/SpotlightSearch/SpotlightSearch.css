@@ -365,6 +365,80 @@
   }
 }
 
+/* Category Headers */
+.spotlight-category-header {
+  padding: 8px 12px 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--vfs-text-muted);
+  margin-top: 8px;
+}
+
+.spotlight-results > .spotlight-category-header:first-child {
+  margin-top: 0;
+}
+
+/* Improved result styling */
+.spotlight-result {
+  position: relative;
+}
+
+.spotlight-result::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: var(--vfs-primary);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.15s ease;
+}
+
+.spotlight-result.selected::before {
+  height: 60%;
+}
+
+/* Better icon backgrounds */
+.result-icon {
+  position: relative;
+}
+
+.result-icon svg {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth transitions */
+.spotlight-result,
+.result-icon,
+.result-content {
+  transition: all 0.15s ease;
+}
+
+/* Improved hover states */
+.spotlight-result:hover .result-icon {
+  transform: scale(1.05);
+}
+
+.spotlight-result.selected .result-icon {
+  transform: scale(1.08);
+}
+
+/* Better spacing for categories */
+.spotlight-results {
+  display: flex;
+  flex-direction: column;
+}
+
+.spotlight-category {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ============================================
    Light Theme Overrides
    ============================================ */
@@ -396,4 +470,8 @@
 
 [data-theme='light'] .result-hint {
   background: var(--vfs-bg-secondary);
+}
+
+[data-theme='light'] .spotlight-category-header {
+  color: var(--vfs-text-muted);
 }

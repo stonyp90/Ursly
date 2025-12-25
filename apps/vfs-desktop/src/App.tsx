@@ -9,6 +9,7 @@ import { ToastProvider } from './components/Toast';
 import { ErrorDialogProvider } from './components/ErrorDialog';
 import { BottomToolbar } from './components/BottomToolbar';
 import { AutoUpdater } from './components/AutoUpdater';
+import { ActionsPanel } from './components/ActionsPanel';
 
 export type AppTab = 'files' | 'metrics';
 
@@ -18,6 +19,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('files');
   const [isThemeCustomizerOpen, setIsThemeCustomizerOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   useEffect(() => {
     const initVfs = async () => {
@@ -96,6 +98,7 @@ function App() {
             <BottomToolbar
               onOpenSettings={() => setIsThemeCustomizerOpen(true)}
               onOpenShortcuts={() => setIsShortcutsOpen(true)}
+              onOpenActions={() => setIsActionsOpen(true)}
               isShortcutsOpen={isShortcutsOpen}
               onCloseShortcuts={() => setIsShortcutsOpen(false)}
             />
@@ -103,6 +106,15 @@ function App() {
             <ThemeCustomizer
               isOpen={isThemeCustomizerOpen}
               onClose={() => setIsThemeCustomizerOpen(false)}
+            />
+
+            <ActionsPanel
+              isOpen={isActionsOpen}
+              onClose={() => setIsActionsOpen(false)}
+              onAction={(action) => {
+                console.log('Action triggered:', action);
+                // Actions will be handled by FinderPage or other components
+              }}
             />
 
             <AutoUpdater />
