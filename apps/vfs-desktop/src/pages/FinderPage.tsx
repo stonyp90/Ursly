@@ -4131,8 +4131,9 @@ function getFileIcon(file: FileMetadata, size = 48): React.ReactNode {
   }
 
   // Use the helper function to get the appropriate icon component
+  // All file icons use currentColor to inherit from CSS variables
   const IconComponent = getFileIconComponent(file.name, file.mimeType);
-  return <IconComponent size={size} glow={false} />;
+  return <IconComponent size={size} color="currentColor" glow={false} />;
 }
 
 function getTierIndicator(

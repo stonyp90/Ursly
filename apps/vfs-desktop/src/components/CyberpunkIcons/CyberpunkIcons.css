@@ -67,48 +67,39 @@
 
 /* ===== FILE & FOLDER ICON STYLES ===== */
 
-/* Base file icon - muted */
-.cyber-icon.file-icon {
-  color: var(--finder-text-tertiary, #8e8e93);
-}
-
-/* Folder icon - use theme accent */
+/* All file and folder icons use the same color from global CSS variable */
+.cyber-icon.file-icon,
 .cyber-icon.folder-icon {
-  color: var(--finder-accent, var(--primary, #0a84ff));
+  color: var(--vfs-primary, var(--finder-accent, var(--primary, #0a84ff)));
 }
 
-/* File type colors - using theme-aware variables */
-.cyber-icon.file-icon.video {
-  color: var(--tier-nearline, #bf5af2);
-}
-.cyber-icon.file-icon.audio {
-  color: var(--finder-success, #30d158);
-}
-.cyber-icon.file-icon.image {
-  color: var(--tier-warm, #ff9f0a);
-}
-.cyber-icon.file-icon.pdf {
-  color: var(--finder-danger, #ff453a);
-}
-.cyber-icon.file-icon.code {
-  color: var(--tier-cold, #64d2ff);
-}
-.cyber-icon.file-icon.archive {
-  color: var(--finder-text-tertiary, #8e8e93);
-}
-.cyber-icon.file-icon.exec {
-  color: var(--finder-danger, #ff375f);
-}
-.cyber-icon.file-icon.spreadsheet {
-  color: var(--finder-success, #30d158);
-}
-.cyber-icon.file-icon.text {
-  color: var(--finder-text-tertiary, #8e8e93);
+/* Ensure consistent sizing - all file/folder icons inherit size from parent */
+.cyber-icon.file-icon,
+.cyber-icon.folder-icon {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
-/* List view icon adjustments */
+/* List view icon adjustments - consistent sizing */
 .list-row .cyber-icon.file-icon,
 .list-row .cyber-icon.folder-icon {
   width: 18px;
   height: 18px;
+  max-width: 18px;
+  max-height: 18px;
+}
+
+/* Override any type-specific colors - all file icons use unified color */
+.cyber-icon.file-icon.video,
+.cyber-icon.file-icon.audio,
+.cyber-icon.file-icon.image,
+.cyber-icon.file-icon.pdf,
+.cyber-icon.file-icon.code,
+.cyber-icon.file-icon.archive,
+.cyber-icon.file-icon.exec,
+.cyber-icon.file-icon.spreadsheet,
+.cyber-icon.file-icon.text {
+  color: var(--vfs-primary, var(--finder-accent, var(--primary, #0a84ff)));
 }

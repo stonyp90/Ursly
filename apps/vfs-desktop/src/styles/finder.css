@@ -1739,10 +1739,12 @@
   color: inherit;
 }
 
-/* All file icons use the same accent color from theme */
+/* All file icons use the same accent color from theme - unified color */
 .file-item .file-icon,
-.file-item .icon-placeholder {
-  color: var(--finder-accent, var(--vfs-primary, #0a84ff));
+.file-item .icon-placeholder,
+.file-item .file-icon .cyber-icon,
+.file-item .icon-placeholder .cyber-icon {
+  color: var(--vfs-primary, var(--finder-accent, var(--primary, #0a84ff)));
 }
 
 /* Thumbnail image styling */
@@ -1783,6 +1785,17 @@
   max-width: 48px;
   max-height: 48px;
   color: inherit;
+}
+
+/* List view icon sizing - consistent with grid view */
+.list-row .file-icon svg,
+.list-row .file-icon .cyber-icon,
+.list-row .icon-placeholder svg,
+.list-row .icon-placeholder .cyber-icon {
+  width: 18px;
+  height: 18px;
+  max-width: 18px;
+  max-height: 18px;
 }
 
 .file-name {

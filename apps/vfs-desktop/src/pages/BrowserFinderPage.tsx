@@ -451,7 +451,9 @@ export function BrowserFinderPage() {
 
   const getFileIcon = (file: FileMetadata) => {
     if (file.mimeType === 'folder' || file.isDirectory) {
-      return <IconFolder className="cyber-icon folder-icon" />;
+      return (
+        <IconFolder className="cyber-icon folder-icon" color="currentColor" />
+      );
     }
 
     // Check for thumbnail
@@ -481,7 +483,9 @@ export function BrowserFinderPage() {
     const IconComponent = getFileIconComponent(
       file.mimeType || 'application/octet-stream',
     );
-    return <IconComponent className="cyber-icon file-icon" />;
+    return (
+      <IconComponent className="cyber-icon file-icon" color="currentColor" />
+    );
   };
 
   const formatSize = (bytes: number): string => {
