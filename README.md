@@ -14,11 +14,37 @@
 
 [Website](https://ursly.io) &bull; [Live Demo](https://app.ursly.io) &bull; [Documentation](./agents.md) &bull; [Discord](https://discord.gg/cree8)
 
-<br />
-
-<img src="website/screenshots/vfs-main-dark.png" alt="Ursly VFS Desktop App" width="800" />
-
 </div>
+
+---
+
+## Virtual File System
+
+Browse files across all connected storage sources with a native desktop experience. Favorites, tags, storage tiers, and full keyboard navigation.
+
+<p align="center">
+  <img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS File Browser" width="800" />
+</p>
+
+---
+
+## AI-Powered Search
+
+Search powered by local AI models. No cloud API costs, no data leaving your network. Leverages Ollama for semantic search and Whisper for audio/video transcription.
+
+<p align="center">
+  <img src="website/screenshots/vfs-shortcuts.png" alt="Ursly VFS Keyboard Shortcuts" width="600" />
+</p>
+
+---
+
+## Performance Metrics
+
+Real-time GPU, CPU, RAM, and system metrics with native Rust APIs. Your AI workloads don't compromise your editing experience.
+
+<p align="center">
+  <img src="website/screenshots/vfs-metrics.png" alt="Ursly VFS Performance Monitor" width="800" />
+</p>
 
 ---
 
