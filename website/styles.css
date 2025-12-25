@@ -3405,6 +3405,128 @@ ul {
   color: var(--background);
 }
 
+/* Download Section */
+.download-section {
+  padding: var(--section-padding);
+  background: var(--background);
+}
+
+.download-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.download-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  text-decoration: none;
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.download-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.05),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.download-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.download-card:hover::before {
+  opacity: 1;
+}
+
+.download-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.download-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.download-info {
+  flex: 1;
+}
+
+.download-info h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.download-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.download-ext {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--primary);
+  padding: 2px 8px;
+  background: rgba(var(--primary-rgb), 0.1);
+  border-radius: 4px;
+}
+
+.download-arrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: all var(--transition-smooth);
+}
+
+.download-card:hover .download-arrow {
+  color: var(--primary);
+  transform: translateY(2px);
+}
+
+.download-footer {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.download-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color var(--transition-smooth);
+}
+
+.download-footer a:hover {
+  color: var(--primary);
+}
+
 /* Responsive for new sections */
 @media (max-width: 900px) {
   .product-features-grid {
@@ -3416,6 +3538,10 @@ ul {
   }
 
   .deployment-options {
+    grid-template-columns: 1fr;
+  }
+
+  .download-options {
     grid-template-columns: 1fr;
   }
 
