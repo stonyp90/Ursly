@@ -244,26 +244,31 @@
   height: 12px;
 }
 
-/* Light Theme */
+/* Light Theme - Uses CSS variables which auto-switch with theme */
 [data-theme='light'] .metrics-preview {
-  background: rgba(0, 0, 0, 0.02);
-  border-top-color: rgba(0, 0, 0, 0.08);
+  background: var(--vfs-bg-tertiary);
+  border-top-color: var(--vfs-border);
 }
 
 [data-theme='light'] .metrics-preview-header:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(var(--vfs-primary-rgb), 0.06);
 }
 
 [data-theme='light'] .metric-tile {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: var(--vfs-bg-secondary);
+  border-color: var(--vfs-border);
+  box-shadow: var(--vfs-shadow-sm);
+}
+
+[data-theme='light'] .metric-tile::before {
+  box-shadow: none;
 }
 
 [data-theme='light'] .open-metrics-btn {
-  background: rgba(0, 122, 255, 0.08);
-  border-color: rgba(0, 122, 255, 0.2);
+  background: rgba(var(--vfs-primary-rgb), 0.08);
+  border-color: rgba(var(--vfs-primary-rgb), 0.2);
 }
 
 [data-theme='light'] .open-metrics-btn:hover {
-  background: rgba(0, 122, 255, 0.12);
+  background: rgba(var(--vfs-primary-rgb), 0.12);
 }
