@@ -18,6 +18,18 @@ interface SystemMetrics {
   network_tx_bytes_sec: number;
 }
 
+function formatBytesCompact(bytes: number): string {
+  if (!bytes || isNaN(bytes) || bytes === 0) return '0';
+  if (!isFinite(bytes)) return '0';
+  const k = 1024;
+  const sizes = ['B', 'K', 'M', 'G'];
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1,
+  );
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + sizes[i];
+}
+
 interface GpuMetrics {
   gpu_utilization: number;
   memory_used_mb: number;
@@ -95,7 +107,11 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
   const memPercent = safeNumber(sys.memory_usage_percent);
   const netRx = safeNumber(sys.network_rx_bytes_sec);
   const netTx = safeNumber(sys.network_tx_bytes_sec);
-  const netTotal = netRx + netTx;
+  const diskRead = safeNumber(sys.disk_read_bytes_sec);
+  const diskWrite = safeNumber(sys.disk_write_bytes_sec);
+  const diskTotal = diskRead + diskWrite;
+
+  const gpuUsage = gpu ? safeNumber(gpu.gpu_utilization) : 0;
 
   return (
     <div className="metrics-preview">
@@ -118,71 +134,87 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
 
       {isExpanded && (
         <div className="metrics-preview-content">
-          {/* CPU */}
-          <div className="metric-row">
-            <div className="metric-info">
-              <span className="metric-label">CPU</span>
-              <span className={`metric-value ${getStatusClass(cpuUsage)}`}>
-                {cpuUsage.toFixed(0)}%
-              </span>
-            </div>
-            <div className="metric-bar">
-              <div
-                className={`metric-bar-fill ${getStatusClass(cpuUsage)}`}
-                style={{ width: `${Math.min(cpuUsage, 100)}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Memory */}
-          <div className="metric-row">
-            <div className="metric-info">
-              <span className="metric-label">RAM</span>
-              <span className={`metric-value ${getStatusClass(memPercent)}`}>
-                {memPercent.toFixed(0)}%
-              </span>
-            </div>
-            <div className="metric-bar">
-              <div
-                className={`metric-bar-fill ${getStatusClass(memPercent)}`}
-                style={{ width: `${Math.min(memPercent, 100)}%` }}
-              />
-            </div>
-          </div>
-
-          {/* GPU (if available) */}
-          {gpu && (
-            <div className="metric-row">
-              <div className="metric-info">
-                <span className="metric-label">GPU</span>
-                <span
-                  className={`metric-value ${getStatusClass(safeNumber(gpu.gpu_utilization))}`}
-                >
-                  {safeNumber(gpu.gpu_utilization).toFixed(0)}%
-                </span>
+          {/* 2x3 Grid (6 tiles) */}
+          <div className="metrics-grid-6">
+            {/* CPU */}
+            <div className={`metric-tile ${getStatusClass(cpuUsage)}`}>
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
+                </svg>
               </div>
-              <div className="metric-bar">
-                <div
-                  className={`metric-bar-fill gpu ${getStatusClass(safeNumber(gpu.gpu_utilization))}`}
-                  style={{
-                    width: `${Math.min(safeNumber(gpu.gpu_utilization), 100)}%`,
-                  }}
-                />
-              </div>
+              <div className="tile-value">{cpuUsage.toFixed(0)}%</div>
+              <div className="tile-label">CPU</div>
             </div>
-          )}
 
-          {/* Network */}
-          <div className="metric-row">
-            <div className="metric-info">
-              <span className="metric-label">Net</span>
-              <span className="metric-value network">
-                {formatBytes(netTotal)}/s
-              </span>
+            {/* RAM */}
+            <div className={`metric-tile ${getStatusClass(memPercent)}`}>
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm5.5 4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5H6v1.5a.5.5 0 0 0 1 0V9h.5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H7V5.5a.5.5 0 0 0-1 0V7h-.5z" />
+                </svg>
+              </div>
+              <div className="tile-value">{memPercent.toFixed(0)}%</div>
+              <div className="tile-label">RAM</div>
             </div>
-            <div className="network-detail">
-              <span className="net-up">↑ {formatBytes(netTx)}</span>
-              <span className="net-down">↓ {formatBytes(netRx)}</span>
+
+            {/* GPU */}
+            <div
+              className={`metric-tile gpu ${gpu ? getStatusClass(gpuUsage) : 'inactive'}`}
+            >
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M4 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm7.5-1.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" />
+                  <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .5.5V4h13.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H2v2.5a.5.5 0 0 1-1 0V2H.5a.5.5 0 0 1-.5-.5Zm5.5 4a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM9 8a2.5 2.5 0 1 0 5 0 2.5 2.5 0 0 0-5 0Z" />
+                </svg>
+              </div>
+              <div className="tile-value">
+                {gpu ? `${gpuUsage.toFixed(0)}%` : 'N/A'}
+              </div>
+              <div className="tile-label">GPU</div>
+            </div>
+
+            {/* Disk I/O */}
+            <div className="metric-tile disk">
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                  <path d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
+                </svg>
+              </div>
+              <div className="tile-value">
+                {formatBytesCompact(diskTotal)}/s
+              </div>
+              <div className="tile-label">DISK</div>
+            </div>
+
+            {/* Net Upload */}
+            <div className="metric-tile upload">
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"
+                  />
+                  <path
+                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1Z"
+                    transform="rotate(180 8 8)"
+                  />
+                </svg>
+              </div>
+              <div className="tile-value">{formatBytesCompact(netTx)}/s</div>
+              <div className="tile-label">↑ UP</div>
+            </div>
+
+            {/* Net Download */}
+            <div className="metric-tile download">
+              <div className="tile-icon">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1Z" />
+                </svg>
+              </div>
+              <div className="tile-value">{formatBytesCompact(netRx)}/s</div>
+              <div className="tile-label">↓ DOWN</div>
             </div>
           </div>
 

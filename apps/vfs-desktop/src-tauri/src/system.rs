@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 use sysinfo::{System, Networks};
 use std::sync::Mutex;
 use std::time::Instant;
+use once_cell::sync::Lazy;
 
 /// State for calculating rates (bytes per second)
 struct IoState {
+    networks: Networks,
     last_update: Instant,
     last_net_rx: u64,
     last_net_tx: u64,
@@ -21,14 +23,19 @@ struct IoState {
     disk_write_rate: u64,
 }
 
-impl Default for IoState {
-    fn default() -> Self {
+impl IoState {
+    fn new() -> Self {
+        let networks = Networks::new_with_refreshed_list();
+        let (net_rx, net_tx) = get_network_totals_from(&networks);
+        let (disk_read, disk_write) = get_disk_totals();
+        
         Self {
+            networks,
             last_update: Instant::now(),
-            last_net_rx: 0,
-            last_net_tx: 0,
-            last_disk_read: 0,
-            last_disk_write: 0,
+            last_net_rx: net_rx,
+            last_net_tx: net_tx,
+            last_disk_read: disk_read,
+            last_disk_write: disk_write,
             net_rx_rate: 0,
             net_tx_rate: 0,
             disk_read_rate: 0,
@@ -37,7 +44,7 @@ impl Default for IoState {
     }
 }
 
-static IO_STATE: Mutex<Option<IoState>> = Mutex::new(None);
+static IO_STATE: Lazy<Mutex<IoState>> = Lazy::new(|| Mutex::new(IoState::new()));
 
 /// System information
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -126,9 +133,8 @@ pub fn get_system_metrics() -> SystemMetrics {
         0.0
     };
 
-    // Get disk I/O and network I/O rates
-    let networks = Networks::new_with_refreshed_list();
-    let (disk_read, disk_write, net_rx, net_tx) = calculate_io_rates(&networks);
+    // Get disk I/O and network I/O rates (uses persistent state)
+    let (disk_read, disk_write, net_rx, net_tx) = calculate_io_rates();
 
     let load_avg = System::load_average();
 
@@ -155,8 +161,8 @@ pub fn get_system_metrics() -> SystemMetrics {
     }
 }
 
-/// Get network cumulative totals
-fn get_network_totals(networks: &Networks) -> (u64, u64) {
+/// Get network cumulative totals from a Networks reference
+fn get_network_totals_from(networks: &Networks) -> (u64, u64) {
     let mut rx = 0u64;
     let mut tx = 0u64;
 
@@ -239,25 +245,14 @@ fn get_disk_totals() -> (u64, u64) {
 }
 
 /// Calculate I/O rates (bytes per second) from cumulative totals
-fn calculate_io_rates(networks: &Networks) -> (u64, u64, u64, u64) {
-    let mut state_guard = IO_STATE.lock().unwrap();
+fn calculate_io_rates() -> (u64, u64, u64, u64) {
+    let mut state = IO_STATE.lock().unwrap();
     
-    let (current_net_rx, current_net_tx) = get_network_totals(networks);
+    // Refresh networks to get updated cumulative counters
+    state.networks.refresh_list();
+    
+    let (current_net_rx, current_net_tx) = get_network_totals_from(&state.networks);
     let (current_disk_read, current_disk_write) = get_disk_totals();
-    
-    let state = state_guard.get_or_insert_with(|| {
-        IoState {
-            last_update: Instant::now(),
-            last_net_rx: current_net_rx,
-            last_net_tx: current_net_tx,
-            last_disk_read: current_disk_read,
-            last_disk_write: current_disk_write,
-            net_rx_rate: 0,
-            net_tx_rate: 0,
-            disk_read_rate: 0,
-            disk_write_rate: 0,
-        }
-    });
     
     let elapsed = state.last_update.elapsed().as_secs_f64();
     

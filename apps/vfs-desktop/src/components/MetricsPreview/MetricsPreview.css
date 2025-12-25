@@ -65,98 +65,154 @@
   gap: 8px;
 }
 
-/* Metric Row */
-.metric-row {
+/* 2x3 Grid Layout (6 tiles) */
+.metrics-grid-6 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+}
+
+/* Metric Tile */
+.metric-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.metric-info {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.metric-label {
-  font-size: 11px;
-  color: var(--vfs-text-tertiary);
-  font-weight: 500;
-}
-
-.metric-value {
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
-}
-
-.metric-value.good {
-  color: var(--vfs-success);
-}
-
-.metric-value.warning {
-  color: var(--vfs-warning);
-}
-
-.metric-value.critical {
-  color: var(--vfs-error);
-}
-
-.metric-value.network {
-  color: var(--vfs-primary);
-}
-
-/* Progress Bar */
-.metric-bar {
-  height: 4px;
+  justify-content: center;
+  padding: 6px 4px;
   background: var(--vfs-bg-primary);
-  border-radius: 2px;
+  border: 1px solid var(--vfs-border);
+  border-radius: 6px;
+  min-height: 52px;
+  transition: all 0.2s ease;
   overflow: hidden;
 }
 
-.metric-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s ease;
+.metric-tile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--vfs-text-tertiary);
+  opacity: 0.3;
 }
 
-.metric-bar-fill.good {
+.metric-tile.good::before {
   background: var(--vfs-success);
+  opacity: 1;
 }
 
-.metric-bar-fill.warning {
+.metric-tile.warning::before {
   background: var(--vfs-warning);
+  opacity: 1;
 }
 
-.metric-bar-fill.critical {
+.metric-tile.critical::before {
   background: var(--vfs-error);
+  opacity: 1;
+  animation: pulse-critical 1s ease-in-out infinite;
 }
 
-.metric-bar-fill.gpu {
-  background: linear-gradient(90deg, var(--vfs-success), var(--tier-hot));
+.metric-tile.inactive::before {
+  background: var(--vfs-text-tertiary);
+  opacity: 0.3;
 }
 
-.metric-bar-fill.gpu.warning {
-  background: linear-gradient(90deg, var(--vfs-warning), var(--tier-hot));
+.metric-tile.network::before {
+  background: var(--vfs-primary);
+  opacity: 1;
 }
 
-.metric-bar-fill.gpu.critical {
-  background: linear-gradient(90deg, var(--vfs-error), #ff4040);
+@keyframes pulse-critical {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-/* Network Detail */
-.network-detail {
-  display: flex;
-  gap: 12px;
-  font-size: 10px;
-  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
+.tile-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--vfs-text-tertiary);
+  margin-bottom: 2px;
 }
 
-.net-up {
+.tile-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.metric-tile.good .tile-icon {
   color: var(--vfs-success);
 }
 
-.net-down {
+.metric-tile.warning .tile-icon {
+  color: var(--vfs-warning);
+}
+
+.metric-tile.critical .tile-icon {
+  color: var(--vfs-error);
+}
+
+.metric-tile.network .tile-icon {
+  color: var(--vfs-primary);
+}
+
+.metric-tile.inactive .tile-icon {
+  color: var(--vfs-text-tertiary);
+  opacity: 0.5;
+}
+
+.tile-value {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
+  color: var(--vfs-text-primary);
+  line-height: 1;
+}
+
+.tile-label {
+  font-size: 9px;
+  color: var(--vfs-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+/* Network tile special label */
+/* Disk tile */
+.metric-tile.disk::before {
+  background: var(--tier-nearline);
+  opacity: 1;
+}
+
+.metric-tile.disk .tile-icon {
+  color: var(--tier-nearline);
+}
+
+/* Upload tile */
+.metric-tile.upload::before {
+  background: var(--vfs-success);
+  opacity: 1;
+}
+
+.metric-tile.upload .tile-icon {
+  color: var(--vfs-success);
+}
+
+/* Download tile */
+.metric-tile.download::before {
+  background: var(--vfs-primary);
+  opacity: 1;
+}
+
+.metric-tile.download .tile-icon {
   color: var(--vfs-primary);
 }
 
@@ -198,8 +254,9 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
-[data-theme='light'] .metric-bar {
-  background: rgba(0, 0, 0, 0.06);
+[data-theme='light'] .metric-tile {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme='light'] .open-metrics-btn {
