@@ -1362,7 +1362,7 @@ ul {
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 16px;
 }
 
 /* 3-column equal-size feature grid */
@@ -1378,7 +1378,7 @@ ul {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--card-radius);
-  padding: var(--card-padding);
+  padding: 20px;
   transition: all var(--transition-smooth);
   height: 100%;
   display: flex;
@@ -1424,7 +1424,7 @@ ul {
   align-items: center;
   justify-content: center;
   color: var(--primary);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
@@ -1446,20 +1446,20 @@ ul {
 .feature-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .feature-description {
   color: var(--text-secondary);
   line-height: 1.7;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   flex-grow: 1;
 }
 
 .feature-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin-top: auto;
 }
 
