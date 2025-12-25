@@ -40,16 +40,28 @@ interface MetricsPreviewProps {
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
+  if (!bytes || isNaN(bytes) || bytes === 0) return '0 B';
+  if (!isFinite(bytes)) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1,
+  );
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
+function safeNumber(val: number | undefined | null, fallback = 0): number {
+  if (val === undefined || val === null || isNaN(val) || !isFinite(val)) {
+    return fallback;
+  }
+  return val;
+}
+
 function getStatusClass(value: number, warn = 70, crit = 90): string {
-  if (value >= crit) return 'critical';
-  if (value >= warn) return 'warning';
+  const v = safeNumber(value);
+  if (v >= crit) return 'critical';
+  if (v >= warn) return 'warning';
   return 'good';
 }
 
@@ -79,8 +91,11 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
 
   const gpu = metrics.gpus[0]?.current;
   const sys = metrics.system;
-  const memPercent = sys.memory_usage_percent || 0;
-  const netTotal = sys.network_rx_bytes_sec + sys.network_tx_bytes_sec;
+  const cpuUsage = safeNumber(sys.cpu_usage);
+  const memPercent = safeNumber(sys.memory_usage_percent);
+  const netRx = safeNumber(sys.network_rx_bytes_sec);
+  const netTx = safeNumber(sys.network_tx_bytes_sec);
+  const netTotal = netRx + netTx;
 
   return (
     <div className="metrics-preview">
@@ -107,14 +122,14 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
           <div className="metric-row">
             <div className="metric-info">
               <span className="metric-label">CPU</span>
-              <span className={`metric-value ${getStatusClass(sys.cpu_usage)}`}>
-                {sys.cpu_usage.toFixed(0)}%
+              <span className={`metric-value ${getStatusClass(cpuUsage)}`}>
+                {cpuUsage.toFixed(0)}%
               </span>
             </div>
             <div className="metric-bar">
               <div
-                className={`metric-bar-fill ${getStatusClass(sys.cpu_usage)}`}
-                style={{ width: `${Math.min(sys.cpu_usage, 100)}%` }}
+                className={`metric-bar-fill ${getStatusClass(cpuUsage)}`}
+                style={{ width: `${Math.min(cpuUsage, 100)}%` }}
               />
             </div>
           </div>
@@ -141,15 +156,17 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
               <div className="metric-info">
                 <span className="metric-label">GPU</span>
                 <span
-                  className={`metric-value ${getStatusClass(gpu.gpu_utilization)}`}
+                  className={`metric-value ${getStatusClass(safeNumber(gpu.gpu_utilization))}`}
                 >
-                  {gpu.gpu_utilization.toFixed(0)}%
+                  {safeNumber(gpu.gpu_utilization).toFixed(0)}%
                 </span>
               </div>
               <div className="metric-bar">
                 <div
-                  className={`metric-bar-fill gpu ${getStatusClass(gpu.gpu_utilization)}`}
-                  style={{ width: `${Math.min(gpu.gpu_utilization, 100)}%` }}
+                  className={`metric-bar-fill gpu ${getStatusClass(safeNumber(gpu.gpu_utilization))}`}
+                  style={{
+                    width: `${Math.min(safeNumber(gpu.gpu_utilization), 100)}%`,
+                  }}
                 />
               </div>
             </div>
@@ -164,12 +181,8 @@ export function MetricsPreview({ onOpenMetrics }: MetricsPreviewProps) {
               </span>
             </div>
             <div className="network-detail">
-              <span className="net-up">
-                ↑ {formatBytes(sys.network_tx_bytes_sec)}
-              </span>
-              <span className="net-down">
-                ↓ {formatBytes(sys.network_rx_bytes_sec)}
-              </span>
+              <span className="net-up">↑ {formatBytes(netTx)}</span>
+              <span className="net-down">↓ {formatBytes(netRx)}</span>
             </div>
           </div>
 

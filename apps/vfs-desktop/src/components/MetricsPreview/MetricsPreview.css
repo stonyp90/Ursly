@@ -87,7 +87,7 @@
 .metric-value {
   font-size: 11px;
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
 }
 
 .metric-value.good {
@@ -149,7 +149,7 @@
   display: flex;
   gap: 12px;
   font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--vfs-font-mono, 'JetBrains Mono', monospace);
 }
 
 .net-up {
