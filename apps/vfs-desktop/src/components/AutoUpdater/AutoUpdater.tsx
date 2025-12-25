@@ -21,10 +21,16 @@ const loadUpdaterModule = async () => {
   }
 };
 
-type UpdateManifest = import('@tauri-apps/plugin-updater').UpdateManifest;
+// Type-safe UpdateManifest - only used if module is available
+type UpdateManifest = {
+  version: string;
+  body?: string;
+  date?: string;
+  [key: string]: unknown;
+};
 
 export function AutoUpdater() {
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState<UpdateManifest | null>(
     null,
   );
@@ -84,6 +90,7 @@ export function AutoUpdater() {
 
     loadUpdaterModule().then(() => {
       if (!updaterModule) {
+        setIsChecking(false); // Ensure checking state is cleared
         return; // Plugin not available, skip setup
       }
 
