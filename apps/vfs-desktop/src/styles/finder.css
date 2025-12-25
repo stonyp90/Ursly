@@ -1755,18 +1755,8 @@
   transition: all 0.2s ease;
 }
 
-/* Show full file name on hover - expand from truncated */
-.file-item:hover .file-name {
-  -webkit-line-clamp: unset;
-  display: block;
-  max-height: none;
-  background: var(--finder-bg-elevated, rgba(30, 30, 30, 0.95));
-  border-radius: 4px;
-  padding: 4px 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 5;
-}
+/* Hover - keep text style unchanged, use native title for tooltip */
+/* Removed: dark background effect on hover that made text hard to read */
 
 /* Selected file name - accent highlight pill with full name */
 .file-item.selected .file-name {

@@ -2698,7 +2698,6 @@ export function FinderPage() {
                       <div
                         key={file.path}
                         data-path={file.path}
-                        data-full-name={file.name}
                         className={`file-item ${selectedFiles.has(file.path) ? 'selected' : ''} ${isFolder ? 'folder' : ''} ${isDropTarget ? 'drop-target' : ''} ${isDragging ? 'dragging' : ''} ${fileIsHidden ? 'is-hidden' : ''}`}
                         onClick={(e) => handleFileClick(file, e)}
                         onDoubleClick={() => handleFileDoubleClick(file)}

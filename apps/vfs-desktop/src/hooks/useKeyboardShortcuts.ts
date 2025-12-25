@@ -161,16 +161,16 @@ export const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
     defaultKey: 'Backspace',
     defaultModifiers: ['meta'],
   },
+
+  // View
   {
     id: 'get-info',
     name: 'Asset Details',
     description: 'Show asset metadata and properties',
-    category: 'file-operations',
+    category: 'view',
     defaultKey: 'i',
     defaultModifiers: ['meta'],
   },
-
-  // View
   {
     id: 'icon-view',
     name: 'Icon View',

@@ -64,17 +64,19 @@ const SHORTCUT_CATEGORIES: ShortcutCategory[] = [
   {
     name: 'View',
     shortcuts: [
+      { keys: [modKey, 'I'], description: 'Asset Details' },
       { keys: [modKey, '1'], description: 'Icon view' },
       { keys: [modKey, '2'], description: 'List view' },
-      { keys: [modKey, 'I'], description: 'Get info' },
       { keys: [modKey, 'Shift', '.'], description: 'Toggle hidden files' },
+      { keys: [modKey, 'Shift', 'I'], description: 'Toggle info panel' },
     ],
   },
   {
-    name: 'Search & Filter',
+    name: 'Search',
     shortcuts: [
-      { keys: [modKey, 'F'], description: 'Search' },
-      { keys: ['Escape'], description: 'Clear search' },
+      { keys: [modKey, 'K'], description: 'Quick Search (Spotlight)' },
+      { keys: [modKey, 'F'], description: 'Focus search box' },
+      { keys: ['Escape'], description: 'Clear search / Close' },
     ],
   },
 ];
