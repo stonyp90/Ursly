@@ -114,7 +114,7 @@ Press `Cmd+K` to instantly search across all your storage. Use powerful operator
 Real-time performance monitoring with detailed CPU core activity (14 cores), memory usage (58.4% - 28.0/48 GB), GPU metrics (58% Apple M4 Pro), VRAM (61%), temperature (61°C), disk I/O, network stats (117.7 KB/s), and system load averages (4.48 / 4.55 / 4.63). Perfect for keeping an eye on renders and heavy workloads.
 
 <p align="center">
-  <img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing macOS 15 with 14 Cores Apple M4 Pro, CPU usage (16%), Memory (58.4% - 28.0/48 GB), GPU (58% Apple M4 Pro), VRAM (61%), Temperature (61°C), Load (32% - 4.48), Disk I/O (0 B/s), Network (117.7 KB/s), and System Load Average (4.48 / 4.55 / 4.63) with real-time graphs and per-core CPU visualization" width="700" />
+  <img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing macOS 15 with 14 Cores Apple M4 Pro. Summary metrics: CPU 16% (14 cores), RAM 55% (26.5/48 GB), GPU 27% (Apple M4 Pro), VRAM 35%, Temp 46°C, Load 35% (4.92). Detailed cards: CPU Usage with 14 core bars, Memory with Swap 75% (3.7/5 GB), GPU with temperature/power/fan/core clock, Disk I/O (0 B/s read/write), Network (575.5 KB/s, Download 18902.0, Upload 570361.0), System Load Average (1M: 4.92, 5M: 3.69, 15M: 3.29). Uptime: 4d 3h" width="700" />
 </p>
 
 ### Keyboard-First Experience
