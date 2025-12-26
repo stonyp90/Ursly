@@ -97,6 +97,10 @@ winreg = "0.52"
 default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
 media = ["axum", "tower", "tower-http"]
+# VFS feature flags (for conditional compilation)
+vfs = []
+# NVIDIA GPU support (optional, requires nvml_wrapper)
+nvidia = []
 
 [profile.release]
 panic = "abort"

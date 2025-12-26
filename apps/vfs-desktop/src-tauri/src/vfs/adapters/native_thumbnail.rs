@@ -356,8 +356,8 @@ impl NativeThumbnailAdapter {
         // Hide the window on Windows using CREATE_NO_WINDOW flag
         #[cfg(target_os = "windows")]
         {
-            use std::os::windows::process::CommandExt;
             const CREATE_NO_WINDOW: u32 = 0x08000000;
+            use std::os::windows::process::CommandExt;
             cmd.creation_flags(CREATE_NO_WINDOW);
         }
         
