@@ -120,7 +120,7 @@ Every action has a shortcut. Press `?` to see all shortcuts. Work faster with ke
 
 ### Performance Monitor
 
-<img src="website/screenshots/vfs-performance-metrics-latest.png" alt="Performance Monitor dashboard showing real-time system metrics" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+<img src="website/screenshots/vfs-performance-metrics-latest.png" alt="Performance Monitor dashboard showing real-time system metrics including CPU usage charts, Memory utilization, GPU metrics, Disk I/O, Network stats, and System Load Average with detailed visualizations" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
 ### Keyboard Shortcuts
 
