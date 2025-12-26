@@ -10,7 +10,6 @@ import { BottomToolbar } from './BottomToolbar';
 // TODO: Fix React hooks test environment configuration
 describe.skip('BottomToolbar', () => {
   const defaultProps = {
-    onOpenSettings: jest.fn(),
     onOpenShortcuts: jest.fn(),
     onOpenSearch: jest.fn(),
     isShortcutsOpen: false,
@@ -26,7 +25,6 @@ describe.skip('BottomToolbar', () => {
 
     expect(screen.getByText('Shortcuts')).toBeInTheDocument();
     expect(screen.getByText('Search')).toBeInTheDocument();
-    expect(screen.getByText('Theme')).toBeInTheDocument();
   });
 
   it('should call onOpenSearch when Search button is clicked', () => {
@@ -43,7 +41,8 @@ describe.skip('BottomToolbar', () => {
   });
 
   it('should not render Search button when onOpenSearch is not provided', () => {
-    const { onOpenSearch: _onOpenSearch, ...propsWithoutSearch } = defaultProps;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { onOpenSearch, ...propsWithoutSearch } = defaultProps;
     render(<BottomToolbar {...propsWithoutSearch} />);
 
     expect(screen.queryByText('Search')).not.toBeInTheDocument();
@@ -64,19 +63,6 @@ describe.skip('BottomToolbar', () => {
     expect(onOpenShortcuts).toHaveBeenCalledTimes(1);
   });
 
-  it('should call onOpenSettings when Theme button is clicked', () => {
-    const onOpenSettings = jest.fn();
-    render(<BottomToolbar {...defaultProps} onOpenSettings={onOpenSettings} />);
-
-    const themeButton = screen.getByText('Theme').closest('button');
-    expect(themeButton).toBeInTheDocument();
-
-    if (themeButton) {
-      fireEvent.click(themeButton);
-    }
-    expect(onOpenSettings).toHaveBeenCalledTimes(1);
-  });
-
   it('should have correct title attributes for accessibility', () => {
     render(<BottomToolbar {...defaultProps} />);
 
@@ -86,7 +72,6 @@ describe.skip('BottomToolbar', () => {
     expect(
       screen.getByTitle('Search Files (Cmd+K / Ctrl+K)'),
     ).toBeInTheDocument();
-    expect(screen.getByTitle('Appearance Settings')).toBeInTheDocument();
   });
 
   it('should render KeyboardShortcutHelper when shortcuts are open', () => {

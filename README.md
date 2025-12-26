@@ -8,66 +8,26 @@
 
 **One app. All your clouds. Zero friction.**
 
-✅ **Enterprise-Grade**: Production-ready desktop application with native performance, comprehensive testing, and enterprise-quality code.
-
-Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Search with AI. Stay in flow.
+Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Search instantly. Stay in flow.
 
 <br />
 
-### 🗂️ Primary Feature: Unified File Browser
+### 🗂️ Your Files, One Place
 
-<img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics/Settings tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" style="max-width: 100%; height: auto;" />
+<img src="website/screenshots/vfs-main-dark-latest.png" alt="Ursly VFS file browser showing unified file management interface" width="800" style="max-width: 100%; height: auto;" />
 
 _Unified file management across all your cloud storage providers in one beautiful interface_
 
 <br />
 <br />
 
-<!-- CI/CD & Build Status -->
-
 [![CI](https://github.com/stonyp90/Ursly/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/stonyp90/Ursly/actions/workflows/ci.yml)
-[![Release](https://github.com/stonyp90/Ursly/actions/workflows/release.yml/badge.svg)](https://github.com/stonyp90/Ursly/actions/workflows/release.yml)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](https://github.com/stonyp90/Ursly/actions)
-[![Code Quality](https://img.shields.io/badge/code%20quality-enterprise--grade-success?style=flat-square)](https://github.com/stonyp90/Ursly)
-
-<!-- Platform Support -->
+[![Download](https://img.shields.io/badge/Download-Free-00d4ff?style=for-the-badge)](https://github.com/stonyp90/Ursly/releases/latest)
+[![License](https://img.shields.io/badge/License-AGPL_v3-blue?style=for-the-badge)](https://www.gnu.org/licenses/agpl-3.0)
 
 [![macOS](https://img.shields.io/badge/platform-macOS-lightgrey?style=flat-square&logo=apple)](https://github.com/stonyp90/Ursly/releases)
 [![Windows](https://img.shields.io/badge/platform-Windows-blue?style=flat-square&logo=windows)](https://github.com/stonyp90/Ursly/releases)
 [![Linux](https://img.shields.io/badge/platform-Linux-orange?style=flat-square&logo=linux)](https://github.com/stonyp90/Ursly/releases)
-
-<!-- Project Stats -->
-
-[![GitHub Stars](https://img.shields.io/github/stars/stonyp90/Ursly?style=for-the-badge&logo=github)](https://github.com/stonyp90/Ursly/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/stonyp90/Ursly?style=flat-square&logo=github)](https://github.com/stonyp90/Ursly/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/stonyp90/Ursly?style=flat-square)](https://github.com/stonyp90/Ursly/issues)
-[![GitHub PRs](https://img.shields.io/github/issues-pr/stonyp90/Ursly?style=flat-square)](https://github.com/stonyp90/Ursly/pulls)
-[![Contributors](https://img.shields.io/github/contributors/stonyp90/Ursly?style=flat-square)](https://github.com/stonyp90/Ursly/graphs/contributors)
-[![Last Commit](https://img.shields.io/github/last-commit/stonyp90/Ursly/main?style=flat-square)](https://github.com/stonyp90/Ursly/commits/main)
-
-<!-- Downloads & Releases -->
-
-[![Download](https://img.shields.io/badge/Download-Free-00d4ff?style=for-the-badge)](https://github.com/stonyp90/Ursly/releases/latest)
-[![Latest Release](https://img.shields.io/github/v/release/stonyp90/Ursly?style=flat-square&logo=github)](https://github.com/stonyp90/Ursly/releases/latest)
-[![Release Date](https://img.shields.io/github/release-date/stonyp90/Ursly?style=flat-square)](https://github.com/stonyp90/Ursly/releases)
-
-<!-- License & Legal -->
-
-[![License](https://img.shields.io/badge/License-AGPL_v3-blue?style=for-the-badge)](https://www.gnu.org/licenses/agpl-3.0)
-[![AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green?style=flat-square)](LICENSE)
-
-<!-- Tech Stack -->
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
-[![Tauri](https://img.shields.io/badge/Tauri-2.0-24C8D8?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
-[![Rust](https://img.shields.io/badge/Rust-Stable-orange?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
-
-<!-- Additional Info -->
-
-[![Website](https://img.shields.io/badge/Website-ursly.io-00d4ff?style=flat-square)](https://ursly.io)
-[![Discussions](https://img.shields.io/badge/Discussions-GitHub-blue?style=flat-square&logo=github)](https://github.com/stonyp90/Ursly/discussions)
 
 <br />
 
@@ -79,117 +39,60 @@ _Unified file management across all your cloud storage providers in one beautifu
 
 ## 🚀 Why Ursly VFS?
 
-Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, local drives, and Dropbox. Each requires a different app. You waste hours hunting for files.
+Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, local drives, and more. Each requires a different app. You waste hours hunting for files.
 
-**Ursly VFS changes everything.** One beautiful, native app that unifies all your storage. See everything in one place. Move files anywhere with drag & drop. Find anything instantly with AI-powered search that runs 100% locally.
+**Ursly VFS changes everything.** One beautiful, native desktop app that unifies all your storage. See everything in one place. Move files anywhere with drag & drop. Find anything instantly with Spotlight Search. Monitor system performance in real-time. All running locally with zero cloud dependencies.
 
 ---
 
-## ✨ Key Features
+## ✨ What You Get
 
-### 🔗 Multi-Cloud Unified Storage
+### 🔗 All Your Storage in One Place
 
-Connect **15+ storage providers** in one unified interface:
+Connect **15+ storage providers** and see everything together:
 
-- **Cloud**: AWS S3, Google Cloud Storage, Azure Blob, S3-Compatible (MinIO, Wasabi, R2)
-- **Network**: SMB/CIFS, NFS, SFTP, WebDAV
+- **Cloud**: AWS S3, Google Cloud Storage, Azure Blob, S3-Compatible services
+- **Network**: SMB/CIFS shares, NFS mounts, SFTP servers, WebDAV
 - **Hybrid**: FSx for ONTAP, NetApp
-- **Block**: iSCSI, Fibre Channel
+- **Block**: iSCSI targets, Fibre Channel
 
-### 🔍 Spotlight Search (`Cmd+K` / `Ctrl+K`)
+### 🔍 Instant Search
 
-- **Instant Search**: Find files across all storage instantly
-- **Smart Operators**: `tag:`, `type:`, `ext:`, `size:` filters
-- **AI-Powered**: Content-aware search with local Ollama integration
-- **Keyboard-First**: Full keyboard navigation and shortcuts
+Press `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) for instant Spotlight Search across all storage. Use smart filters like `tag:`, `type:`, `ext:`, `size:` to find exactly what you need.
 
-### 🎬 Video & Media Intelligence
+### 🏷️ Smart Organization
 
-- **Video Transcription**: Auto-transcribe videos in 99 languages with Whisper
-- **Smart Thumbnails**: Auto-generated thumbnails for photos and videos
-- **HLS Streaming**: Stream videos from any storage tier
-- **Media Preview**: Built-in preview for images, videos, PDFs
+- **Favorites**: Drag files to Favorites for quick access
+- **Tags**: Organize files with custom tags
+- **Grid & List Views**: Choose your preferred view
+- **Color Labels**: Visual organization like macOS Finder
 
-### 🏷️ Smart Tagging & Organization
+### 📊 System Monitoring
 
-- **AI Auto-Tagging**: Automatically tag photos and images
-- **Cross-Storage Tags**: Tags sync across all storage providers
-- **Color-Coded**: Visual organization with color-coded tags
-- **Favorites**: Quick access to frequently used locations
+Keep an eye on your system with real-time metrics:
 
-### 📊 Real-Time System Monitoring
-
-- **GPU Metrics**: Temperature, power, fan speed, core clock
-- **CPU & Memory**: Per-core usage, load averages, RAM utilization
-- **Disk I/O**: Read/write speeds and throughput
-- **Network**: Upload/download speeds and bandwidth
+- GPU temperature and performance
+- CPU and memory usage
+- Disk I/O speeds
+- Network bandwidth
 
 ### ⌨️ Keyboard-First Design
 
-Every action has a shortcut:
+Every action has a shortcut. Press `?` to see all shortcuts. Work faster with keyboard navigation.
 
-- `⌘+K` / `Ctrl+K` - Spotlight Search
-- `⌘+A` - Select All
-- `⌘+C/V` - Copy/Paste
-- `⌘+Shift+N` - New Folder
-- `Enter` - Rename
-- `Delete` - Move to Trash
-- `?` - Show all shortcuts
+### 🎨 Beautiful & Customizable
 
-### 🎨 Theme Customization & Settings
+- Dark and light themes
+- 10+ accent colors
+- Smooth animations
+- Native performance
 
-Customize your experience with a dedicated Settings tab:
+### 🔒 Privacy First
 
-- **Dark & Light Themes**: Switch between themes instantly
-- **10 Accent Colors**: Choose from Cyan, Purple, Neon Cyan, Electric Purple, and more
-- **Onboarding Tour**: Interactive tour to learn features and shortcuts
-- **Auto-Updates**: Seamless updates with progress tracking
-- **Settings Tab**: Access all preferences from the header navigation
-
-### 🎯 Three Deployment Modes
-
-- **Cloud GPU**: Windows Server 2025 with FSx ONTAP + NVMe cache
-- **Workstation**: Local machine with LucidLink sync
-- **Browser-Only**: API-based access without local mounts
-
-### 🔒 Privacy & Security
-
-- **100% Local AI**: All AI processing runs locally with Ollama
-- **Zero Cloud Dependencies**: Your files never leave your machine
-- **Secure Connections**: Encrypted connections to all storage providers
-- **No Telemetry**: No tracking, no analytics, no data collection
-
----
-
-## 📸 Screenshots
-
-<div align="center">
-
-### 🗂️ Main File Browser (Primary Feature)
-
-_The heart of Ursly VFS - unified file management across all your storage providers_
-
-<img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS file browser showing unified file management interface with sidebar navigation, file list with columns, header tabs, and search functionality" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
-
-### 📊 Performance Monitor (Secondary Feature)
-
-_Real-time system metrics and monitoring - accessible via the Metrics tab_
-
-<img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing GPU, CPU, memory, disk I/O, and network metrics" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
-
-### Keyboard Shortcuts
-
-<img src="website/screenshots/vfs-keyboard-shortcuts.png" alt="Keyboard Shortcuts dialog showing navigation, selection, clipboard, and file operation shortcuts" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
-
-### Settings & Theme Customization
-
-<img src="website/screenshots/vfs-theme-customizer-dark.png" alt="Settings page showing theme mode toggle (Dark/Light), accent color selection with 10 color options, and onboarding tour button" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
-
-### Add Storage Modal
-
-<img src="website/screenshots/vfs-add-storage-dark.png" alt="Add Storage modal showing cloud, network, and hybrid storage options" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
-
-</div>
+- **100% Local**: Your files never leave your machine
+- **No Tracking**: No telemetry, no analytics
+- **Open Source**: Inspect the code yourself
+- **Secure**: Encrypted connections to all storage
 
 ---
 
@@ -197,50 +100,71 @@ _Real-time system metrics and monitoring - accessible via the Metrics tab_
 
 **Free for personal use. No account required. No credit card.**
 
-<div style="overflow-x: auto;">
-
 | Platform    | Download                                                                                            | Requirements  |
 | ----------- | --------------------------------------------------------------------------------------------------- | ------------- |
 | **macOS**   | [Download .dmg](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.dmg)           | macOS 11+     |
 | **Windows** | [Download .msi](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.msi)           | Windows 10/11 |
 | **Linux**   | [Download .AppImage](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.AppImage) | glibc 2.31+   |
 
-</div>
-
 > **macOS:** If you see "App is damaged", run: `xattr -cr /Applications/Ursly\ VFS.app`
 
 ---
 
-## 🛠️ Built With Modern Tech
+## 📸 See It In Action
 
-<div style="overflow-x: auto;">
+<div align="center">
 
-| Layer            | Technology                   | Purpose                          |
-| ---------------- | ---------------------------- | -------------------------------- |
-| **Desktop App**  | Tauri 2.0 + Rust             | Native performance, small bundle |
-| **Frontend**     | React 18 + TypeScript        | Modern UI framework              |
-| **Styling**      | Tailwind CSS + CSS Variables | Consistent theming               |
-| **Local AI**     | Ollama + Whisper             | Privacy-first AI processing      |
-| **Build System** | Nx Monorepo                  | Efficient builds and testing     |
-| **Icons**        | Lucide React                 | Beautiful icon library           |
+### Main File Browser
+
+<img src="website/screenshots/vfs-main-dark-latest.png" alt="Ursly VFS file browser showing header with Files/Metrics/Settings tabs, sidebar with Favorites/Storage/Tags, main content area, and bottom toolbar with Shortcuts and Search buttons" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+
+### Performance Monitor
+
+<img src="website/screenshots/vfs-performance-metrics-latest.png" alt="Performance Monitor dashboard showing real-time system metrics" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+
+### Keyboard Shortcuts
+
+<img src="website/screenshots/vfs-keyboard-shortcuts-latest.png" alt="Keyboard Shortcuts dialog showing all available shortcuts" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+
+### Add Storage
+
+<img src="website/screenshots/vfs-add-storage-dark-latest.png" alt="Add Storage modal showing storage provider options" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
 </div>
+
+> **📸 Screenshot Update Needed**: Current screenshots may show outdated UI. New screenshots should show:
+>
+> - Bottom toolbar with **Shortcuts** and **Search** buttons only (no Theme button)
+> - Header with **Files**, **Metrics**, and **Settings** tabs
+> - Settings tab accessible from header (not bottom toolbar)
 
 ---
 
 ## 🚦 Quick Start
 
-### Prerequisites
+### For Users
+
+1. **Download** the app for your platform above
+2. **Install** and launch Ursly VFS
+3. **Add Storage** by clicking the "+" button in the sidebar
+4. **Search** with `Cmd+K` / `Ctrl+K`
+5. **Enjoy** unified file management!
+
+### For Developers
+
+<details>
+<summary><b>Click to expand technical setup</b></summary>
+
+#### Prerequisites
 
 - **Node.js**: 24.x or later
-- **npm**: 10.x or later
-- **Rust**: 1.70+ (for Tauri)
+- **Rust**: 1.70+ (for Tauri backend)
 - **Platform Tools**:
-  - **macOS**: Xcode Command Line Tools
-  - **Windows**: Visual Studio Build Tools
-  - **Linux**: `libwebkit2gtk-4.0-dev`, `libssl-dev`
+  - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
+  - **Windows**: Visual Studio Build Tools with C++ workload
+  - **Linux**: `libwebkit2gtk-4.0-dev`, `libssl-dev`, `libayatana-appindicator3-dev`
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repository
@@ -251,100 +175,34 @@ cd Ursly
 npm install
 
 # Run the desktop app in development mode
-cd apps/vfs-desktop
-npm run tauri:dev
+npm run start:vfs
 ```
 
-### Building for Production
+#### Building
 
 ```bash
 # Build for current platform
 npm run build:vfs
-
-# Or use Tauri CLI directly
-cd apps/vfs-desktop
-npm run tauri:build
 ```
 
----
-
-## 🏗️ Architecture
-
-### Clean Architecture (Ports & Adapters)
-
-Ursly VFS follows Clean Architecture principles:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      VFS Module                              │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        │
-│  │   Domain    │   │    Ports    │   │  Adapters   │        │
-│  │  entities   │   │  (traits)   │   │ (concrete)  │        │
-│  │  values     │   │ IStorage    │   │ S3Adapter   │        │
-│  │  events     │   │ ICache      │   │ LocalAdapter│        │
-│  └─────────────┘   └─────────────┘   └─────────────┘        │
-│           │               ▲                 │                │
-│           └───────────────┼─────────────────┘                │
-│                           │                                  │
-│                  ┌────────┴────────┐                         │
-│                  │   Application   │                         │
-│                  │   (use cases)   │                         │
-│                  └─────────────────┘                         │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Storage Tiers
-
-| Tier         | Provider              | Retrieval Time   | Metadata     | Cost     |
-| ------------ | --------------------- | ---------------- | ------------ | -------- |
-| **Hot**      | FSx ONTAP             | Instant (sub-ms) | Full         | $$$$$    |
-| **Nearline** | FSxN S3 (Fabric Pool) | 1-5 seconds      | Full (local) | $$       |
-| **Cold**     | S3 Glacier Instant    | Instant          | Full (API)   | $        |
-| **Archive**  | S3 Glacier Deep       | 12-48 hours      | Full (API)   | Cheapest |
-
----
-
-## 🧪 Development
-
-### Available Scripts
+#### Testing
 
 ```bash
-# Development
-npm run start:vfs        # Start VFS desktop app
-npm run build:vfs        # Build for production
+# Run tests
+npm test
 
-# Testing
-npm test                 # Run all tests
-npm run test:watch       # Watch mode
-npm run test:coverage    # Coverage report
-
-# Code Quality
-npm run lint             # Lint code
-npm run lint:fix         # Fix linting issues
+# Run with coverage
+npm run test:coverage
 ```
 
-### Project Structure
+#### Tech Stack
 
-```
-ursly/
-├── apps/
-│   └── vfs-desktop/     # Tauri desktop application
-│       ├── src/         # React frontend
-│       └── src-tauri/   # Rust backend
-├── website/             # Marketing website
-└── package.json         # Root package configuration
-```
+- **Desktop**: Tauri 2.0 + Rust (native performance)
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS
+- **Build**: Nx Monorepo + Vite
 
----
-
-## 📚 Documentation
-
-- **[Architecture Guide](./agents.md)**: Detailed architecture and development guide
-- **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute to Ursly VFS
-- **[Code of Conduct](./CODE_OF_CONDUCT.md)**: Community guidelines
-- **[Security Policy](./SECURITY.md)**: How to report security vulnerabilities
-- **[Changelog](./CHANGELOG.md)**: Version history and release notes
+</details>
 
 ---
 
@@ -360,28 +218,11 @@ We welcome contributions! Here's how you can help:
 6. **Push**: `git push origin feature/amazing-feature`
 7. **Open a Pull Request**
 
-### Development Guidelines
-
-- Follow the existing code style
-- Write tests for new features
-- Update documentation as needed
-- Use conventional commits
-- Ensure all tests pass before submitting
-
 ---
 
 ## 📄 License
 
 **AGPL-3.0** — Free for personal use. [View license](LICENSE)
-
-### License Summary
-
-- ✅ **Commercial Use**: Allowed
-- ✅ **Modification**: Allowed
-- ✅ **Distribution**: Allowed
-- ✅ **Private Use**: Allowed
-- ❌ **Sublicensing**: Not allowed
-- ❌ **Liability**: No warranty provided
 
 **Note**: AGPL-3.0 requires that if you modify and run this software, you must make the source code available to users who interact with it over a network.
 
@@ -393,17 +234,6 @@ We welcome contributions! Here's how you can help:
 - **GitHub**: [github.com/stonyp90/Ursly](https://github.com/stonyp90/Ursly)
 - **Issues**: [Report a bug](https://github.com/stonyp90/Ursly/issues/new)
 - **Discussions**: [GitHub Discussions](https://github.com/stonyp90/Ursly/discussions)
-
----
-
-## 🙏 Acknowledgments
-
-Built with inspiration from:
-
-- **[rclone](https://github.com/rclone/rclone)** - Command-line program to sync files
-- **[Mountain Duck](https://mountainduck.io/)** - Mount cloud storage as local drives
-- **[Tauri](https://github.com/tauri-apps/tauri)** - Build smaller, faster desktop apps
-- **[OpenDAL](https://github.com/apache/opendal)** - Universal data access layer
 
 ---
 

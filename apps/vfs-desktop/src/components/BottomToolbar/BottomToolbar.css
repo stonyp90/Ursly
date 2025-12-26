@@ -3,34 +3,37 @@
 
 .bottom-toolbar {
   position: fixed;
-  bottom: 16px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px;
-  background: color-mix(in srgb, var(--background, #1c1c1e) 85%, transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-  border-radius: 14px;
+  gap: 0;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--background, #1c1c1e) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 8px 40px rgba(0, 0, 0, 0.5),
-    0 0 80px color-mix(in srgb, var(--primary, #0a84ff) 10%, transparent);
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 60px color-mix(in srgb, var(--primary, #0a84ff) 8%, transparent);
   z-index: 100;
-  animation: toolbar-appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: toolbar-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 @keyframes toolbar-appear {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.95);
+    transform: translateX(-50%) translateY(24px) scale(0.92);
+    filter: blur(4px);
   }
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -114,21 +117,21 @@
   color: var(--accent, #ff9f0a);
 }
 
-/* Settings button - Secondary color glow */
-.action-pill.settings .pill-glow {
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--secondary, #bf5af2) 25%, transparent) 0%,
-    transparent 70%
-  );
+/* Enhanced hover states for cleaner 2-button design */
+.action-pill {
+  padding: 10px 20px 10px 16px;
+  min-width: 130px;
+  justify-content: center;
 }
 
-.action-pill.settings:hover {
-  border-color: color-mix(in srgb, var(--secondary, #bf5af2) 40%, transparent);
+.action-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-.action-pill.settings .pill-icon {
-  color: var(--secondary, #bf5af2);
+.action-pill:active {
+  transform: translateY(0) scale(0.97);
+  transition: all 0.1s ease;
 }
 
 /* Icon styling */
@@ -154,17 +157,20 @@
   opacity: 1;
 }
 
-/* Divider */
+/* Divider - Enhanced for 2-button layout */
 .action-divider {
   width: 1px;
-  height: 24px;
+  height: 28px;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    var(--border, rgba(255, 255, 255, 0.15)) 50%,
+    var(--border, rgba(255, 255, 255, 0.12)) 20%,
+    var(--border, rgba(255, 255, 255, 0.18)) 50%,
+    var(--border, rgba(255, 255, 255, 0.12)) 80%,
     transparent 100%
   );
-  margin: 0 2px;
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
 /* Responsive - hide labels on small screens */

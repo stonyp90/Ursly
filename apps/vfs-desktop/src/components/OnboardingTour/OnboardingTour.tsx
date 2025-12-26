@@ -16,88 +16,133 @@ interface OnboardingTourProps {
   onSkip?: () => void;
 }
 
-// Define tour steps
+// Define tour steps with enhanced UX
 const TOUR_STEPS: Step[] = [
   {
     target: '.action-pill.search',
     content: (
-      <div>
-        <h3>Search</h3>
+      <div className="tour-step-content">
+        <div className="tour-step-icon">🔍</div>
+        <h3>Instant Spotlight Search</h3>
         <p>
           Press <kbd>Cmd+K</kbd> (Mac) or <kbd>Ctrl+K</kbd> (Windows/Linux) to
           open Spotlight Search. Instantly find files, folders, and tags across
-          all your storage sources. Use powerful operators like{' '}
-          <code>tag:</code>, <code>type:</code>, <code>ext:</code>, and{' '}
-          <code>size:</code> to filter results.
+          all your storage sources.
         </p>
+        <div className="tour-step-tip">
+          <strong>Pro tip:</strong> Use operators like <code>tag:</code>,{' '}
+          <code>type:</code>, <code>ext:</code>, and <code>size:</code> to
+          filter results instantly.
+        </div>
       </div>
     ),
     placement: 'top',
     disableBeacon: true,
+    disableOverlayClose: false,
   },
   {
-    target: '.header-tab[data-tab="metrics"], .header-tab:nth-child(2)',
+    target: '.header-tab[data-tab="metrics"]',
     content: (
-      <div>
-        <h3>System Metrics</h3>
+      <div className="tour-step-content">
+        <div className="tour-step-icon">📊</div>
+        <h3>Real-Time System Metrics</h3>
         <p>
-          Click the <strong>Metrics</strong> tab to monitor system performance,
-          GPU usage, CPU cores, memory, and storage statistics in real-time.
-          Perfect for keeping an eye on resource consumption during heavy
-          workloads like video rendering or large file transfers.
+          Click the <strong>Metrics</strong> tab to monitor system performance
+          in real-time. Track GPU usage, CPU cores, memory, disk I/O, and
+          network stats.
         </p>
+        <div className="tour-step-tip">
+          <strong>Perfect for:</strong> Keeping an eye on resource consumption
+          during heavy workloads like video rendering or large file transfers.
+        </div>
       </div>
     ),
     placement: 'bottom',
     disableBeacon: true,
+    disableOverlayClose: false,
   },
   {
     target: '.action-pill.shortcuts',
     content: (
-      <div>
-        <h3>Keyboard Shortcuts</h3>
+      <div className="tour-step-content">
+        <div className="tour-step-icon">⌨️</div>
+        <h3>Keyboard-First Navigation</h3>
         <p>
-          Ursly VFS is keyboard-first for maximum productivity. Press{' '}
-          <kbd>?</kbd> to view all available shortcuts. Navigate, search, and
-          manage files without touching your mouse.
+          Ursly VFS is designed for keyboard productivity. Press <kbd>?</kbd>{' '}
+          anytime to view all available shortcuts.
         </p>
+        <div className="tour-step-tip">
+          <strong>Try it:</strong> Navigate, search, and manage files without
+          touching your mouse. Every action has a shortcut.
+        </div>
       </div>
     ),
     placement: 'top',
     disableBeacon: true,
+    disableOverlayClose: false,
   },
   {
-    target: '.favorites-section, .sidebar-section',
+    target: '.header-tab[data-tab="settings"]',
     content: (
-      <div>
-        <h3>Favorites</h3>
+      <div className="tour-step-content">
+        <div className="tour-step-icon">⚙️</div>
+        <h3>Settings & Customization</h3>
         <p>
-          Quickly access your most-used files and folders. Drag any file or
-          folder here to add it to favorites, or right-click and select{' '}
-          <strong>"Add to Favorites"</strong>. Your favorites are saved locally
-          and help you access frequently used locations instantly.
+          Click the <strong>Settings</strong> tab to customize your experience.
+          Change themes (dark/light), choose from 10 accent colors, and manage
+          all your preferences in one place.
         </p>
+        <div className="tour-step-tip">
+          <strong>Pro tip:</strong> You can also start or reset the onboarding
+          tour from Settings to learn features anytime.
+        </div>
+      </div>
+    ),
+    placement: 'bottom',
+    disableBeacon: true,
+    disableOverlayClose: false,
+  },
+  {
+    target: '.favorites-section',
+    content: (
+      <div className="tour-step-content">
+        <div className="tour-step-icon">⭐</div>
+        <h3>Quick Access Favorites</h3>
+        <p>
+          Drag any file or folder here to add it to favorites for instant
+          access. Your favorites are saved locally and sync across sessions.
+        </p>
+        <div className="tour-step-tip">
+          <strong>Alternative:</strong> Right-click any item and select{' '}
+          <strong>"Add to Favorites"</strong> from the context menu.
+        </div>
       </div>
     ),
     placement: 'right',
     disableBeacon: true,
+    disableOverlayClose: false,
   },
   {
-    target: '.file-browser, .finder-content',
+    target: '.finder-content, .file-browser',
     content: (
-      <div>
-        <h3>File Management</h3>
+      <div className="tour-step-content">
+        <div className="tour-step-icon">📁</div>
+        <h3>Unified File Browser</h3>
         <p>
-          This is your main file browser. Right-click any file to view details,
-          add tags, or manage properties. Use <kbd>Cmd+I</kbd> (Mac) or{' '}
-          <kbd>Ctrl+I</kbd> (Windows/Linux) to open file details. Drag and drop
-          files between storage sources, or use keyboard shortcuts for quick
-          navigation.
+          This is your main workspace. Browse files across all storage sources
+          in one unified view. Drag and drop files between storage providers
+          seamlessly.
         </p>
+        <div className="tour-step-tip">
+          <strong>Power features:</strong> Right-click for context menu, use{' '}
+          <kbd>Cmd+I</kbd> (Mac) or <kbd>Ctrl+I</kbd> (Windows/Linux) for file
+          details, and drag files to move them between storage sources.
+        </div>
       </div>
     ),
     placement: 'right',
     disableBeacon: true,
+    disableOverlayClose: false,
   },
 ];
 
@@ -144,6 +189,9 @@ export function OnboardingTour({
         const metricsTab =
           document.querySelector('.header-tab[data-tab="metrics"]') ||
           document.querySelector('.header-tab:nth-child(2)');
+        const settingsTab =
+          document.querySelector('.header-tab[data-tab="settings"]') ||
+          document.querySelector('.header-tab:nth-child(3)');
         const favoritesSection =
           document.querySelector('.favorites-section') ||
           document.querySelector('.sidebar-section');
@@ -154,6 +202,7 @@ export function OnboardingTour({
           shortcutsButton &&
           fileBrowser &&
           metricsTab &&
+          settingsTab &&
           favoritesSection
         ) {
           console.log('Onboarding tour: All elements found, starting tour');
@@ -167,6 +216,7 @@ export function OnboardingTour({
               shortcutsButton: !!shortcutsButton,
               fileBrowser: !!fileBrowser,
               metricsTab: !!metricsTab,
+              settingsTab: !!settingsTab,
               favoritesSection: !!favoritesSection,
             },
           );
@@ -197,18 +247,30 @@ export function OnboardingTour({
 
       // Handle tour completion, skipping, or closing (Escape/X button)
       if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-        setRun(false);
-        localStorage.setItem(STORAGE_KEY, 'true');
+        // Smooth fade out
+        requestAnimationFrame(() => {
+          setRun(false);
+          localStorage.setItem(STORAGE_KEY, 'true');
 
-        if (status === STATUS.FINISHED) {
-          onComplete?.();
-        } else {
-          // Handle skip or close (Escape/X button triggers SKIPPED status)
-          onSkip?.();
-        }
+          if (status === STATUS.FINISHED) {
+            onComplete?.();
+          } else {
+            // Handle skip or close (Escape/X button triggers SKIPPED status)
+            onSkip?.();
+          }
+        });
       } else if (type === 'step:after') {
-        // Move to next step after current step completes
-        setStepIndex(index);
+        // Smooth transition to next step
+        requestAnimationFrame(() => {
+          setStepIndex(index);
+        });
+        // Last step - add completion animation
+        if (index === TOUR_STEPS.length - 1) {
+          const tooltip = document.querySelector('.react-joyride__tooltip');
+          if (tooltip) {
+            tooltip.classList.add('tour-completing');
+          }
+        }
       } else if (type === 'error:target_not_found') {
         // If target not found, try to wait a bit and retry, or skip to next step
         console.warn(`Onboarding tour: Target not found for step ${index}`);
@@ -224,29 +286,45 @@ export function OnboardingTour({
           }
         }, 500);
       } else if (type === 'step:before') {
-        // Before showing a step, ensure we're on the right tab
+        // Before showing a step, ensure we're on the right tab with smooth transition
         const step = TOUR_STEPS[index];
-        if (step?.target === '.header-tab[data-tab="metrics"]') {
-          // Switch to Metrics tab if needed
-          const metricsTab = document.querySelector(
-            '.header-tab[data-tab="metrics"]',
-          ) as HTMLElement;
-          if (metricsTab && !metricsTab.classList.contains('active')) {
-            metricsTab.click();
+        requestAnimationFrame(() => {
+          if (step?.target === '.header-tab[data-tab="metrics"]') {
+            // Switch to Metrics tab if needed
+            const metricsTab = document.querySelector(
+              '.header-tab[data-tab="metrics"]',
+            ) as HTMLElement;
+            if (metricsTab && !metricsTab.classList.contains('active')) {
+              metricsTab.style.transition =
+                'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+              metricsTab.click();
+            }
+          } else if (step?.target === '.header-tab[data-tab="settings"]') {
+            // Switch to Settings tab if needed
+            const settingsTab = document.querySelector(
+              '.header-tab[data-tab="settings"]',
+            ) as HTMLElement;
+            if (settingsTab && !settingsTab.classList.contains('active')) {
+              settingsTab.style.transition =
+                'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+              settingsTab.click();
+            }
+          } else if (
+            step?.target === '.file-browser' ||
+            step?.target === '.favorites-section'
+          ) {
+            // Ensure we're on Files tab for file browser steps
+            const filesTab = document.querySelector(
+              '.header-tab:not([data-tab="metrics"]):not([data-tab="settings"])',
+            ) as HTMLElement;
+            if (filesTab && !filesTab.classList.contains('active')) {
+              filesTab.style.transition =
+                'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+              filesTab.click();
+            }
           }
-        } else if (
-          step?.target === '.file-browser' ||
-          step?.target === '.favorites-section'
-        ) {
-          // Ensure we're on Files tab for file browser steps (switch back from Metrics if needed)
-          const filesTab = document.querySelector(
-            '.header-tab:not([data-tab="metrics"])',
-          ) as HTMLElement;
-          if (filesTab && !filesTab.classList.contains('active')) {
-            filesTab.click();
-          }
-        }
-        // For steps 3 (shortcuts) and 1 (search), we can be on any tab - no switching needed
+        });
+        // For steps (shortcuts) and (search), we can be on any tab - no switching needed
       }
     },
     [onComplete, onSkip],
@@ -268,20 +346,45 @@ export function OnboardingTour({
         scrollOffset={20}
         scrollToFirstStep={true}
         callback={handleJoyrideCallback}
+        floaterProps={{
+          disableAnimation: false,
+          styles: {
+            arrow: {
+              color: 'var(--surface, #1e1e1e)',
+            },
+          },
+          placement: 'auto',
+          offset: 10,
+        }}
+        spotlightClicks={true}
+        spotlightPadding={12}
+        disableScrollParentFix={false}
+        disableScrolling={false}
+        scrollOffset={100}
+        scrollDuration={400}
         styles={{
           options: {
             primaryColor: 'var(--primary, #0a84ff)',
             textColor: 'var(--text-primary, #f5f5f7)',
-            backgroundColor: 'var(--surface, #3a3a3c)',
-            overlayColor: 'rgba(0, 0, 0, 0.6)',
-            arrowColor: 'var(--surface, #3a3a3c)',
+            backgroundColor: 'var(--surface, #1e1e1e)',
+            overlayColor: 'rgba(0, 0, 0, 0.75)',
+            arrowColor: 'var(--surface, #1e1e1e)',
             zIndex: 10002,
+            beaconSize: 36,
+            spotlightPadding: 8,
+            spotlightRadius: 12,
           },
           tooltip: {
-            borderRadius: '12px',
-            padding: '20px',
+            borderRadius: '16px',
+            padding: '24px',
             fontFamily:
               'var(--font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif)',
+            maxWidth: '380px',
+            boxShadow:
+              '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08) inset',
+            border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
+            background:
+              'linear-gradient(135deg, var(--surface, #1e1e1e) 0%, var(--surface-elevated, #252525) 100%)',
           },
           tooltipContainer: {
             textAlign: 'left',
@@ -291,66 +394,86 @@ export function OnboardingTour({
           tooltipFooter: {
             pointerEvents: 'auto',
             zIndex: 10004,
+            marginTop: '16px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
           },
           tooltipTitle: {
-            fontSize: '18px',
-            fontWeight: '600',
-            marginBottom: '8px',
+            fontSize: '20px',
+            fontWeight: '700',
+            marginBottom: '12px',
             color: 'var(--text-primary, #f5f5f7)',
+            lineHeight: '1.3',
           },
           tooltipContent: {
-            fontSize: '14px',
-            lineHeight: '1.5',
+            fontSize: '15px',
+            lineHeight: '1.6',
             color: 'var(--text-secondary, #a1a1a6)',
-            padding: '8px 0',
+            padding: '0',
           },
           buttonNext: {
             backgroundColor: 'var(--primary, #0a84ff)',
             color: 'white',
             fontSize: '14px',
-            fontWeight: '500',
-            padding: '10px 20px',
-            borderRadius: '8px',
+            fontWeight: '600',
+            padding: '10px 24px',
+            borderRadius: '10px',
             border: 'none',
             cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 12px rgba(10, 132, 255, 0.3)',
           },
           buttonBack: {
             color: 'var(--text-secondary, #a1a1a6)',
             fontSize: '14px',
             marginRight: '8px',
             padding: '10px 20px',
-            borderRadius: '8px',
-            border: '1px solid var(--border, rgba(255, 255, 255, 0.1))',
+            borderRadius: '10px',
+            border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
             backgroundColor: 'transparent',
             cursor: 'pointer',
+            transition: 'all 0.2s ease',
           },
           buttonSkip: {
             color: 'var(--text-muted, #8e8e93)',
             fontSize: '14px',
             padding: '10px 20px',
-            borderRadius: '8px',
+            borderRadius: '10px',
             border: 'none',
             backgroundColor: 'transparent',
             cursor: 'pointer',
+            transition: 'all 0.2s ease',
           },
           buttonClose: {
             color: 'var(--text-muted, #8e8e93)',
-            fontSize: '20px',
-            top: '12px',
-            right: '12px',
+            fontSize: '22px',
+            top: '16px',
+            right: '16px',
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            transition: 'all 0.2s ease',
           },
           spotlight: {
-            borderRadius: '8px',
+            borderRadius: '12px',
+            boxShadow:
+              '0 0 0 4px rgba(10, 132, 255, 0.25), 0 0 0 8px rgba(10, 132, 255, 0.15), 0 0 0 12px rgba(10, 132, 255, 0.08)',
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          },
+          beacon: {
+            animation: 'pulse 2s infinite',
           },
         }}
         locale={{
           back: 'Back',
           close: 'Close',
-          last: 'Finish',
+          last: 'Get Started',
           next: 'Next',
           open: 'Open the dialog',
           skip: 'Skip tour',
         }}
+        disableOverlayClose={false}
+        hideBackButton={false}
       />
     </>
   );

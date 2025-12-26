@@ -5,7 +5,6 @@ import { FinderPage } from './pages/FinderPage';
 import { MetricsPage } from './pages/MetricsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { ThemeCustomizer } from './components/ThemeCustomizer';
 import { ToastProvider } from './components/Toast';
 import { ErrorDialogProvider } from './components/ErrorDialog';
 import { BottomToolbar } from './components/BottomToolbar';
@@ -18,7 +17,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<AppTab>('files');
-  const [isThemeCustomizerOpen, setIsThemeCustomizerOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -105,7 +103,6 @@ function App() {
             </main>
 
             <BottomToolbar
-              onOpenSettings={() => setActiveTab('settings')}
               onOpenShortcuts={() => setIsShortcutsOpen(true)}
               onOpenSearch={() => {
                 // Switch to Files tab if on Metrics tab
@@ -117,13 +114,6 @@ function App() {
               isShortcutsOpen={isShortcutsOpen}
               onCloseShortcuts={() => setIsShortcutsOpen(false)}
             />
-
-            {activeTab !== 'settings' && (
-              <ThemeCustomizer
-                isOpen={isThemeCustomizerOpen}
-                onClose={() => setIsThemeCustomizerOpen(false)}
-              />
-            )}
 
             <AutoUpdater />
 
