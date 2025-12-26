@@ -14,7 +14,7 @@ Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Searc
 
 <br />
 
-<img src="website/screenshots/vfs-main-dark.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" style="max-width: 100%; height: auto;" />
+<img src="website/screenshots/vfs-main-dark.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics/Settings tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" style="max-width: 100%; height: auto;" />
 
 <br />
 <br />
@@ -33,7 +33,7 @@ Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Searc
 
 <br />
 
-[**Download**](https://github.com/stonyp90/Ursly/releases/latest) · [Website](https://ursly.io) · [Report Bug](https://github.com/stonyp90/Ursly/issues/new)
+[**Download**](https://github.com/stonyp90/Ursly/releases/latest) · [Website](https://ursly.io) · [Report Bug](https://github.com/stonyp90/Ursly/issues/new) · [Request Feature](https://github.com/stonyp90/Ursly/issues/new)
 
 </div>
 
@@ -44,6 +44,71 @@ Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Searc
 Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, local drives, and Dropbox. Each requires a different app. You waste hours hunting for files.
 
 **Ursly VFS changes everything.** One beautiful, native app that unifies all your storage. See everything in one place. Move files anywhere with drag & drop. Find anything instantly with AI-powered search that runs 100% locally.
+
+---
+
+## ✨ Key Features
+
+### 🔗 Multi-Cloud Unified Storage
+
+Connect **15+ storage providers** in one unified interface:
+
+- **Cloud**: AWS S3, Google Cloud Storage, Azure Blob, S3-Compatible (MinIO, Wasabi, R2)
+- **Network**: SMB/CIFS, NFS, SFTP, WebDAV
+- **Hybrid**: FSx for ONTAP, NetApp
+- **Block**: iSCSI, Fibre Channel
+
+### 🔍 Spotlight Search (`Cmd+K` / `Ctrl+K`)
+
+- **Instant Search**: Find files across all storage instantly
+- **Smart Operators**: `tag:`, `type:`, `ext:`, `size:` filters
+- **AI-Powered**: Content-aware search with local Ollama integration
+- **Keyboard-First**: Full keyboard navigation and shortcuts
+
+### 🎬 Video & Media Intelligence
+
+- **Video Transcription**: Auto-transcribe videos in 99 languages with Whisper
+- **Smart Thumbnails**: Auto-generated thumbnails for photos and videos
+- **HLS Streaming**: Stream videos from any storage tier
+- **Media Preview**: Built-in preview for images, videos, PDFs
+
+### 🏷️ Smart Tagging & Organization
+
+- **AI Auto-Tagging**: Automatically tag photos and images
+- **Cross-Storage Tags**: Tags sync across all storage providers
+- **Color-Coded**: Visual organization with color-coded tags
+- **Favorites**: Quick access to frequently used locations
+
+### 📊 Real-Time System Monitoring
+
+- **GPU Metrics**: Temperature, power, fan speed, core clock
+- **CPU & Memory**: Per-core usage, load averages, RAM utilization
+- **Disk I/O**: Read/write speeds and throughput
+- **Network**: Upload/download speeds and bandwidth
+
+### ⌨️ Keyboard-First Design
+
+Every action has a shortcut:
+
+- `⌘+K` - Spotlight Search
+- `⌘+A` - Select All
+- `⌘+C/V` - Copy/Paste
+- `⌘+Shift+N` - New Folder
+- `Enter` - Rename
+- `Delete` - Move to Trash
+
+### 🎯 Three Deployment Modes
+
+- **Cloud GPU**: Windows Server 2025 with FSx ONTAP + NVMe cache
+- **Workstation**: Local machine with LucidLink sync
+- **Browser-Only**: API-based access without local mounts
+
+### 🔒 Privacy & Security
+
+- **100% Local AI**: All AI processing runs locally with Ollama
+- **Zero Cloud Dependencies**: Your files never leave your machine
+- **Secure Connections**: Encrypted connections to all storage providers
+- **No Telemetry**: No tracking, no analytics, no data collection
 
 ---
 
@@ -63,27 +128,9 @@ Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, loca
 
 <img src="website/screenshots/vfs-keyboard-shortcuts.png" alt="Keyboard Shortcuts dialog" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
-</div>
+### Add Storage Modal
 
----
-
-## ✨ What Makes Ursly VFS Different
-
-<div style="overflow-x: auto;">
-
-| Feature                    | What You Get                                                                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🔗 **Multi-Cloud Unified** | Connect AWS S3, Azure Blob, Google Cloud Storage, Dropbox, Google Drive, OneDrive, NAS, SFTP, WebDAV, and more — all in one view                 |
-| 🔍 **Spotlight Search**    | Press `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) for instant search across files, folders, tags, and operators (`tag:`, `type:`, `ext:`, `size:`) |
-| 🤖 **AI-Powered Search**   | Find files by content, not just names. Runs 100% locally with Ollama — your data never leaves your machine                                       |
-| 🎬 **Video Transcription** | Auto-transcribe videos in 99 languages with Whisper. Search spoken words across your entire library                                              |
-| 🏷️ **Smart Tagging**       | AI auto-tags photos and images. Organize with color-coded tags that sync across all storage                                                      |
-| ⌨️ **Keyboard-First**      | Every action has a shortcut. Built for power users who value speed                                                                               |
-| 📊 **System Monitor**      | Real-time GPU, CPU, RAM metrics. Perfect for monitoring renders and heavy workloads                                                              |
-| 🎯 **Onboarding Tour**     | Interactive tour guides you through Search, Metrics, Shortcuts, Favorites, and Asset Management                                                  |
-| 🔄 **Auto-Updates**        | Seamless updates with progress tracking. Always stay on the latest version                                                                       |
-| 🔒 **100% Private**        | All AI processing runs locally. Zero cloud dependencies. Your files never leave your machine                                                     |
-| 🚀 **Blazing Fast**        | Built with Tauri 2.0 + Rust. Native performance, not a slow web wrapper                                                                          |
+<img src="website/screenshots/vfs-add-storage-dark.png" alt="Add Storage modal showing cloud, network, and hybrid storage options" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
 </div>
 
@@ -111,19 +158,32 @@ Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, loca
 
 <div style="overflow-x: auto;">
 
-| Layer            | Technology                   |
-| ---------------- | ---------------------------- |
-| **Desktop App**  | Tauri 2.0 + Rust             |
-| **Frontend**     | React 18 + TypeScript        |
-| **Local AI**     | Ollama + Whisper             |
-| **Build System** | Nx Monorepo                  |
-| **Styling**      | Tailwind CSS + CSS Variables |
+| Layer            | Technology                   | Purpose                          |
+| ---------------- | ---------------------------- | -------------------------------- |
+| **Desktop App**  | Tauri 2.0 + Rust             | Native performance, small bundle |
+| **Frontend**     | React 18 + TypeScript        | Modern UI framework              |
+| **Styling**      | Tailwind CSS + CSS Variables | Consistent theming               |
+| **Local AI**     | Ollama + Whisper             | Privacy-first AI processing      |
+| **Build System** | Nx Monorepo                  | Efficient builds and testing     |
+| **Icons**        | Lucide React                 | Beautiful icon library           |
 
 </div>
 
 ---
 
 ## 🚦 Quick Start
+
+### Prerequisites
+
+- **Node.js**: 24.x or later
+- **npm**: 10.x or later
+- **Rust**: 1.70+ (for Tauri)
+- **Platform Tools**:
+  - **macOS**: Xcode Command Line Tools
+  - **Windows**: Visual Studio Build Tools
+  - **Linux**: `libwebkit2gtk-4.0-dev`, `libssl-dev`
+
+### Installation
 
 ```bash
 # Clone the repository
@@ -133,16 +193,158 @@ cd Ursly
 # Install dependencies
 npm install
 
-# Run the desktop app
+# Run the desktop app in development mode
 cd apps/vfs-desktop
 npm run tauri:dev
 ```
+
+### Building for Production
+
+```bash
+# Build for current platform
+npm run build:vfs
+
+# Or use Tauri CLI directly
+cd apps/vfs-desktop
+npm run tauri:build
+```
+
+---
+
+## 🏗️ Architecture
+
+### Clean Architecture (Ports & Adapters)
+
+Ursly VFS follows Clean Architecture principles:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      VFS Module                              │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        │
+│  │   Domain    │   │    Ports    │   │  Adapters   │        │
+│  │  entities   │   │  (traits)   │   │ (concrete)  │        │
+│  │  values     │   │ IStorage    │   │ S3Adapter   │        │
+│  │  events     │   │ ICache      │   │ LocalAdapter│        │
+│  └─────────────┘   └─────────────┘   └─────────────┘        │
+│           │               ▲                 │                │
+│           └───────────────┼─────────────────┘                │
+│                           │                                  │
+│                  ┌────────┴────────┐                         │
+│                  │   Application   │                         │
+│                  │   (use cases)   │                         │
+│                  └─────────────────┘                         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Storage Tiers
+
+| Tier         | Provider              | Retrieval Time   | Metadata     | Cost     |
+| ------------ | --------------------- | ---------------- | ------------ | -------- |
+| **Hot**      | FSx ONTAP             | Instant (sub-ms) | Full         | $$$$$    |
+| **Nearline** | FSxN S3 (Fabric Pool) | 1-5 seconds      | Full (local) | $$       |
+| **Cold**     | S3 Glacier Instant    | Instant          | Full (API)   | $        |
+| **Archive**  | S3 Glacier Deep       | 12-48 hours      | Full (API)   | Cheapest |
+
+---
+
+## 🧪 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run start:vfs        # Start VFS desktop app
+npm run build:vfs        # Build for production
+
+# Testing
+npm test                 # Run all tests
+npm run test:watch       # Watch mode
+npm run test:coverage    # Coverage report
+
+# Code Quality
+npm run lint             # Lint code
+npm run lint:fix         # Fix linting issues
+```
+
+### Project Structure
+
+```
+ursly/
+├── apps/
+│   └── vfs-desktop/     # Tauri desktop application
+│       ├── src/         # React frontend
+│       └── src-tauri/   # Rust backend
+├── website/             # Marketing website
+└── package.json         # Root package configuration
+```
+
+---
+
+## 📚 Documentation
+
+- **[Architecture Guide](./vfs.md)**: Detailed architecture documentation
+- **[API Documentation](./docs/api.md)**: API reference (coming soon)
+- **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute (coming soon)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** with tests
+4. **Run tests**: `npm test && npm run lint`
+5. **Commit**: `git commit -m 'feat: add amazing feature'`
+6. **Push**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow the existing code style
+- Write tests for new features
+- Update documentation as needed
+- Use conventional commits
+- Ensure all tests pass before submitting
 
 ---
 
 ## 📄 License
 
 **AGPL-3.0** — Free for personal use. [View license](LICENSE)
+
+### License Summary
+
+- ✅ **Commercial Use**: Allowed
+- ✅ **Modification**: Allowed
+- ✅ **Distribution**: Allowed
+- ✅ **Private Use**: Allowed
+- ❌ **Sublicensing**: Not allowed
+- ❌ **Liability**: No warranty provided
+
+**Note**: AGPL-3.0 requires that if you modify and run this software, you must make the source code available to users who interact with it over a network.
+
+---
+
+## 🆘 Support
+
+- **Website**: [ursly.io](https://ursly.io)
+- **GitHub**: [github.com/stonyp90/Ursly](https://github.com/stonyp90/Ursly)
+- **Issues**: [Report a bug](https://github.com/stonyp90/Ursly/issues/new)
+- **Discussions**: [GitHub Discussions](https://github.com/stonyp90/Ursly/discussions)
+
+---
+
+## 🙏 Acknowledgments
+
+Built with inspiration from:
+
+- **[rclone](https://github.com/rclone/rclone)** - Command-line program to sync files
+- **[Mountain Duck](https://mountainduck.io/)** - Mount cloud storage as local drives
+- **[Tauri](https://github.com/tauri-apps/tauri)** - Build smaller, faster desktop apps
+- **[OpenDAL](https://github.com/apache/opendal)** - Universal data access layer
 
 ---
 

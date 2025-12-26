@@ -2,7 +2,32 @@
   "name": "ursly",
   "version": "1.1.4",
   "license": "AGPL-3.0",
-  "description": "Ursly VFS - Cloud-Native Virtual File System",
+  "description": "Ursly VFS - The File Manager Built for Creatives. One app. All your clouds. Zero friction.",
+  "keywords": [
+    "file-manager",
+    "cloud-storage",
+    "vfs",
+    "virtual-file-system",
+    "tauri",
+    "rust",
+    "react",
+    "multi-cloud",
+    "storage-unification",
+    "ai-search",
+    "desktop-app"
+  ],
+  "author": {
+    "name": "Anthony Paquet",
+    "url": "https://www.linkedin.com/in/anthony-paquet-94a31085/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stonyp90/Ursly.git"
+  },
+  "homepage": "https://ursly.io",
+  "bugs": {
+    "url": "https://github.com/stonyp90/Ursly/issues"
+  },
   "scripts": {
     "start:vfs": "nx serve vfs-desktop",
     "build:vfs": "nx build vfs-desktop",
