@@ -9,6 +9,7 @@ export default {
         tsconfig: {
           jsx: 'react-jsx',
         },
+        isolatedModules: true,
       },
     ],
   },
@@ -32,10 +33,5 @@ export default {
   },
   testEnvironmentOptions: {
     customExportConditions: [''],
-  },
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
-    },
   },
 };
