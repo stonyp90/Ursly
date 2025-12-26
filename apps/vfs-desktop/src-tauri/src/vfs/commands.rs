@@ -375,29 +375,37 @@ pub async fn vfs_eject(
     #[cfg(target_os = "windows")]
     {
         // On Windows, use PowerShell to eject (hidden window)
-        use std::process::Command;
+        // Run in blocking task to ensure CREATE_NO_WINDOW flag works
+        use std::process::{Command, Stdio};
+        use std::os::windows::process::CommandExt;
         
-        let mut cmd = Command::new("powershell");
-        cmd.args([
-            "-NoProfile",
-            "-NonInteractive",
-            "-WindowStyle", "Hidden",
-            "-Command",
-            &format!(
-                "$vol = Get-Volume -FilePath '{}'; \
-                 $driveEject = New-Object -comObject Shell.Application; \
-                 $driveEject.Namespace(17).ParseName($vol.DriveLetter + ':').InvokeVerb('Eject')",
-                path_str
-            )
-        ]);
-        #[cfg(target_os = "windows")]
-        {
-            use std::os::windows::process::CommandExt;
+        let path_str_clone = path_str.clone();
+        let output = tokio::task::spawn_blocking(move || {
+            let mut cmd = Command::new("powershell.exe");
+            cmd.args([
+                "-NoProfile",
+                "-NonInteractive",
+                "-WindowStyle", "Hidden",
+                "-Command",
+                &format!(
+                    "$vol = Get-Volume -FilePath '{}'; \
+                     $driveEject = New-Object -comObject Shell.Application; \
+                     $driveEject.Namespace(17).ParseName($vol.DriveLetter + ':').InvokeVerb('Eject')",
+                    path_str_clone
+                )
+            ]);
+            cmd.stdout(Stdio::piped());
+            cmd.stderr(Stdio::piped());
+            
+            // Set CREATE_NO_WINDOW flag to prevent window creation
             const CREATE_NO_WINDOW: u32 = 0x08000000;
             cmd.creation_flags(CREATE_NO_WINDOW);
-        }
-        let output = cmd.output()
-            .map_err(|e| format!("Failed to eject: {}", e))?;
+            
+            cmd.output()
+        })
+        .await
+        .map_err(|e| format!("Failed to spawn blocking task: {}", e))?
+        .map_err(|e| format!("Failed to eject: {}", e))?;
         
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
@@ -2164,11 +2172,14 @@ pub async fn vfs_check_nvme_cache() -> Result<NvmeCacheStatusDto, String> {
         use std::process::Command;
         
         // Check if Native NVMe is enabled via registry
-        let output = Command::new("reg")
-            .args(["query", 
-                   r"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides",
-                   "/v", "1176759950"])
-            .output();
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let mut cmd = Command::new("reg");
+        cmd.args(["query", 
+                 r"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides",
+                 "/v", "1176759950"]);
+        cmd.creation_flags(CREATE_NO_WINDOW);
+        let output = cmd.output();
         
         let native_nvme_enabled = output
             .map(|o| String::from_utf8_lossy(&o.stdout).contains("0x1"))
@@ -2247,8 +2258,11 @@ pub async fn vfs_reveal_in_finder(
     
     #[cfg(target_os = "windows")]
     {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
         std::process::Command::new("explorer")
             .args(["/select,", &path.replace('/', "\\")])
+            .creation_flags(CREATE_NO_WINDOW)
             .spawn()
             .map_err(|e| format!("Failed to open Explorer: {}", e))?;
     }
@@ -2315,8 +2329,11 @@ pub async fn vfs_open_file(
     
     #[cfg(target_os = "windows")]
     {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
         std::process::Command::new("cmd")
             .args(["/C", "start", "", real_path.to_str().unwrap_or("")])
+            .creation_flags(CREATE_NO_WINDOW)
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }

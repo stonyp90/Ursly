@@ -603,28 +603,35 @@ return "ok"
 
 #[cfg(target_os = "windows")]
 async fn read_windows_clipboard() -> Result<Option<Vec<PathBuf>>> {
-    use std::process::Command;
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
     
     // Use PowerShell to read file paths (hidden window)
-    let mut cmd = Command::new("powershell");
-    cmd.args([
-        "-NoProfile",
-        "-NonInteractive",
-        "-WindowStyle", "Hidden",
-        "-Command",
-        r#"
-        Add-Type -AssemblyName System.Windows.Forms
-        $files = [System.Windows.Forms.Clipboard]::GetFileDropList()
-        $files | ForEach-Object { Write-Output $_ }
-        "#,
-    ]);
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
+    // Run in blocking task to ensure CREATE_NO_WINDOW flag works
+    let output = tokio::task::spawn_blocking(move || {
+        let mut cmd = Command::new("powershell.exe");
+        cmd.args([
+            "-NoProfile",
+            "-NonInteractive",
+            "-WindowStyle", "Hidden",
+            "-Command",
+            r#"
+            Add-Type -AssemblyName System.Windows.Forms
+            $files = [System.Windows.Forms.Clipboard]::GetFileDropList()
+            $files | ForEach-Object { Write-Output $_ }
+            "#,
+        ]);
+        cmd.stdout(Stdio::piped());
+        cmd.stderr(Stdio::piped());
+        
+        // Set CREATE_NO_WINDOW flag to prevent window creation
         const CREATE_NO_WINDOW: u32 = 0x08000000;
         cmd.creation_flags(CREATE_NO_WINDOW);
-    }
-    let output = cmd.output();
+        
+        cmd.output()
+    })
+    .await
+    .context("Failed to spawn blocking task for clipboard read")?;
     
     match output {
         Ok(out) if out.status.success() => {
@@ -669,21 +676,30 @@ async fn write_windows_clipboard(paths: &[PathBuf]) -> Result<()> {
             .join("\n")
     );
     
-    let mut cmd = Command::new("powershell");
-    cmd.args([
-        "-NoProfile",
-        "-NonInteractive",
-        "-WindowStyle", "Hidden",
-        "-Command", &script
-    ]);
-    #[cfg(target_os = "windows")]
-    {
+    // Run in blocking task to ensure CREATE_NO_WINDOW flag works
+    tokio::task::spawn_blocking(move || {
+        use std::process::{Command, Stdio};
         use std::os::windows::process::CommandExt;
+        
+        let mut cmd = Command::new("powershell.exe");
+        cmd.args([
+            "-NoProfile",
+            "-NonInteractive",
+            "-WindowStyle", "Hidden",
+            "-Command", &script
+        ]);
+        cmd.stdout(Stdio::piped());
+        cmd.stderr(Stdio::piped());
+        
+        // Set CREATE_NO_WINDOW flag to prevent window creation
         const CREATE_NO_WINDOW: u32 = 0x08000000;
         cmd.creation_flags(CREATE_NO_WINDOW);
-    }
-    cmd.output()
-        .context("Failed to write to Windows clipboard")?;
+        
+        cmd.output()
+    })
+    .await
+    .context("Failed to spawn blocking task for clipboard write")?
+    .context("Failed to write to Windows clipboard")?;
     
     debug!("Wrote {} paths to Windows clipboard", paths.len());
     Ok(())

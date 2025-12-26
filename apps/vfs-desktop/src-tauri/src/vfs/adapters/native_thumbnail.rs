@@ -343,37 +343,43 @@ impl NativeThumbnailAdapter {
         );
         
         // Run PowerShell with timeout (10 seconds max) and hidden window
-        let mut cmd = Command::new("powershell.exe");
-        cmd.args([
-            "-NoProfile",
-            "-NonInteractive",
-            "-WindowStyle", "Hidden",
-            "-ExecutionPolicy", "Bypass",
-            "-Command", &script
-        ]);
-        cmd.stdout(Stdio::piped());
-        cmd.stderr(Stdio::piped());
-        // Hide the window on Windows using CREATE_NO_WINDOW flag
-        #[cfg(target_os = "windows")]
-        {
-            const CREATE_NO_WINDOW: u32 = 0x08000000;
-            use std::os::windows::process::CommandExt;
-            cmd.creation_flags(CREATE_NO_WINDOW);
-        }
+        // Use std::process::Command wrapped in spawn_blocking for Windows to support CREATE_NO_WINDOW
+        // tokio::process::Command doesn't support CommandExt, so we must use std::process::Command
+        use std::process::{Command as StdCommand, Stdio as StdStdio};
+        use std::os::windows::process::CommandExt;
         
-        // Add timeout using tokio::time::timeout
+        let script_clone = script.clone();
+        let thumb_path_clone = thumb_path.clone();
         let output = tokio::time::timeout(
             std::time::Duration::from_secs(10),
-            cmd.output()
+            tokio::task::spawn_blocking(move || {
+                let mut cmd = StdCommand::new("powershell.exe");
+                cmd.args([
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-WindowStyle", "Hidden",
+                    "-ExecutionPolicy", "Bypass",
+                    "-Command", &script_clone
+                ]);
+                cmd.stdout(StdStdio::piped());
+                cmd.stderr(StdStdio::piped());
+                
+                // Set CREATE_NO_WINDOW flag to prevent window creation
+                const CREATE_NO_WINDOW: u32 = 0x08000000;
+                cmd.creation_flags(CREATE_NO_WINDOW);
+                
+                cmd.output()
+            })
         )
         .await
         .context("PowerShell command timed out after 10 seconds")?
+        .context("Failed to spawn blocking task")?
         .context("Failed to run PowerShell")?;
         
         // Check if thumbnail was created
-        if thumb_path.exists() {
-            let data = tokio::fs::read(&thumb_path).await?;
-            tokio::fs::remove_file(&thumb_path).await.ok();
+        if thumb_path_clone.exists() {
+            let data = tokio::fs::read(&thumb_path_clone).await?;
+            tokio::fs::remove_file(&thumb_path_clone).await.ok();
             
             Ok(ThumbnailData {
                 data,
