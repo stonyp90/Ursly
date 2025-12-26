@@ -25,7 +25,6 @@ NEED HELP?
 ----------
 Website: https://ursly.io
 GitHub:  https://github.com/stonyp90/Ursly
-Discord: https://discord.gg/cree8
 
 ================================================================================
                          Thank you for using Ursly VFS!

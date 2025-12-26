@@ -1,4 +1,4 @@
-//! CREE8 VFS Feature Tests
+//! VFS Feature Tests
 //!
 //! This module contains one clear test per feature/use case.
 //! Each test is named to describe the feature being tested.
