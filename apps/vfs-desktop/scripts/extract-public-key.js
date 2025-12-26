@@ -41,37 +41,46 @@ try {
     publicKey = fs.readFileSync(publicKeyPath, 'utf8').trim();
     console.log('✅ Found existing public key file');
   } else {
-    // Try to extract public key from private key using Tauri CLI
-    // The private key format is: "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
-    // We need to use Tauri's signer to derive the public key
+    // Try to extract public key from private key using Node.js crypto
+    // Tauri uses Ed25519 keys, so we can derive the public key
     try {
-      // Use Tauri CLI to get public key (if available)
-      // Note: This requires the Tauri CLI to be installed
-      const { execSync } = require('child_process');
+      const crypto = require('crypto');
       
-      // Try to use Tauri signer to extract public key
-      // The signer can derive public key from private key
-      const result = execSync('npx @tauri-apps/cli signer generate --ci 2>&1', {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
+      // Read the private key
+      const keyContent = privateKey.trim();
       
-      // Parse output to find public key
-      // Tauri signer outputs: "Public key: <key>"
-      const publicKeyMatch = result.match(/Public key:\s*([A-Za-z0-9+\/=\s]+)/i);
-      if (publicKeyMatch) {
-        publicKey = publicKeyMatch[1].trim().replace(/\s+/g, '');
-        console.log('✅ Extracted public key from Tauri CLI');
+      // Try to parse as PEM format
+      if (keyContent.includes('BEGIN PRIVATE KEY') || keyContent.includes('BEGIN PRIVATE KEY')) {
+        // For Ed25519 keys, we can extract the public key
+        // Tauri uses Ed25519 which has the public key embedded in the private key
+        try {
+          // Create a key object from the private key
+          const keyObject = crypto.createPrivateKey(keyContent);
+          
+          // Extract public key
+          const publicKeyObject = crypto.createPublicKey(keyObject);
+          publicKey = publicKeyObject.export({
+            type: 'spki',
+            format: 'pem'
+          }).toString().replace(/-----BEGIN PUBLIC KEY-----/g, '').replace(/-----END PUBLIC KEY-----/g, '').replace(/\n/g, '').trim();
+          
+          console.log('✅ Extracted public key from private key using Node.js crypto');
+        } catch (cryptoError) {
+          // If crypto doesn't work, try using Tauri CLI as fallback
+          console.log('⚠️  Node.js crypto extraction failed, trying Tauri CLI...');
+          throw cryptoError;
+        }
       } else {
-        throw new Error('Could not parse public key from Tauri CLI output');
+        throw new Error('Private key format not recognized');
       }
     } catch (error) {
-      console.error('⚠️  Could not extract public key automatically.');
+      // Fallback: Try to use Tauri CLI (though this generates a new keypair)
+      console.error('⚠️  Could not extract public key from private key.');
       console.error('⚠️  Error:', error.message);
-      console.error('⚠️  Please ensure:');
-      console.error('    1. Tauri CLI is installed: npm install -g @tauri-apps/cli');
-      console.error('    2. Private key is valid');
-      console.error('    3. Or generate keys with: npx @tauri-apps/cli signer generate --write-keys');
+      console.error('⚠️  IMPORTANT: The public key must be saved when generating keys.');
+      console.error('⚠️  Please ensure TAURI_SIGNING_PRIVATE_KEY includes both private and public keys,');
+      console.error('⚠️  or generate keys with: npx @tauri-apps/cli signer generate --write-keys');
+      console.error('⚠️  and save both keys separately.');
       process.exit(1);
     }
   }
