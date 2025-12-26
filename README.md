@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="website/logo.svg" alt="Ursly Logo" width="80" height="80" />
+<img src="website/logo.svg" alt="Ursly Logo" width="80" height="80" style="max-width: 100%; height: auto;" />
 
 # Ursly
 
@@ -12,7 +12,7 @@ Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Searc
 
 <br />
 
-<img src="website/screenshots/vfs-main-dark.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" />
+<img src="website/screenshots/vfs-main-dark.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" style="max-width: 100%; height: auto;" />
 
 <br />
 <br />
@@ -39,6 +39,8 @@ Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, loca
 
 ## ✨ What Makes Ursly Different
 
+<div style="overflow-x: auto;">
+
 | Feature                    | What You Get                                                                                                                                     |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🔗 **Multi-Cloud Unified** | Connect AWS S3, Azure Blob, Google Cloud Storage, Dropbox, Google Drive, OneDrive, NAS, SFTP, WebDAV, and more — all in one view                 |
@@ -53,17 +55,23 @@ Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, loca
 | 🔒 **100% Private**        | All AI processing runs locally. Zero cloud dependencies. Your files never leave your machine                                                     |
 | 🚀 **Blazing Fast**        | Built with Tauri 2.0 + Rust. Native performance, not a slow web wrapper                                                                          |
 
+</div>
+
 ---
 
 ## 📥 Download
 
 **Free for personal use. No account required. No credit card.**
 
+<div style="overflow-x: auto;">
+
 | Platform    | Download                                                                                            | Requirements  |
 | ----------- | --------------------------------------------------------------------------------------------------- | ------------- |
 | **macOS**   | [Download .dmg](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.dmg)           | macOS 11+     |
 | **Windows** | [Download .msi](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.msi)           | Windows 10/11 |
 | **Linux**   | [Download .AppImage](https://github.com/stonyp90/Ursly/releases/latest/download/ursly-vfs.AppImage) | glibc 2.31+   |
+
+</div>
 
 > **macOS:** If you see "App is damaged", run: `xattr -cr /Applications/Ursly\ VFS.app`
 
@@ -106,7 +114,7 @@ Your files are scattered across AWS S3, Azure Blob, Google Cloud, your NAS, loca
 Press `Cmd+K` to instantly search across all your storage. Use powerful operators like `tag:important`, `type:video`, `ext:mp4`, or `size:>1gb`.
 
 <p align="center">
-  <img src="website/screenshots/vfs-spotlight-search.png" alt="Spotlight Search overlay showing search input with magnifying glass icon on left, keyboard shortcut icon and X icon on right. Four filter operators displayed: tag: (blue tag icon), type: (blue document icon), ext: (blue file extension icon, highlighted with blue background and 'Tab to insert' hint), size: (blue chart icon). Footer shows keyboard shortcuts: ↑ ↓ Navigate, ⏎ Select, Tab Complete, Esc Close. All icons use consistent blue theme color" width="700" />
+  <img src="website/screenshots/vfs-spotlight-search.png" alt="Spotlight Search overlay showing search input with magnifying glass icon on left, keyboard shortcut icon and X icon on right. Four filter operators displayed: tag: (blue tag icon), type: (blue document icon), ext: (blue file extension icon, highlighted with blue background and 'Tab to insert' hint), size: (blue chart icon). Footer shows keyboard shortcuts: ↑ ↓ Navigate, ⏎ Select, Tab Complete, Esc Close. All icons use consistent blue theme color" width="700" style="max-width: 100%; height: auto;" />
 </p>
 
 ### System Performance Monitor
@@ -114,7 +122,7 @@ Press `Cmd+K` to instantly search across all your storage. Use powerful operator
 Real-time performance monitoring with detailed CPU core activity (14 cores), memory usage (54.6% - 26.2/48 GB), GPU metrics (64% Apple M4 Pro), VRAM (66%), temperature (64°C), disk I/O, network stats (2.5 KB/s), and system load averages (5.02 / 4.56 / 3.80). Perfect for keeping an eye on renders and heavy workloads.
 
 <p align="center">
-  <img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing macOS 15 with 14 Cores Apple M4 Pro. Header metrics: CPU 16% (14 cores), RAM 55% (26.2/48 GB), GPU 64% (Apple M4 Pro), VRAM 66% (5.2/0 GB), TEMP 64°C, LOAD 36% (5.02). Detailed cards: CPU Usage 15.9% with 14 individual core bars, Memory 54.6% (26.2/48 GB) with Swap 75% (3.7/5 GB), GPU 64% with Temperature 64°C, Power 170W, Fan Speed 58%, Core Clock 1986 MHz, Disk I/O 0 B/s (Read 0 B/s, Write 0 B/s), Network 2.5 KB/s (Download 1.0 KB/s, Upload 1.5 KB/s), System Load Average 5.02 (1M: 5.02, 5M: 4.56, 15M: 3.80). Uptime: 4d 3h" width="700" />
+  <img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing macOS 15 with 14 Cores Apple M4 Pro. Header metrics: CPU 16% (14 cores), RAM 55% (26.2/48 GB), GPU 64% (Apple M4 Pro), VRAM 66% (5.2/0 GB), TEMP 64°C, LOAD 36% (5.02). Detailed cards: CPU Usage 15.9% with 14 individual core bars, Memory 54.6% (26.2/48 GB) with Swap 75% (3.7/5 GB), GPU 64% with Temperature 64°C, Power 170W, Fan Speed 58%, Core Clock 1986 MHz, Disk I/O 0 B/s (Read 0 B/s, Write 0 B/s), Network 2.5 KB/s (Download 1.0 KB/s, Upload 1.5 KB/s), System Load Average 5.02 (1M: 5.02, 5M: 4.56, 15M: 3.80). Uptime: 4d 3h" width="700" style="max-width: 100%; height: auto;" />
 </p>
 
 ### Keyboard-First Experience
@@ -122,12 +130,14 @@ Real-time performance monitoring with detailed CPU core activity (14 cores), mem
 Every action has a shortcut. Stay in your flow without touching the mouse.
 
 <p align="center">
-  <img src="website/screenshots/vfs-keyboard-shortcuts.png" alt="Keyboard Shortcuts dialog showing four sections: NAVIGATION (Go back ⌘+[, Go forward ⌘+], Go to parent folder ⌘+↑, Open selected Enter, Navigate files ↑↓←→), SELECTION (Select all ⌘+A, Toggle selection ⌘+Click, Range select Shift+Click, Clear selection Escape), CLIPBOARD (Copy ⌘+C, Paste ⌘+V, Duplicate ⌘+D), and FILE OPERATIONS (New folder ⌘+Shift+N, Rename Enter, Move to Trash ⌘+Delete, Delete Delete). Bottom hint: Press ? to toggle this panel" width="700" />
+  <img src="website/screenshots/vfs-keyboard-shortcuts.png" alt="Keyboard Shortcuts dialog showing four sections: NAVIGATION (Go back ⌘+[, Go forward ⌘+], Go to parent folder ⌘+↑, Open selected Enter, Navigate files ↑↓←→), SELECTION (Select all ⌘+A, Toggle selection ⌘+Click, Range select Shift+Click, Clear selection Escape), CLIPBOARD (Copy ⌘+C, Paste ⌘+V, Duplicate ⌘+D), and FILE OPERATIONS (New folder ⌘+Shift+N, Rename Enter, Move to Trash ⌘+Delete, Delete Delete). Bottom hint: Press ? to toggle this panel" width="700" style="max-width: 100%; height: auto;" />
 </p>
 
 ---
 
 ## 🛠️ Built With Modern Tech
+
+<div style="overflow-x: auto;">
 
 | Layer            | Technology                   |
 | ---------------- | ---------------------------- |
@@ -136,6 +146,8 @@ Every action has a shortcut. Stay in your flow without touching the mouse.
 | **Local AI**     | Ollama + Whisper             |
 | **Build System** | Nx Monorepo                  |
 | **Styling**      | Tailwind CSS + CSS Variables |
+
+</div>
 
 ---
 
