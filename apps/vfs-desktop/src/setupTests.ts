@@ -3,6 +3,7 @@ import React from 'react';
 
 // Ensure React is available globally for tests
 if (typeof globalThis !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (globalThis as any).React = React;
 }
 
@@ -108,7 +109,9 @@ if (typeof DragEvent === 'undefined') {
       super(type, eventInitDict);
       this.dataTransfer = eventInitDict?.dataTransfer || null;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.effectAllowed =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (eventInitDict as any)?.effectAllowed || 'uninitialized';
       this.dropEffect = 'none';
     }

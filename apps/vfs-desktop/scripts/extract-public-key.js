@@ -6,7 +6,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const privateKeyPath = path.join(__dirname, '..', '.tauri-keys', 'key');
 const privateKeyEnv = process.env.TAURI_SIGNING_PRIVATE_KEY;
