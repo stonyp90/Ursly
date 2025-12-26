@@ -181,3 +181,4 @@ service-account*.json
 .nx/cache/**/*.msi
 .nx/cache/**/*.AppImage
 apps/*/src-tauri/target/release/bundle/**
+.env.local
