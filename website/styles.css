@@ -3577,22 +3577,34 @@ body.theme-light .mobile-menu-theme-toggle .theme-icon-dark {
     gap: 24px;
   }
 
-  /* Single column on mobile */
+  /* Single column on mobile - force all grids to single column */
+  .hero,
+  .what-is-content,
+  .try-app-container,
+  .quick-start,
+  .product-features-grid,
+  .download-grid,
+  .integration-featured,
+  .integration-features,
   .features-grid,
   .vfs-grid,
   .iam-grid,
   .cloud-grid,
-  .steps-visual {
-    grid-template-columns: 1fr;
+  .features-grid-2,
+  .features-grid-3,
+  .steps-visual,
+  .integrations-grid,
+  .install-notes-grid {
+    grid-template-columns: 1fr !important;
   }
 
   .feature-large {
-    grid-column: span 1;
+    grid-column: span 1 !important;
   }
 
-  /* Integration grid on tablets */
-  .integrations-grid {
-    grid-template-columns: 1fr;
+  /* Ensure integration featured spans full width */
+  .integrations-grid > .integration-featured {
+    grid-column: 1 / -1 !important;
   }
 
   .integration-header {
@@ -3694,6 +3706,36 @@ body.theme-light .mobile-menu-theme-toggle .theme-icon-dark {
     --card-padding: 16px;
     --section-padding: 32px;
     --nav-height: 56px;
+  }
+
+  /* Force single column on all grids for mobile */
+  .hero,
+  .what-is-content,
+  .try-app-container,
+  .quick-start,
+  .product-features-grid,
+  .download-grid,
+  .integration-featured,
+  .integration-features,
+  .features-grid,
+  .vfs-grid,
+  .iam-grid,
+  .cloud-grid,
+  .features-grid-2,
+  .features-grid-3,
+  .steps-visual,
+  .integrations-grid,
+  .install-notes-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .feature-large {
+    grid-column: span 1 !important;
+  }
+
+  /* Ensure integration featured spans full width */
+  .integrations-grid > .integration-featured {
+    grid-column: 1 / -1 !important;
   }
 
   /* Improved typography for mobile */
