@@ -146,8 +146,8 @@ export function LogoAnimated({ size = 48, className = '' }: LogoProps) {
     return fallback;
   };
 
-  const primaryColor = getCSSVariable('--primary', '#00d4ff');
-  const secondaryColor = getCSSVariable('--secondary', '#ff00ea');
+  const primaryColor = getCSSVariable('--primary', '#0a84ff');
+  const secondaryColor = getCSSVariable('--secondary', '#5e5ce6');
 
   return (
     <svg
