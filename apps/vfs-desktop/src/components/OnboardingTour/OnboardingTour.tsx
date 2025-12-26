@@ -352,7 +352,7 @@ export function OnboardingTour({
             primaryColor: 'var(--primary, #0a84ff)',
             textColor: 'var(--text-primary, #f5f5f7)',
             backgroundColor: 'var(--surface, #1e1e1e)',
-            overlayColor: 'rgba(0, 0, 0, 0.75)',
+            overlayColor: 'rgba(0, 0, 0, 0.35)',
             arrowColor: 'var(--surface, #1e1e1e)',
             zIndex: 10002,
             beaconSize: 36,
@@ -440,8 +440,9 @@ export function OnboardingTour({
           spotlight: {
             borderRadius: '12px',
             boxShadow:
-              '0 0 0 4px rgba(10, 132, 255, 0.25), 0 0 0 8px rgba(10, 132, 255, 0.15), 0 0 0 12px rgba(10, 132, 255, 0.08)',
+              '0 0 0 4px rgba(10, 132, 255, 0.4), 0 0 0 8px rgba(10, 132, 255, 0.25), 0 0 0 12px rgba(10, 132, 255, 0.15), 0 0 0 16px rgba(10, 132, 255, 0.08)',
             transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            backgroundColor: 'transparent',
           },
           beacon: {
             animation: 'pulse 2s infinite',

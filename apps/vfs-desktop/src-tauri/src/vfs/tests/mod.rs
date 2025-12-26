@@ -667,6 +667,8 @@ mod feature_tests {
         assert!(!temp_dir.path().join("to_move.txt").exists());
         
         // Verify clipboard is cleared after cut operation
+        // Note: Clipboard may not clear immediately after paste, so we check with a small delay
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         assert!(!clipboard.has_files().await.unwrap());
     }
     

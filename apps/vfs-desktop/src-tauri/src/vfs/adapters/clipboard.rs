@@ -287,8 +287,10 @@ impl IClipboardService for ClipboardAdapter {
     }
     
     async fn has_files(&self) -> Result<bool> {
-        let clipboard = self.get_clipboard().await?;
-        Ok(clipboard.map(|c| !c.paths.is_empty()).unwrap_or(false))
+        // Only check internal clipboard, not OS clipboard
+        // This ensures consistency with our internal state
+        let clipboard = self.internal_clipboard.read().await;
+        Ok(clipboard.as_ref().map(|c| !c.paths.is_empty()).unwrap_or(false))
     }
     
     async fn paste_to_vfs(

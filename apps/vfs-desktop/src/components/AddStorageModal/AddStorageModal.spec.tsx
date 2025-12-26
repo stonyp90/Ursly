@@ -523,7 +523,6 @@ describe('AddStorageModal', () => {
     });
 
     it('should reset form state when modal closes', async () => {
-      const user = userEvent.setup();
       const { rerender } = render(
         <AddStorageModal
           isOpen={true}
