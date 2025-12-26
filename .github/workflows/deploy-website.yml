@@ -60,6 +60,7 @@ jobs:
 
       - name: Invalidate CloudFront cache
         if: always()
+        continue-on-error: true
         run: |
           if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
             echo "Invalidating CloudFront cache..."
@@ -69,7 +70,10 @@ jobs:
               --paths "/screenshots/ursly-vfs.png" \
               --paths "/screenshots/ursly-search.png" \
               --paths "/screenshots/ursly-metrics.png" \
-              --paths "/screenshots/ursly-shortcuts.png"
+              --paths "/screenshots/ursly-shortcuts.png" || {
+              echo "⚠️ CloudFront invalidation failed, but deployment succeeded"
+              exit 0
+            }
             echo "✅ CloudFront cache invalidated successfully"
           else
             echo "⚠️ CLOUDFRONT_DISTRIBUTION_ID not set, skipping cache invalidation"

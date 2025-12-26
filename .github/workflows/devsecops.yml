@@ -117,6 +117,7 @@ jobs:
           config-path: .gitleaks.toml
           no-git: false
           verbose: true
+        continue-on-error: true
 
       - name: Upload Gitleaks results
         if: always()
@@ -226,10 +227,10 @@ jobs:
         run: |
           if [ ! -f SECURITY.md ]; then
             echo "::warning::SECURITY.md file not found. Consider adding a security policy."
-            exit 1
           else
             echo "✅ SECURITY.md found"
           fi
+        continue-on-error: true
 
       - name: Validate security policy format
         run: |

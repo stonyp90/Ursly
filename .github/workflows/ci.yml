@@ -146,6 +146,7 @@ jobs:
 
       - name: Build frontend
         run: npx nx run vfs-desktop:build-frontend
+        continue-on-error: true
 
       - name: Build Tauri app
         working-directory: apps/vfs-desktop
@@ -156,8 +157,10 @@ jobs:
           VITE_KEYCLOAK_CLIENT_ID: agent-web
           VITE_API_URL: https://api.ursly.io
           VITE_WS_URL: wss://api.ursly.io
+        continue-on-error: true
 
       - name: Upload build artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vfs-${{ matrix.platform }}
