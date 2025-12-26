@@ -5024,19 +5024,39 @@ body.theme-light .theme-toggle-btn .theme-icon-dark {
 /* Responsive for new sections */
 @media (max-width: 900px) {
   .product-features-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .models-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .deployment-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .download-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+  }
+
+  .download-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .integration-featured {
+    grid-template-columns: 1fr !important;
+  }
+
+  .try-app-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .what-is-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero {
+    grid-template-columns: 1fr !important;
   }
 
   .open-source-cta {
