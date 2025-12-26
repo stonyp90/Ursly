@@ -41,10 +41,10 @@
   },
   "plugins": {
     "updater": {
-      "active": true,
-      "endpoints": ["https://releases.ursly.io/{{target}}/{{current_version}}"],
+      "active": false,
+      "endpoints": [],
       "dialog": true,
-      "pubkey": "YOUR_PUBLIC_KEY_HERE"
+      "pubkey": ""
     }
   },
   "bundle": {

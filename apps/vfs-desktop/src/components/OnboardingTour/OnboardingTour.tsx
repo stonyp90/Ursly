@@ -36,7 +36,7 @@ const TOUR_STEPS: Step[] = [
     disableBeacon: true,
   },
   {
-    target: '.header-tab[data-tab="metrics"]',
+    target: '.header-tab[data-tab="metrics"], .header-tab:nth-child(2)',
     content: (
       <div>
         <h3>System Metrics</h3>
@@ -67,7 +67,7 @@ const TOUR_STEPS: Step[] = [
     disableBeacon: true,
   },
   {
-    target: '.favorites-section',
+    target: '.favorites-section, .sidebar-section',
     content: (
       <div>
         <h3>Favorites</h3>
@@ -83,7 +83,7 @@ const TOUR_STEPS: Step[] = [
     disableBeacon: true,
   },
   {
-    target: '.file-browser',
+    target: '.file-browser, .finder-content',
     content: (
       <div>
         <h3>File Management</h3>
@@ -129,17 +129,24 @@ export function OnboardingTour({
   useEffect(() => {
     const hasCompleted = localStorage.getItem(STORAGE_KEY) === 'true';
     if (autoStart && !hasCompleted) {
+      let retryCount = 0;
+      const maxRetries = 20; // Try for up to 10 seconds (20 * 500ms)
+
       // Wait for DOM to be fully ready and ensure all elements are rendered
       const checkElements = () => {
         const searchButton = document.querySelector('.action-pill.search');
         const shortcutsButton = document.querySelector(
           '.action-pill.shortcuts',
         );
-        const fileBrowser = document.querySelector('.file-browser');
-        const metricsTab = document.querySelector(
-          '.header-tab[data-tab="metrics"]',
-        );
-        const favoritesSection = document.querySelector('.favorites-section');
+        const fileBrowser =
+          document.querySelector('.file-browser') ||
+          document.querySelector('.finder-content');
+        const metricsTab =
+          document.querySelector('.header-tab[data-tab="metrics"]') ||
+          document.querySelector('.header-tab:nth-child(2)');
+        const favoritesSection =
+          document.querySelector('.favorites-section') ||
+          document.querySelector('.sidebar-section');
 
         // Check all required elements exist
         if (
@@ -152,20 +159,33 @@ export function OnboardingTour({
           console.log('Onboarding tour: All elements found, starting tour');
           setRun(true);
         } else {
-          console.log('Onboarding tour: Waiting for elements...', {
-            searchButton: !!searchButton,
-            shortcutsButton: !!shortcutsButton,
-            fileBrowser: !!fileBrowser,
-            metricsTab: !!metricsTab,
-            favoritesSection: !!favoritesSection,
-          });
+          retryCount++;
+          console.log(
+            `Onboarding tour: Waiting for elements... (attempt ${retryCount}/${maxRetries})`,
+            {
+              searchButton: !!searchButton,
+              shortcutsButton: !!shortcutsButton,
+              fileBrowser: !!fileBrowser,
+              metricsTab: !!metricsTab,
+              favoritesSection: !!favoritesSection,
+            },
+          );
+
           // Retry after a short delay if elements aren't ready
-          setTimeout(checkElements, 500);
+          if (retryCount < maxRetries) {
+            setTimeout(checkElements, 500);
+          } else {
+            console.warn(
+              'Onboarding tour: Max retries reached, some elements not found. Starting tour anyway.',
+            );
+            // Start tour even if some elements are missing - Joyride will handle missing targets
+            setRun(true);
+          }
         }
       };
 
       // Initial delay to ensure app is loaded
-      setTimeout(checkElements, 2000);
+      setTimeout(checkElements, 1500);
     } else if (autoStart && hasCompleted) {
       console.log('Onboarding tour: Already completed, skipping');
     }

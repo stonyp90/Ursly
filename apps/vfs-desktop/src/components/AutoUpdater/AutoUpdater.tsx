@@ -128,10 +128,20 @@ export function AutoUpdater() {
     loadUpdaterModule().then((loaded) => {
       if (!loaded) {
         setIsChecking(false); // Ensure checking state is cleared
+        console.debug(
+          'AutoUpdater: Plugin not available (expected in dev mode or if updater is disabled)',
+        );
         return; // Plugin not available, skip setup
       }
 
-      checkForUpdates();
+      // Only check for updates if updater is properly configured
+      // Check if we're in production build and updater is enabled
+      const isProduction = import.meta.env.PROD;
+      if (isProduction) {
+        checkForUpdates();
+      } else {
+        console.debug('AutoUpdater: Skipping update check in development mode');
+      }
 
       // Check for updates every 6 hours
       interval = setInterval(
