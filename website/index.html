@@ -33,7 +33,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#00d4ff">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <meta name="msapplication-TileColor" content="#7c3aed">
   
   <!-- Fonts - Distinctive typography -->
@@ -84,7 +84,7 @@
   }
   </script>
 </head>
-<body>
+<body class="theme-dark">
   <!-- Skip to main content link for accessibility -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
   
@@ -99,12 +99,23 @@
         <a href="#features" role="menuitem">Features</a>
         <a href="#product" role="menuitem">Product</a>
         <a href="#download" role="menuitem">Download</a>
-        <a href="https://www.linkedin.com/in/anthony-paquet-94a31085/" class="btn-nav-icon btn-linkedin" target="_blank" rel="noopener noreferrer" aria-label="Connect on LinkedIn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        </a>
-        <a href="https://github.com/stonyp90/ursly" class="btn-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="View Ursly on GitHub">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        </a>
+        <button class="btn-nav-icon theme-toggle-btn" aria-label="Toggle theme" title="Switch between light and dark theme">
+          <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
+          </svg>
+          <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <div class="nav-social-icons">
+          <a href="https://www.linkedin.com/in/anthony-paquet-94a31085/" class="btn-nav-icon btn-linkedin" target="_blank" rel="noopener noreferrer" aria-label="Connect on LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/stonyp90/ursly" class="btn-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="View Ursly on GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
       </div>
       <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-menu">
         <span></span>
@@ -119,6 +130,16 @@
     <a href="#features" role="menuitem">Features</a>
     <a href="#product" role="menuitem">Product</a>
     <a href="#download" role="menuitem">Download</a>
+    <button class="mobile-menu-theme-toggle" aria-label="Toggle theme" title="Switch between light and dark theme">
+      <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
+      </svg>
+      <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <span>Theme</span>
+    </button>
     <div class="mobile-menu-social">
       <a href="https://www.linkedin.com/in/anthony-paquet-94a31085/" class="mobile-social-link mobile-linkedin" target="_blank" rel="noopener noreferrer" aria-label="Connect on LinkedIn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -279,19 +300,10 @@
                 <span></span>
               </div>
               <span class="screenshot-title">Ursly VFS</span>
-              <button class="screenshot-theme-toggle" aria-label="Toggle screenshot theme" title="Switch between light and dark theme">
-                <svg class="theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="5"/>
-                  <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
-                </svg>
-                <svg class="theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-              </button>
             </div>
             <div class="screenshot-image-wrapper">
-              <img class="screenshot-img" src="screenshots/ursly-vfs.png" data-light="screenshots/ursly-vfs.png" data-dark="screenshots/ursly-vfs-black.png" alt="Ursly VFS file browser showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags), main content area, header with Files/Metrics/Settings tabs, and bottom toolbar with Shortcuts and Search buttons" loading="lazy">
-              <img class="screenshot-img" src="screenshots/ursly-vfs-black.png" data-light="screenshots/ursly-vfs.png" data-dark="screenshots/ursly-vfs-black.png" alt="" aria-hidden="true" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: auto;">
+              <img class="screenshot-img screenshot-light" src="screenshots/ursly-vfs.png" alt="Ursly VFS file browser showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags), main content area, header with Files/Metrics/Settings tabs, and bottom toolbar with Shortcuts and Search buttons" loading="lazy">
+              <img class="screenshot-img screenshot-dark" src="screenshots/ursly-vfs-black.png" alt="" aria-hidden="true">
             </div>
           </div>
           <div class="screenshot-caption">
@@ -305,19 +317,10 @@
           <div class="product-feature-card">
             <div class="screenshot-frame small" data-screenshot="search">
               <div class="screenshot-header">
-                <button class="screenshot-theme-toggle" aria-label="Toggle screenshot theme" title="Switch between light and dark theme">
-                  <svg class="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
-                  </svg>
-                  <svg class="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                </button>
               </div>
               <div class="screenshot-image-wrapper">
-                <img class="screenshot-img" src="screenshots/ursly-search.png" data-light="screenshots/ursly-search.png" data-dark="screenshots/ursly-search-black.png" alt="Spotlight Search interface showing instant search across all storage with smart operators and keyboard shortcuts" loading="lazy">
-                <img class="screenshot-img" src="screenshots/ursly-search-black.png" data-light="screenshots/ursly-search.png" data-dark="screenshots/ursly-search-black.png" alt="" aria-hidden="true" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: auto;">
+                <img class="screenshot-img screenshot-light" src="screenshots/ursly-search.png" alt="Spotlight Search interface showing instant search across all storage with smart operators and keyboard shortcuts" loading="lazy">
+                <img class="screenshot-img screenshot-dark" src="screenshots/ursly-search-black.png" alt="" aria-hidden="true">
               </div>
             </div>
             <div class="feature-info">
@@ -330,19 +333,10 @@
           <div class="product-feature-card">
             <div class="screenshot-frame small" data-screenshot="metrics">
               <div class="screenshot-header">
-                <button class="screenshot-theme-toggle" aria-label="Toggle screenshot theme" title="Switch between light and dark theme">
-                  <svg class="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
-                  </svg>
-                  <svg class="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                </button>
               </div>
               <div class="screenshot-image-wrapper">
-                <img class="screenshot-img" src="screenshots/ursly-metrics.png" data-light="screenshots/ursly-metrics.png" data-dark="screenshots/ursly-metrics-black.png" alt="Performance Monitor dashboard showing real-time system metrics: CPU, RAM, GPU, VRAM, Temperature, Load, with detailed line graphs for CPU Usage, Memory, GPU, Disk I/O, Network stats, and System Load Average" loading="lazy">
-                <img class="screenshot-img" src="screenshots/ursly-metrics-black.png" data-light="screenshots/ursly-metrics.png" data-dark="screenshots/ursly-metrics-black.png" alt="" aria-hidden="true" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: auto;">
+                <img class="screenshot-img screenshot-light" src="screenshots/ursly-metrics.png" alt="Performance Monitor dashboard showing real-time system metrics: CPU, RAM, GPU, VRAM, Temperature, Load, with detailed line graphs for CPU Usage, Memory, GPU, Disk I/O, Network stats, and System Load Average" loading="lazy">
+                <img class="screenshot-img screenshot-dark" src="screenshots/ursly-metrics-black.png" alt="" aria-hidden="true">
               </div>
             </div>
             <div class="feature-info">
@@ -351,30 +345,6 @@
             </div>
           </div>
 
-          <!-- 4. KEYBOARD SHORTCUTS -->
-          <div class="product-feature-card">
-            <div class="screenshot-frame small" data-screenshot="shortcuts">
-              <div class="screenshot-header">
-                <button class="screenshot-theme-toggle" aria-label="Toggle screenshot theme" title="Switch between light and dark theme">
-                  <svg class="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M17.66 6.34l1.42-1.42"/>
-                  </svg>
-                  <svg class="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="screenshot-image-wrapper">
-                <img class="screenshot-img" src="screenshots/ursly-shortcuts.png" data-light="screenshots/ursly-shortcuts.png" data-dark="screenshots/ursly-shortcuts-black.png" alt="Keyboard Shortcuts dialog showing navigation, selection, clipboard, file operations, view, and search shortcuts with keyboard combinations" loading="lazy">
-                <img class="screenshot-img" src="screenshots/ursly-shortcuts-black.png" data-light="screenshots/ursly-shortcuts.png" data-dark="screenshots/ursly-shortcuts-black.png" alt="" aria-hidden="true" style="position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: auto;">
-              </div>
-            </div>
-            <div class="feature-info">
-              <h4>Keyboard Shortcuts</h4>
-              <p>Press <code>?</code> to view all shortcuts in the dialog. Every action has a keyboard shortcut for maximum productivity: navigate with arrow keys, select with <code>⌘+A</code>, copy/paste with <code>⌘+C/V</code>, create folders with <code>⌘+Shift+N</code>, and more. Navigate, search, and manage files without touching your mouse.</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -735,23 +705,58 @@
   </main>
 
   <script>
-    // Mobile menu toggle with accessibility
+    // Mobile menu toggle with accessibility and improved UX
     const mobileBtn = document.querySelector('.mobile-menu-btn');
     const mobileMenu = document.querySelector('.mobile-menu');
     
-    mobileBtn.addEventListener('click', () => {
+    // Prevent body scroll when menu is open
+    function toggleMenu() {
       const isExpanded = mobileBtn.getAttribute('aria-expanded') === 'true';
-      mobileBtn.setAttribute('aria-expanded', !isExpanded);
+      const willBeExpanded = !isExpanded;
+      
+      mobileBtn.setAttribute('aria-expanded', willBeExpanded);
       mobileBtn.classList.toggle('active');
       mobileMenu.classList.toggle('active');
+      
+      // Prevent body scroll when menu is open
+      if (willBeExpanded) {
+        document.body.style.overflow = 'hidden';
+        // Focus first menu item for accessibility
+        const firstMenuItem = mobileMenu.querySelector('a, button');
+        if (firstMenuItem) {
+          setTimeout(() => firstMenuItem.focus(), 100);
+        }
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+    
+    mobileBtn.addEventListener('click', toggleMenu);
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+        toggleMenu();
+        mobileBtn.focus();
+      }
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (mobileMenu.classList.contains('active') && 
+          !mobileMenu.contains(e.target) && 
+          !mobileBtn.contains(e.target)) {
+        toggleMenu();
+      }
     });
 
-    // Close mobile menu on link click
-    document.querySelectorAll('.mobile-menu a').forEach(link => {
+    // Close mobile menu on link click (including social links and theme toggle)
+    document.querySelectorAll('.mobile-menu a, .mobile-menu-social a, .mobile-menu-theme-toggle').forEach(link => {
       link.addEventListener('click', () => {
         mobileBtn.setAttribute('aria-expanded', 'false');
         mobileBtn.classList.remove('active');
         mobileMenu.classList.remove('active');
+        document.body.style.overflow = '';
       });
     });
 
@@ -828,123 +833,109 @@
       });
     })();
 
-    // Screenshot Theme Toggle Functionality
+    // Global Theme Toggle Functionality
     (function() {
-      const STORAGE_KEY = 'ursly_screenshot_themes';
-      const screenshots = document.querySelectorAll('.screenshot-frame[data-screenshot]');
+      const STORAGE_KEY = 'ursly_theme';
+      const themeToggleBtn = document.querySelector('.theme-toggle-btn');
+      const mobileThemeToggleBtn = document.querySelector('.mobile-menu-theme-toggle');
+      const body = document.body;
       
-      // Load saved preferences
-      function loadPreferences() {
+      // Load saved theme preference or default to dark
+      function loadTheme() {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            const themes = JSON.parse(saved);
-            screenshots.forEach(frame => {
-              const id = frame.getAttribute('data-screenshot');
-              if (themes[id]) {
-                frame.setAttribute('data-theme', themes[id]);
-                updateImageSrc(frame, themes[id]);
-              }
-            });
-          }
+          const theme = saved || 'dark'; // Default to dark
+          body.className = body.className.replace(/theme-\w+/g, '');
+          body.classList.add(`theme-${theme}`);
+          updateThemeIcons(theme);
         } catch (e) {
-          console.error('Failed to load screenshot preferences:', e);
+          console.error('Failed to load theme preference:', e);
+          // Default to dark if error
+          body.className = body.className.replace(/theme-\w+/g, '');
+          body.classList.add('theme-dark');
+          updateThemeIcons('dark');
         }
       }
 
-      // Save preferences
-      function savePreferences() {
+      // Save theme preference
+      function saveTheme(theme) {
         try {
-          const themes = {};
-          screenshots.forEach(frame => {
-            const id = frame.getAttribute('data-screenshot');
-            themes[id] = frame.getAttribute('data-theme') || 'light';
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(themes));
+          localStorage.setItem(STORAGE_KEY, theme);
         } catch (e) {
-          console.error('Failed to save screenshot preferences:', e);
+          console.error('Failed to save theme preference:', e);
         }
       }
 
-      // Update image visibility with smooth transition
-      function updateImageSrc(frame, theme) {
-        // The CSS handles the transition, we just need to set the data-theme attribute
-        // Images are already loaded, so transitions will be smooth
-      }
-
-      // Toggle theme for a specific screenshot
-      function toggleScreenshotTheme(frame) {
-        const currentTheme = frame.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      // Update theme icon visibility for all toggle buttons
+      function updateThemeIcons(theme) {
+        const toggleButtons = [themeToggleBtn, mobileThemeToggleBtn].filter(Boolean);
         
-        frame.setAttribute('data-theme', newTheme);
-        updateImageSrc(frame, newTheme);
-        savePreferences();
-
-        // Add a subtle animation effect
-        frame.style.transform = 'scale(0.99)';
-        setTimeout(() => {
-          frame.style.transform = '';
-        }, 200);
+        toggleButtons.forEach(btn => {
+          const lightIcon = btn.querySelector('.theme-icon-light');
+          const darkIcon = btn.querySelector('.theme-icon-dark');
+          
+          if (theme === 'dark') {
+            if (lightIcon) {
+              lightIcon.style.opacity = '0';
+              lightIcon.style.transform = 'rotate(-180deg) scale(0.8)';
+            }
+            if (darkIcon) {
+              darkIcon.style.opacity = '1';
+              darkIcon.style.transform = 'rotate(0deg) scale(1)';
+            }
+          } else {
+            if (lightIcon) {
+              lightIcon.style.opacity = '1';
+              lightIcon.style.transform = 'rotate(0deg) scale(1)';
+            }
+            if (darkIcon) {
+              darkIcon.style.opacity = '0';
+              darkIcon.style.transform = 'rotate(180deg) scale(0.8)';
+            }
+          }
+        });
       }
 
-      // Initialize toggle buttons
-      screenshots.forEach(frame => {
-        const toggle = frame.querySelector('.screenshot-theme-toggle');
-        if (toggle) {
-          toggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleScreenshotTheme(frame);
-          });
+      // Toggle theme
+      function toggleTheme() {
+        const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        body.className = body.className.replace(/theme-\w+/g, '');
+        body.classList.add(`theme-${newTheme}`);
+        updateThemeIcons(newTheme);
+        saveTheme(newTheme);
+      }
 
-          // Add keyboard support
-          toggle.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              toggleScreenshotTheme(frame);
-            }
-          });
-        }
-      });
+      // Initialize theme toggle buttons
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        
+        // Add keyboard support
+        themeToggleBtn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleTheme();
+          }
+        });
+      }
 
-      // Load preferences on page load
-      loadPreferences();
+      if (mobileThemeToggleBtn) {
+        mobileThemeToggleBtn.addEventListener('click', () => {
+          toggleTheme();
+          // Close mobile menu after theme change for better UX
+          const mobileBtn = document.querySelector('.mobile-menu-btn');
+          const mobileMenu = document.querySelector('.mobile-menu');
+          if (mobileBtn && mobileMenu) {
+            mobileBtn.setAttribute('aria-expanded', 'false');
+            mobileBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+          }
+        });
+      }
 
-      // Global toggle option (Shift+Click to toggle all)
-      let globalToggleMode = false;
-      document.addEventListener('keydown', (e) => {
-        if (e.shiftKey && e.key === 'T') {
-          globalToggleMode = true;
-          const currentThemes = {};
-          screenshots.forEach(frame => {
-            const id = frame.getAttribute('data-screenshot');
-            currentThemes[id] = frame.getAttribute('data-theme') || 'light';
-          });
-          
-          // Determine the most common theme
-          const themeCounts = { light: 0, dark: 0 };
-          Object.values(currentThemes).forEach(theme => {
-            themeCounts[theme] = (themeCounts[theme] || 0) + 1;
-          });
-          const targetTheme = themeCounts.dark > themeCounts.light ? 'light' : 'dark';
-          
-          // Toggle all screenshots
-          screenshots.forEach(frame => {
-            frame.setAttribute('data-theme', targetTheme);
-            updateImageSrc(frame, targetTheme);
-          });
-          
-          savePreferences();
-          
-          // Show visual feedback
-          screenshots.forEach(frame => {
-            frame.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-              frame.style.transform = '';
-            }, 300);
-          });
-        }
-      });
+      // Load theme on page load
+      loadTheme();
     })();
   </script>
 </body>
