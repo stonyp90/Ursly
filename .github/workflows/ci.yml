@@ -90,11 +90,25 @@ jobs:
         run: npm test -- --passWithNoTests
 
   # ==========================================================================
-  # Build VFS Desktop Frontend (Linux)
+  # Build VFS Desktop (All Platforms)
   # ==========================================================================
-  build-vfs-linux:
-    name: Build VFS Desktop Frontend (Linux)
-    runs-on: ubuntu-latest
+  build-vfs:
+    name: Build VFS Desktop (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macOS
+            os: macos-latest
+            rust_target: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: Windows
+            os: windows-latest
+            rust_target: x86_64-pc-windows-msvc
+          - platform: Linux
+            os: ubuntu-latest
+            rust_target: x86_64-unknown-linux-gnu
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -106,8 +120,44 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/vfs-desktop/src-tauri -> target
+          key: vfs-ci-${{ matrix.os }}
+
       - name: Install dependencies
+        run: npm ci
+
+      - name: Install VFS desktop dependencies
+        working-directory: apps/vfs-desktop
         run: npm ci
 
       - name: Build frontend
         run: npx nx run vfs-desktop:build-frontend
+
+      - name: Build Tauri app
+        working-directory: apps/vfs-desktop
+        run: npm run tauri:build
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vfs-${{ matrix.platform }}
+          path: |
+            apps/vfs-desktop/src-tauri/target/release/bundle/**/*
+            apps/vfs-desktop/dist/**
+          retention-days: 7
+          if-no-files-found: ignore
