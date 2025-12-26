@@ -253,9 +253,14 @@
   box-shadow: 0 0 0 2px var(--primary, #6366f1);
 }
 
-/* Tour Button */
+/* Tour Buttons */
+.tour-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .tour-btn {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,6 +288,18 @@
   color: var(--primary, #6366f1);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(var(--primary-rgb, 99, 102, 241), 0.2);
+}
+
+.tour-btn.secondary {
+  flex: 0 0 auto;
+  padding: 16px;
+  min-width: auto;
+}
+
+.tour-btn.secondary:hover {
+  border-color: var(--secondary, #5e5ce6);
+  background: rgba(var(--secondary-rgb, 94, 92, 230), 0.1);
+  color: var(--secondary, #5e5ce6);
 }
 
 .tour-description {

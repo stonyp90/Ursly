@@ -4,7 +4,10 @@
  */
 import { useEffect } from 'react';
 import { useTheme, themeColors, ThemeColorKey } from '../contexts/ThemeContext';
-import { startOnboardingTour } from '../components/OnboardingTour';
+import {
+  startOnboardingTour,
+  resetOnboardingTour,
+} from '../components/OnboardingTour';
 import './SettingsPage.css';
 
 interface SettingsPageProps {
@@ -155,27 +158,51 @@ export function SettingsPage({ onClose }: SettingsPageProps) {
           {/* Onboarding Tour */}
           <div className="settings-section">
             <h2>Onboarding</h2>
-            <button
-              className="tour-btn"
-              onClick={() => {
-                startOnboardingTour();
-                if (onClose) onClose();
-              }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+            <div className="tour-buttons">
+              <button
+                className="tour-btn"
+                onClick={() => {
+                  startOnboardingTour();
+                  if (onClose) onClose();
+                }}
               >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-              </svg>
-              <span>Start Feature Tour</span>
-            </button>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+                <span>Start Feature Tour</span>
+              </button>
+              <button
+                className="tour-btn secondary"
+                onClick={() => {
+                  resetOnboardingTour();
+                  if (onClose) onClose();
+                }}
+                title="Reset onboarding tour (will show on next app start)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                  <path d="M3 21v-5h5" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
             <p className="tour-description">
               Take a quick tour to learn about Ursly VFS features and keyboard
-              shortcuts.
+              shortcuts. Use "Reset" if you want to see it again on next app
+              start.
             </p>
           </div>
         </div>
