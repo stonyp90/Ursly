@@ -14,7 +14,11 @@ Connect AWS, Azure, Google Cloud, your NAS, and 15+ more storage services. Searc
 
 <br />
 
+### 🗂️ Primary Feature: Unified File Browser
+
 <img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS file browser on macOS 15 with Apple M4 Pro showing unified file management interface with sidebar navigation (Favorites, Storage locations, Tags, System metrics), main content area displaying file list with Name, Date Modified, Size, and Tier columns, header with Files/Metrics/Settings tabs, navigation bar with search, and footer with Shortcuts/Search/Theme buttons" width="800" style="max-width: 100%; height: auto;" />
+
+_Unified file management across all your cloud storage providers in one beautiful interface_
 
 <br />
 <br />
@@ -161,13 +165,17 @@ Customize your experience with a dedicated Settings tab:
 
 <div align="center">
 
-### Main File Browser
+### 🗂️ Main File Browser (Primary Feature)
 
-<img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS file browser" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+_The heart of Ursly VFS - unified file management across all your storage providers_
 
-### Performance Monitor
+<img src="website/screenshots/vfs-file-browser.png" alt="Ursly VFS file browser showing unified file management interface with sidebar navigation, file list with columns, header tabs, and search functionality" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
-<img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
+### 📊 Performance Monitor (Secondary Feature)
+
+_Real-time system metrics and monitoring - accessible via the Metrics tab_
+
+<img src="website/screenshots/vfs-performance-metrics.png" alt="Performance Monitor dashboard showing GPU, CPU, memory, disk I/O, and network metrics" width="100%" style="max-width: 1200px; height: auto; border-radius: 8px;" />
 
 ### Keyboard Shortcuts
 
