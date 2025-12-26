@@ -4797,6 +4797,18 @@ body.theme-light .theme-toggle-btn .theme-icon-dark {
   max-width: 900px;
   margin: 40px auto 0;
   text-align: left;
+  display: none; /* Hidden by default */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.install-notes.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .install-notes-title {

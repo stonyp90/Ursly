@@ -775,32 +775,30 @@
       }
     });
 
-    // Auto-detect OS and show relevant installation help
+    // Show Installation Help when download button is clicked
     (function() {
-      const installNotes = document.querySelectorAll('.install-note-card[data-os]');
-      if (installNotes.length === 0) return;
+      const installNotesSection = document.querySelector('.install-notes');
+      const installNoteCards = document.querySelectorAll('.install-note-card[data-os]');
+      const downloadCards = document.querySelectorAll('.download-card');
 
-      // Detect OS
-      let detectedOS = 'linux'; // default
-      const platform = navigator.platform.toLowerCase();
-      const userAgent = navigator.userAgent.toLowerCase();
+      if (!installNotesSection || installNoteCards.length === 0 || downloadCards.length === 0) return;
 
-      if (platform.includes('mac') || platform.includes('darwin') || userAgent.includes('mac')) {
-        detectedOS = 'macos';
-      } else if (platform.includes('win') || userAgent.includes('windows')) {
-        detectedOS = 'windows';
-      } else if (platform.includes('linux') || userAgent.includes('linux')) {
-        detectedOS = 'linux';
-      }
+      // Add click handler to all download buttons
+      downloadCards.forEach((downloadCard) => {
+        downloadCard.addEventListener('click', (e) => {
+          // Show the installation help section
+          installNotesSection.classList.add('visible');
+          
+          // Open all installation help items
+          installNoteCards.forEach((card) => {
+            card.open = true;
+          });
 
-      // Open the relevant OS section, close others
-      installNotes.forEach((details) => {
-        const os = details.getAttribute('data-os');
-        if (os === detectedOS) {
-          details.open = true;
-        } else {
-          details.open = false;
-        }
+          // Scroll to installation help section smoothly
+          setTimeout(() => {
+            installNotesSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        });
       });
     })();
 
