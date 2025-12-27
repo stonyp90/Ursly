@@ -1765,7 +1765,18 @@ export function FinderPage({
   };
 
   const handleUploadToS3 = async () => {
-    if (!selectedSource) return;
+    console.log('[FinderPage] handleUploadToS3 called');
+
+    if (!selectedSource) {
+      console.warn('[FinderPage] No source selected');
+      DialogService.error(
+        'Please select a storage source first',
+        'Upload Error',
+      );
+      return;
+    }
+
+    console.log('[FinderPage] Selected source:', selectedSource);
 
     const storageType =
       selectedSource.providerId || selectedSource.type || 'local';
@@ -1773,6 +1784,8 @@ export function FinderPage({
       storageType === 's3' ||
       storageType === 'aws-s3' ||
       storageType === 's3-compatible';
+
+    console.log('[FinderPage] Storage type:', storageType, 'isS3:', isS3);
 
     if (!isS3) {
       DialogService.error(
@@ -1783,12 +1796,19 @@ export function FinderPage({
     }
 
     try {
+      console.log('[FinderPage] Opening file dialog...');
       const selectedFiles = await DialogService.open({
         multiple: true,
         directory: false,
+        title: `Upload files to ${selectedSource.name}`,
       });
 
-      if (!selectedFiles || selectedFiles.length === 0) return;
+      console.log('[FinderPage] Selected files:', selectedFiles);
+
+      if (!selectedFiles || selectedFiles.length === 0) {
+        console.log('[FinderPage] No files selected, cancelling upload');
+        return;
+      }
 
       const { invoke } = await import('@tauri-apps/api/core');
 
@@ -1800,6 +1820,12 @@ export function FinderPage({
             ? fileName
             : `${currentPath.replace(/^\//, '')}/${fileName}`;
 
+        console.log('[FinderPage] Starting upload:', {
+          fileName,
+          localPath,
+          s3Path,
+        });
+
         try {
           const uploadId = await invoke<string>('vfs_start_multipart_upload', {
             sourceId: selectedSource.id,
@@ -1808,6 +1834,8 @@ export function FinderPage({
             partSize: null, // Use default 5MB
           });
 
+          console.log('[FinderPage] Upload started, ID:', uploadId);
+
           setActiveUploads((prev) => new Set([...prev, uploadId]));
 
           toast.showToast({
@@ -1815,7 +1843,7 @@ export function FinderPage({
             message: `Started uploading ${fileName}`,
           });
         } catch (err) {
-          console.error('Failed to start upload:', err);
+          console.error('[FinderPage] Failed to start upload:', err);
           DialogService.error(
             `Failed to upload ${fileName}: ${err}`,
             'Upload Error',
@@ -1823,7 +1851,7 @@ export function FinderPage({
         }
       }
     } catch (err) {
-      console.error('Failed to open file dialog:', err);
+      console.error('[FinderPage] Failed to open file dialog:', err);
       DialogService.error(`Failed to open file dialog: ${err}`, 'Upload Error');
     }
   };
