@@ -3694,8 +3694,18 @@ fn get_upload_manager() -> &'static MultipartUploadManager {
             .unwrap_or_else(|| std::path::PathBuf::from("/tmp"))
             .join("ursly")
             .join("multipart_uploads");
-        MultipartUploadManager::new(&state_dir)
-            .expect("Failed to initialize multipart upload manager")
+        let manager = MultipartUploadManager::new(&state_dir)
+            .expect("Failed to initialize multipart upload manager");
+        
+        // Load persisted states on initialization
+        let manager_clone = &manager;
+        tokio::spawn(async move {
+            if let Err(e) = manager_clone.load_states().await {
+                error!("Failed to load persisted upload states: {}", e);
+            }
+        });
+        
+        manager
     })
 }
 

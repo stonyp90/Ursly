@@ -2018,6 +2018,13 @@ export function FinderPage({
         });
 
         try {
+          console.log('[FinderPage] Calling vfs_start_multipart_upload with:', {
+            sourceId: selectedSource.id,
+            localPath,
+            s3Path,
+            partSize: null,
+          });
+
           const uploadId = await invoke<string>('vfs_start_multipart_upload', {
             sourceId: selectedSource.id,
             localPath,
@@ -2025,7 +2032,10 @@ export function FinderPage({
             partSize: null, // Use default 5MB
           });
 
-          console.log('[FinderPage] Upload started, ID:', uploadId);
+          console.log(
+            '[FinderPage] Upload started successfully, ID:',
+            uploadId,
+          );
 
           setActiveUploads((prev) => new Set([...prev, uploadId]));
 
@@ -2035,8 +2045,9 @@ export function FinderPage({
           });
         } catch (err) {
           console.error('[FinderPage] Failed to start upload:', err);
+          const errorMessage = err instanceof Error ? err.message : String(err);
           DialogService.error(
-            `Failed to upload ${fileName}: ${err}`,
+            `Failed to upload ${fileName}: ${errorMessage}`,
             'Upload Error',
           );
         }
