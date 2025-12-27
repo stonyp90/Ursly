@@ -59,6 +59,10 @@
   text-align: center;
 }
 
+.upload-status-widget:has(.upload-status-item-failed) .upload-status-badge {
+  background: var(--vfs-error, #ff453a);
+}
+
 .upload-status-chevron {
   width: 12px;
   height: 12px;

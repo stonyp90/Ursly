@@ -136,8 +136,10 @@ export const UploadStatusWidget: React.FC = () => {
             <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
           </svg>
           <span className="upload-status-title">Uploads</span>
-          {activeUploads.length > 0 && (
-            <span className="upload-status-badge">{activeUploads.length}</span>
+          {(activeUploads.length > 0 || failedUploads.length > 0) && (
+            <span className="upload-status-badge">
+              {activeUploads.length + failedUploads.length}
+            </span>
           )}
         </div>
         <svg
