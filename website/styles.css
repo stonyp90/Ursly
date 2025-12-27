@@ -740,6 +740,7 @@ body.theme-light .mobile-menu-theme-toggle .theme-icon-dark {
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   align-items: center;
+  padding: var(--section-padding) var(--container-padding);
   overflow: visible;
   position: relative;
   padding: calc(var(--nav-height) + 40px) 24px 40px;
@@ -3844,6 +3845,16 @@ body.theme-light .mobile-menu-theme-toggle .theme-icon-dark {
     line-height: 1.6;
   }
 
+  /* Improved margins for hero section on mobile */
+  .hero {
+    padding: calc(var(--nav-height) + 24px) 20px 32px !important;
+    margin-bottom: 24px;
+  }
+
+  .hero-content {
+    padding: 0 4px; /* Add small horizontal padding for better spacing */
+  }
+
   .section-title {
     font-size: 1.75rem;
     line-height: 1.3;
@@ -4122,11 +4133,18 @@ body.theme-light .mobile-menu-theme-toggle .theme-icon-dark {
   }
 
   .stat-value {
-    font-size: 1rem;
+    font-size: 1.5rem !important; /* Increased from 1rem - zoomed for mobile */
+    transform: scale(1.2); /* Additional zoom effect */
+    transform-origin: center;
   }
 
   .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.9rem !important; /* Increased from 0.75rem */
+  }
+
+  .stat {
+    transform: scale(1.1); /* Scale entire stat block */
+    transform-origin: center;
   }
 
   /* Better badge display */
