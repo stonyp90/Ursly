@@ -291,6 +291,42 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
   const [config, setConfig] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
+  // Debug logging
+  React.useEffect(() => {
+    if (isOpen) {
+      console.log('[AddStorageModal] Modal opened');
+    }
+  }, [isOpen]);
+
+  // Handle paste events - ensure clipboard works from outside the app
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>, fieldKey?: string) => {
+      try {
+        // Read text from clipboard event
+        const pastedText =
+          e.clipboardData.getData('text/plain') ||
+          e.clipboardData.getData('text');
+
+        if (pastedText && pastedText.trim()) {
+          // Prevent default to handle paste manually (more reliable in Tauri)
+          e.preventDefault();
+
+          if (fieldKey) {
+            // Update specific config field
+            setConfig((prev) => ({ ...prev, [fieldKey]: pastedText.trim() }));
+          } else {
+            // Update display name
+            setName(pastedText.trim());
+          }
+        }
+      } catch (err) {
+        console.error('[AddStorageModal] Error handling paste:', err);
+        // Fallback: let browser handle paste normally
+      }
+    },
+    [],
+  );
+
   if (!isOpen) return null;
 
   const handleProviderSelect = (
@@ -342,38 +378,19 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
   };
 
   const handleClose = () => {
-    setStep('select');
-    setSelectedProvider(null);
-    setSelectedCategory(null);
-    setName('');
-    setConfig({});
-    setError(null);
-    onClose();
+    try {
+      setStep('select');
+      setSelectedProvider(null);
+      setSelectedCategory(null);
+      setName('');
+      setConfig({});
+      setError(null);
+      onClose();
+    } catch (err) {
+      console.error('[AddStorageModal] Error closing modal:', err);
+      onClose(); // Still try to close
+    }
   };
-
-  // Handle paste events - ensure clipboard works from outside the app
-  const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLInputElement>, fieldKey?: string) => {
-      // Read text from clipboard event
-      const pastedText =
-        e.clipboardData.getData('text/plain') ||
-        e.clipboardData.getData('text');
-
-      if (pastedText && pastedText.trim()) {
-        // Prevent default to handle paste manually (more reliable in Tauri)
-        e.preventDefault();
-
-        if (fieldKey) {
-          // Update specific config field
-          setConfig((prev) => ({ ...prev, [fieldKey]: pastedText.trim() }));
-        } else {
-          // Update display name
-          setName(pastedText.trim());
-        }
-      }
-    },
-    [],
-  );
 
   const fields = selectedProvider
     ? PROVIDER_FIELDS[selectedProvider] || []
@@ -394,7 +411,13 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
         right: 0,
         bottom: 0,
         zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-storage-title"
     >
       <div
         className="add-storage-modal"
@@ -402,10 +425,12 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
         style={{
           position: 'relative',
           zIndex: 10001,
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <div className="modal-header">
-          <h2>
+          <h2 id="add-storage-title">
             {step === 'select' ? 'Add Storage' : `Configure ${providerName}`}
           </h2>
           <button className="close-btn" onClick={handleClose}>

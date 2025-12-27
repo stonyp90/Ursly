@@ -43,10 +43,12 @@
         rgba(var(--vfs-primary-rgb, var(--primary-rgb, 10, 132, 255)), 0.15)
     );
   overflow: hidden;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   animation: slideIn 0.25s
     var(--vfs-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  position: relative;
+  z-index: 10001;
 }
 
 @keyframes slideIn {

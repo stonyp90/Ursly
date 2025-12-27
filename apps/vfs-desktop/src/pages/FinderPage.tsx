@@ -2843,7 +2843,10 @@ export function FinderPage({
           <div className="sidebar-section">
             <button
               className="add-storage-btn"
-              onClick={() => setShowAddStorage(true)}
+              onClick={() => {
+                console.log('[FinderPage] Add Storage button clicked');
+                setShowAddStorage(true);
+              }}
               title="Add Storage"
             >
               <span className="add-icon">+</span>
@@ -4192,11 +4195,16 @@ export function FinderPage({
       )}
 
       {/* Add Storage Modal */}
-      <AddStorageModal
-        isOpen={showAddStorage}
-        onClose={() => setShowAddStorage(false)}
-        onAdd={handleAddStorage}
-      />
+      {showAddStorage && (
+        <AddStorageModal
+          isOpen={showAddStorage}
+          onClose={() => {
+            console.log('[FinderPage] Closing Add Storage modal');
+            setShowAddStorage(false);
+          }}
+          onAdd={handleAddStorage}
+        />
+      )}
 
       {/* Spotlight Search */}
       <SpotlightSearch
