@@ -133,7 +133,13 @@ function App() {
 
             <AutoUpdater />
 
-            <OnboardingTour autoStart={true} />
+            <OnboardingTour
+              autoStart={true}
+              onComplete={() => {
+                // Navigate to files tab (main FS page) when tour completes
+                setActiveTab('files');
+              }}
+            />
           </div>
         </ErrorDialogProvider>
       </ToastProvider>
