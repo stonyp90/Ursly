@@ -7,13 +7,13 @@
 .add-storage-overlay {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, var(--background, #1c1c1e) 40%, transparent);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 10000;
   animation: fadeIn 0.2s
     var(--vfs-ease-out-quart, cubic-bezier(0.25, 1, 0.5, 1));
 }

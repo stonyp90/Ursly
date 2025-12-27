@@ -384,8 +384,26 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     )?.name || 'Storage';
 
   return (
-    <div className="add-storage-overlay" onClick={handleClose}>
-      <div className="add-storage-modal" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="add-storage-overlay"
+      onClick={handleClose}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 10000,
+      }}
+    >
+      <div
+        className="add-storage-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          zIndex: 10001,
+        }}
+      >
         <div className="modal-header">
           <h2>
             {step === 'select' ? 'Add Storage' : `Configure ${providerName}`}
