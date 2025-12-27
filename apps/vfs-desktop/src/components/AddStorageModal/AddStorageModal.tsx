@@ -7,7 +7,7 @@
  * - Hybrid: FSx ONTAP, NetApp
  * - Custom: User-defined providers
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StorageCategory, StorageSource } from '../../types/storage';
 import {
   IconCloud,
@@ -351,6 +351,41 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     onClose();
   };
 
+  // Handle paste events - ensure clipboard works from outside the app
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>, fieldKey?: string) => {
+      // Don't prevent default - let the browser handle it naturally
+      // The onChange handler will fire automatically
+      // This ensures paste works from any source (browser, text editor, etc.)
+
+      // However, we can also read from clipboardData as a backup
+      const pastedText =
+        e.clipboardData.getData('text/plain') ||
+        e.clipboardData.getData('text');
+
+      if (pastedText) {
+        // Small delay to ensure the input value is updated after browser's default paste
+        setTimeout(() => {
+          if (fieldKey) {
+            setConfig((prev) => {
+              // Only update if the value hasn't been set by onChange
+              if (!prev[fieldKey] || prev[fieldKey] !== pastedText.trim()) {
+                return { ...prev, [fieldKey]: pastedText.trim() };
+              }
+              return prev;
+            });
+          } else {
+            // For display name, update if different
+            if (name !== pastedText.trim()) {
+              setName(pastedText.trim());
+            }
+          }
+        }, 0);
+      }
+    },
+    [name],
+  );
+
   const fields = selectedProvider
     ? PROVIDER_FIELDS[selectedProvider] || []
     : [];
@@ -418,11 +453,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  onPaste={(e) => {
-                    e.preventDefault();
-                    const pastedText = e.clipboardData.getData('text');
-                    setName(pastedText);
-                  }}
+                  onPaste={(e) => handlePaste(e)}
                   placeholder={`My ${providerName}`}
                 />
               </div>
@@ -440,11 +471,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                     onChange={(e) =>
                       setConfig({ ...config, [field.key]: e.target.value })
                     }
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      const pastedText = e.clipboardData.getData('text');
-                      setConfig({ ...config, [field.key]: pastedText });
-                    }}
+                    onPaste={(e) => handlePaste(e, field.key)}
                     placeholder={field.placeholder}
                   />
                 </div>
