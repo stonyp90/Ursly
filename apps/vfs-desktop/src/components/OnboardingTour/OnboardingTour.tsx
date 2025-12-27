@@ -204,6 +204,14 @@ export function OnboardingTour({
           setRun(false);
           localStorage.setItem(STORAGE_KEY, 'true');
 
+          // Navigate to files tab (main FS page) when tour completes
+          const filesTab = document.querySelector(
+            '.header-tab:not([data-tab="metrics"]):not([data-tab="settings"])',
+          ) as HTMLElement;
+          if (filesTab && !filesTab.classList.contains('active')) {
+            filesTab.click();
+          }
+
           if (status === STATUS.FINISHED) {
             onComplete?.();
           } else {
@@ -220,9 +228,19 @@ export function OnboardingTour({
               setStepIndex(index + 1);
             });
           } else {
+            // Last step - "Get Started" clicked
             requestAnimationFrame(() => {
               setRun(false);
               localStorage.setItem(STORAGE_KEY, 'true');
+
+              // Navigate to files tab (main FS page)
+              const filesTab = document.querySelector(
+                '.header-tab:not([data-tab="metrics"]):not([data-tab="settings"])',
+              ) as HTMLElement;
+              if (filesTab && !filesTab.classList.contains('active')) {
+                filesTab.click();
+              }
+
               onComplete?.();
             });
           }
