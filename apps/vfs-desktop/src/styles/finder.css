@@ -980,6 +980,7 @@
 .storage-info-popover {
   min-width: 260px;
   max-width: 320px;
+  width: 320px;
   background: var(--vfs-bg-secondary);
   border: 1px solid var(--vfs-border);
   border-radius: var(--finder-radius-lg, 12px);
@@ -988,6 +989,9 @@
   z-index: 1000;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
 }
 
 /* Hero Section - Icon + Name */
@@ -1111,6 +1115,26 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2, 8px);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.storage-info-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.storage-info-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.storage-info-grid::-webkit-scrollbar-thumb {
+  background: var(--vfs-border);
+  border-radius: var(--radius-sm, 4px);
+}
+
+.storage-info-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--vfs-border-hover);
 }
 
 .storage-info-grid .info-row {
@@ -1198,6 +1222,7 @@
   padding: var(--space-3, 12px) var(--space-4, 16px);
   border-top: 1px solid var(--vfs-separator);
   background: var(--vfs-bg-tertiary);
+  flex-shrink: 0;
 }
 
 .storage-action-btn {
