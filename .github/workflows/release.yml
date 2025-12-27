@@ -201,6 +201,42 @@ jobs:
           echo "=== Downloaded artifacts ==="
           find artifacts -type f
           echo "==========================="
+          
+      - name: Verify all artifacts exist
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Verifying artifacts for version: $VERSION"
+          
+          MISSING=0
+          
+          if [ ! -f "artifacts/macos/ursly-vfs.dmg" ]; then
+            echo "❌ Missing: artifacts/macos/ursly-vfs.dmg"
+            MISSING=1
+          else
+            echo "✅ Found: artifacts/macos/ursly-vfs.dmg"
+          fi
+          
+          if [ ! -f "artifacts/windows/ursly-vfs.msi" ]; then
+            echo "❌ Missing: artifacts/windows/ursly-vfs.msi"
+            MISSING=1
+          else
+            echo "✅ Found: artifacts/windows/ursly-vfs.msi"
+          fi
+          
+          if [ ! -f "artifacts/linux/ursly-vfs.AppImage" ]; then
+            echo "❌ Missing: artifacts/linux/ursly-vfs.AppImage"
+            MISSING=1
+          else
+            echo "✅ Found: artifacts/linux/ursly-vfs.AppImage"
+          fi
+          
+          if [ $MISSING -eq 1 ]; then
+            echo "⚠️ Some artifacts are missing. Listing all files:"
+            find artifacts -type f -exec ls -lh {} \;
+            exit 1
+          fi
+          
+          echo "✅ All artifacts verified successfully"
 
       - name: Get version
         id: version
@@ -252,6 +288,7 @@ jobs:
             artifacts/windows/ursly-vfs.msi
             artifacts/linux/ursly-vfs.AppImage
             apps/vfs-desktop/latest.json
+          fail_on_unmatched_files: false
           body: |
             ## Ursly VFS ${{ steps.version.outputs.version }}
             
