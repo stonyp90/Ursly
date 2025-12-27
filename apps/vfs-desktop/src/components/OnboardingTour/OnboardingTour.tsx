@@ -22,7 +22,6 @@ const TOUR_STEPS: Step[] = [
     target: '.action-pill.search',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">🔍</div>
         <h3>Instant Spotlight Search</h3>
         <p>
           Press <kbd>Cmd+K</kbd> (Mac) or <kbd>Ctrl+K</kbd> (Windows/Linux) to
@@ -44,7 +43,6 @@ const TOUR_STEPS: Step[] = [
     target: '.header-tab[data-tab="metrics"]',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">📊</div>
         <h3>Real-Time System Metrics</h3>
         <p>
           Click the <strong>Metrics</strong> tab to monitor system performance
@@ -65,7 +63,6 @@ const TOUR_STEPS: Step[] = [
     target: '.action-pill.shortcuts',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">⌨️</div>
         <h3>Keyboard-First Navigation</h3>
         <p>
           Ursly VFS is designed for keyboard productivity. Press <kbd>?</kbd>{' '}
@@ -85,7 +82,6 @@ const TOUR_STEPS: Step[] = [
     target: '.header-tab[data-tab="settings"]',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">⚙️</div>
         <h3>Settings & Customization</h3>
         <p>
           Click the <strong>Settings</strong> tab to customize your experience.
@@ -106,7 +102,6 @@ const TOUR_STEPS: Step[] = [
     target: '.favorites-section',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">⭐</div>
         <h3>Quick Access Favorites</h3>
         <p>
           Drag any file or folder here to add it to favorites for instant
@@ -126,7 +121,6 @@ const TOUR_STEPS: Step[] = [
     target: '.finder-content, .file-browser',
     content: (
       <div className="tour-step-content">
-        <div className="tour-step-icon">📁</div>
         <h3>Unified File Browser</h3>
         <p>
           This is your main workspace. Browse files across all storage sources
@@ -352,7 +346,7 @@ export function OnboardingTour({
             primaryColor: 'var(--primary, #0a84ff)',
             textColor: 'var(--text-primary, #f5f5f7)',
             backgroundColor: 'var(--surface, #1e1e1e)',
-            overlayColor: 'rgba(0, 0, 0, 0.35)',
+            overlayColor: 'rgba(0, 0, 0, 0.15)',
             arrowColor: 'var(--surface, #1e1e1e)',
             zIndex: 10002,
             beaconSize: 36,
