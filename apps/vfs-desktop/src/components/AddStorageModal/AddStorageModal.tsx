@@ -24,6 +24,7 @@ interface AddStorageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (source: Partial<StorageSource>) => void;
+  editingSource?: StorageSource | null;
 }
 
 // Helper to get provider icon component
@@ -282,6 +283,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
   isOpen,
   onClose,
   onAdd,
+  editingSource,
 }) => {
   const [step, setStep] = useState<'select' | 'configure'>('select');
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
@@ -298,28 +300,21 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     }
   }, [isOpen]);
 
-  // Handle paste events - only intercept for cross-app pastes in Tauri
-  const handlePaste = useCallback(
-    async (e: React.ClipboardEvent<HTMLInputElement>, fieldKey?: string) => {
-      // Check if clipboard event has data (native paste works)
-      const hasData =
-        e.clipboardData.getData('text/plain') ||
-        e.clipboardData.getData('text');
+  // Handle keyboard paste (Cmd+V/Ctrl+V)
+  const handleKeyboardPaste = useCallback(
+    async (e: React.KeyboardEvent<HTMLInputElement>, fieldKey?: string) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const isPasteKey =
+        (isMac && e.metaKey && e.key === 'v') ||
+        (!isMac && e.ctrlKey && e.key === 'v');
 
-      // If clipboard event has data, let native paste work completely
-      if (hasData && hasData.trim()) {
-        // Don't do anything - let browser handle native paste
-        return;
-      }
+      if (!isPasteKey) return;
 
-      // Only intercept if clipboard event has no data (cross-app paste in Tauri)
       try {
-        e.preventDefault();
-        e.stopPropagation();
-
         if (navigator.clipboard && navigator.clipboard.readText) {
           const pastedText = await navigator.clipboard.readText();
           if (pastedText && pastedText.trim()) {
+            e.preventDefault();
             const trimmedText = pastedText.trim();
             if (fieldKey) {
               setConfig((prev) => ({ ...prev, [fieldKey]: trimmedText }));
@@ -329,12 +324,32 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
           }
         }
       } catch (clipboardErr) {
-        console.warn('[AddStorageModal] Cross-app paste failed:', clipboardErr);
-        // Don't prevent default on error - let browser try
+        console.warn('[AddStorageModal] Keyboard paste failed:', clipboardErr);
+        // Let native paste work if clipboard API fails
       }
     },
     [],
   );
+
+  // Initialize form when editing
+  React.useEffect(() => {
+    if (isOpen && editingSource) {
+      setStep('configure');
+      setSelectedProvider(editingSource.providerId);
+      setSelectedCategory(editingSource.category);
+      setName(editingSource.name);
+      setConfig(editingSource.config as Record<string, string>);
+      setError(null);
+    } else if (isOpen && !editingSource) {
+      // Reset form when opening for new source
+      setStep('select');
+      setSelectedProvider(null);
+      setSelectedCategory(null);
+      setName('');
+      setConfig({});
+      setError(null);
+    }
+  }, [isOpen, editingSource]);
 
   if (!isOpen) return null;
 
@@ -345,7 +360,9 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     setSelectedProvider(providerId);
     setSelectedCategory(category);
     setStep('configure');
-    setConfig({});
+    if (!editingSource) {
+      setConfig({});
+    }
     setError(null);
   };
 
@@ -374,7 +391,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     }
 
     const source: Partial<StorageSource> = {
-      id: `${selectedProvider}-${Date.now()}`,
+      id: editingSource?.id || `${selectedProvider}-${Date.now()}`,
       name: name.trim(),
       providerId: selectedProvider,
       category: selectedCategory,
@@ -420,7 +437,11 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
       <div className="add-storage-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 id="add-storage-title">
-            {step === 'select' ? 'Add Storage' : `Configure ${providerName}`}
+            {editingSource
+              ? `Edit ${editingSource.name}`
+              : step === 'select'
+                ? 'Add Storage'
+                : `Configure ${providerName}`}
           </h2>
           <button className="close-btn" onClick={handleClose}>
             ×
@@ -474,6 +495,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  onKeyDown={(e) => handleKeyboardPaste(e)}
                   placeholder={`My ${providerName}`}
                 />
               </div>
@@ -491,6 +513,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                     onChange={(e) =>
                       setConfig({ ...config, [field.key]: e.target.value })
                     }
+                    onKeyDown={(e) => handleKeyboardPaste(e, field.key)}
                     placeholder={field.placeholder}
                   />
                 </div>
@@ -513,7 +536,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
           </button>
           {step === 'configure' && (
             <button className="add-btn" onClick={handleSubmit}>
-              Add Storage
+              {editingSource ? 'Save Changes' : 'Add Storage'}
             </button>
           )}
         </div>

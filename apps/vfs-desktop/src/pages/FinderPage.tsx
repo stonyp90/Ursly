@@ -78,6 +78,9 @@ export function FinderPage({
   const [loading, setLoading] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [showAddStorage, setShowAddStorage] = useState(false);
+  const [editingSource, setEditingSource] = useState<StorageSource | null>(
+    null,
+  );
   const [showHiddenFiles, setShowHiddenFiles] = useState(false);
   const [activeUploads, setActiveUploads] = useState<Set<string>>(new Set());
   const [warmProgress, setWarmProgress] = useState<
@@ -552,13 +555,63 @@ export function FinderPage({
     return thumbnailTypes.includes(ext);
   };
 
+  // Load storage sources from localStorage on mount
+  const loadPersistedSources = () => {
+    try {
+      const stored = localStorage.getItem('ursly-storage-sources');
+      if (stored) {
+        const parsed = JSON.parse(stored) as StorageSource[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Restore sources from localStorage
+          setSources(parsed);
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load persisted sources:', err);
+    }
+    return null;
+  };
+
+  // Save storage sources to localStorage
+  const savePersistedSources = (sourcesList: StorageSource[]) => {
+    try {
+      // Don't persist system locations or ejectable volumes
+      const toPersist = sourcesList.filter(
+        (s) => !s.isSystemLocation && !s.isEjectable,
+      );
+      localStorage.setItem('ursly-storage-sources', JSON.stringify(toPersist));
+    } catch (err) {
+      console.error('Failed to save persisted sources:', err);
+    }
+  };
+
   const loadSourcesList = async () => {
     try {
+      // First try to load from localStorage
+      const persisted = loadPersistedSources();
+
+      // Then load from backend (this will include system locations)
       const list = await StorageService.listSources();
-      setSources(list);
+
+      // Merge persisted sources with backend sources
+      const persistedIds = new Set(persisted?.map((s) => s.id) || []);
+      const backendIds = new Set(list.map((s) => s.id));
+
+      // Add persisted sources that aren't in backend (user-added sources)
+      const merged = [...list];
+      persisted?.forEach((source) => {
+        if (!backendIds.has(source.id)) {
+          merged.push(source);
+        }
+      });
+
+      setSources(merged);
+      savePersistedSources(merged);
+
       // Only auto-select first source if nothing is selected
-      if (list.length > 0 && !selectedSource) {
-        const firstSource = list[0];
+      if (merged.length > 0 && !selectedSource) {
+        const firstSource = merged[0];
         setSelectedSource(firstSource);
         // Explicitly load files for initial source
         // (since useEffect won't trigger - prevSourceIdRef is null initially)
@@ -1747,21 +1800,68 @@ export function FinderPage({
     try {
       const { invoke } = await import('@tauri-apps/api/core');
 
-      // Register the new storage source with the backend
-      const newSource = await invoke<StorageSource>('vfs_add_source', {
-        source: sourceConfig,
-      });
+      if (editingSource) {
+        // Update existing source
+        // First remove the old source
+        await invoke('vfs_remove_source', { sourceId: editingSource.id });
 
-      // Add to sources list
-      setSources((prev) => [...prev, newSource]);
+        // Then add the updated source
+        const updatedSource = await invoke<StorageSource>('vfs_add_source', {
+          source: sourceConfig,
+        });
 
-      // Optionally select the new source
-      setSelectedSource(newSource);
-      setCurrentPath('/');
+        // Update in sources list
+        setSources((prev) =>
+          prev.map((s) => (s.id === editingSource.id ? updatedSource : s)),
+        );
+
+        // Update selection if this was the selected source
+        if (selectedSource?.id === editingSource.id) {
+          setSelectedSource(updatedSource);
+        }
+
+        toast.showToast({
+          type: 'success',
+          message: `Updated ${updatedSource.name}`,
+        });
+      } else {
+        // Add new source
+        const newSource = await invoke<StorageSource>('vfs_add_source', {
+          source: sourceConfig,
+        });
+
+        // Add to sources list
+        setSources((prev) => {
+          const updated = [...prev, newSource];
+          savePersistedSources(updated);
+          return updated;
+        });
+
+        // Optionally select the new source
+        setSelectedSource(newSource);
+        setCurrentPath('/');
+
+        toast.showToast({
+          type: 'success',
+          message: `Added ${newSource.name}`,
+        });
+      }
+
+      setEditingSource(null);
     } catch (err) {
-      console.error('Failed to add storage:', err);
-      DialogService.error(`Failed to add storage: ${err}`, 'Storage Error');
+      console.error('Failed to add/update storage:', err);
+      DialogService.error(
+        `Failed to ${editingSource ? 'update' : 'add'} storage: ${err}`,
+        'Storage Error',
+      );
     }
+  };
+
+  // Handle editing a storage source
+  const handleEditStorage = (source: StorageSource) => {
+    setEditingSource(source);
+    setShowAddStorage(true);
+    setStorageContextMenu(null);
   };
 
   // Handle removing a storage source
@@ -1781,7 +1881,11 @@ export function FinderPage({
       await invoke('vfs_remove_source', { sourceId });
 
       // Remove from sources list
-      setSources((prev) => prev.filter((s) => s.id !== sourceId));
+      setSources((prev) => {
+        const updated = prev.filter((s) => s.id !== sourceId);
+        savePersistedSources(updated);
+        return updated;
+      });
 
       // If the removed source was selected, clear selection
       if (selectedSource?.id === sourceId) {
@@ -4128,6 +4232,20 @@ export function FinderPage({
               </svg>
               Open
             </button>
+            {/* Don't show edit/remove for system locations */}
+            {!storageContextMenu.source.isSystemLocation && (
+              <button
+                className="storage-action-btn"
+                onClick={() => {
+                  handleEditStorage(storageContextMenu.source);
+                }}
+              >
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                </svg>
+                Edit
+              </button>
+            )}
             <button
               className="storage-action-btn"
               onClick={() => {
@@ -4297,8 +4415,10 @@ export function FinderPage({
           onClose={() => {
             console.log('[FinderPage] Closing Add Storage modal');
             setShowAddStorage(false);
+            setEditingSource(null);
           }}
           onAdd={handleAddStorage}
+          editingSource={editingSource}
         />
       )}
 
