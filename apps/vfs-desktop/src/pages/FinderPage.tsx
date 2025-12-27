@@ -1772,6 +1772,7 @@ export function FinderPage({
         message: `Are you sure you want to remove this storage source? This will not delete any files, only remove it from the list.`,
         okLabel: 'Remove',
         cancelLabel: 'Cancel',
+        type: 'warning',
       });
 
       if (!confirmed) return;
