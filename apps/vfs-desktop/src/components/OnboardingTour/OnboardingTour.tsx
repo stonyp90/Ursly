@@ -308,19 +308,29 @@ export function OnboardingTour({
                 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
               metricsTab.click();
             }
-            // Wait for metrics page to load before highlighting settings button
-            // Use a longer timeout to ensure metrics page is fully rendered
+            // Wait for metrics page to fully render (including data loading)
+            // Use a longer delay to ensure page is visible and not in loading state
             setTimeout(() => {
-              const settingsBtn = document.querySelector(
-                '.metrics-header .settings-btn',
-              ) as HTMLElement;
-              if (settingsBtn) {
-                settingsBtn.scrollIntoView({
-                  block: 'nearest',
-                  behavior: 'smooth',
-                });
+              const metricsPage = document.querySelector('.metrics-page');
+              const loadingState = document.querySelector('.metrics-loading');
+              const errorState = document.querySelector('.metrics-error');
+
+              // Only proceed if page is rendered and not in loading/error state
+              if (metricsPage && !loadingState && !errorState) {
+                // Wait a bit more for settings button to be available
+                setTimeout(() => {
+                  const settingsBtn = document.querySelector(
+                    '.metrics-header .settings-btn',
+                  ) as HTMLElement;
+                  if (settingsBtn) {
+                    settingsBtn.scrollIntoView({
+                      block: 'nearest',
+                      behavior: 'smooth',
+                    });
+                  }
+                }, 200);
               }
-            }, 500);
+            }, 1200);
           }
         });
       }
