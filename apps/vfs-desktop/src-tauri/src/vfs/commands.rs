@@ -3699,7 +3699,69 @@ fn get_upload_manager() -> &'static MultipartUploadManager {
     })
 }
 
-/// Start a multipart upload to S3
+/// Helper function to create OpenDAL operator for object storage (S3, GCS, Azure)
+fn create_object_storage_operator(
+    source: &crate::vfs::domain::StorageSource,
+) -> Result<opendal::Operator, String> {
+    use opendal::Operator;
+    
+    match source.source_type {
+        crate::vfs::domain::StorageSourceType::S3 => {
+            use opendal::services::S3;
+            let mut builder = S3::default();
+            builder.bucket(&source.config.path_or_bucket);
+            if let Some(region) = &source.config.region {
+                builder.region(region);
+            }
+            if let Some(ak) = &source.config.access_key {
+                builder.access_key_id(ak);
+            }
+            if let Some(sk) = &source.config.secret_key {
+                builder.secret_access_key(sk);
+            }
+            if let Some(ep) = &source.config.endpoint {
+                builder.endpoint(ep);
+            }
+            Ok(Operator::new(builder)
+                .map_err(|e| format!("Failed to create S3 operator: {}", e))?
+                .finish())
+        }
+        crate::vfs::domain::StorageSourceType::Gcs => {
+            use opendal::services::Gcs;
+            let mut builder = Gcs::default();
+            builder.bucket(&source.config.path_or_bucket);
+            // GCS uses credentials_path from config if available
+            if let Some(creds) = &source.config.endpoint {
+                // Using endpoint field to store credentials path for GCS
+                builder.credential_path(creds);
+            }
+            Ok(Operator::new(builder)
+                .map_err(|e| format!("Failed to create GCS operator: {}", e))?
+                .finish())
+        }
+        crate::vfs::domain::StorageSourceType::AzureBlob => {
+            use opendal::services::Azblob;
+            let mut builder = Azblob::default();
+            // Azure uses account_name and container
+            // account_name is typically in path_or_bucket, container in region field
+            builder.account_name(&source.config.path_or_bucket);
+            if let Some(container) = &source.config.region {
+                builder.container(container);
+            }
+            if let Some(ak) = &source.config.access_key {
+                builder.account_key(ak);
+            }
+            Ok(Operator::new(builder)
+                .map_err(|e| format!("Failed to create Azure Blob operator: {}", e))?
+                .finish())
+        }
+        _ => {
+            return Err(format!("Multipart upload not supported for storage type: {:?}", source.source_type));
+        }
+    }
+}
+
+/// Start a multipart upload to object storage (S3, GCS, Azure)
 #[tauri::command]
 pub async fn vfs_start_multipart_upload(
     source_id: String,
@@ -3711,40 +3773,22 @@ pub async fn vfs_start_multipart_upload(
     let service = state.get_service()
         .ok_or_else(|| "VFS not initialized".to_string())?;
     
-    // Get the source and verify it's S3
+    // Get the source
     let source = service.get_source(&source_id)
         .ok_or_else(|| "Storage source not found".to_string())?;
     
-    if source.source_type != crate::vfs::domain::StorageSourceType::S3 {
-        return Err("Multipart upload is only supported for S3 storage".to_string());
+    // Verify it's an object storage type
+    match source.source_type {
+        crate::vfs::domain::StorageSourceType::S3
+        | crate::vfs::domain::StorageSourceType::Gcs
+        | crate::vfs::domain::StorageSourceType::AzureBlob => {}
+        _ => {
+            return Err("Multipart upload is only supported for S3, GCS, and Azure Blob storage".to_string());
+        }
     }
     
-    // We'll create the operator from source config since we can't access the adapter directly
-    
     // Create operator from source config
-    let operator = {
-        use opendal::services::S3;
-        use opendal::Operator;
-        
-        let mut builder = S3::default();
-        builder.bucket(&source.config.path_or_bucket);
-        if let Some(region) = &source.config.region {
-            builder.region(region);
-        }
-        if let Some(ak) = &source.config.access_key {
-            builder.access_key_id(ak);
-        }
-        if let Some(sk) = &source.config.secret_key {
-            builder.secret_access_key(sk);
-        }
-        if let Some(ep) = &source.config.endpoint {
-            builder.endpoint(ep);
-        }
-        
-        Operator::new(builder)
-            .map_err(|e| format!("Failed to create S3 operator: {}", e))?
-            .finish()
-    };
+    let operator = create_object_storage_operator(&source)?;
     
     let manager = get_upload_manager();
         let upload_id = manager.start_upload(
@@ -3799,30 +3843,8 @@ pub async fn vfs_resume_upload(
     let source = service.get_source(source_id)
         .ok_or_else(|| "Storage source not found".to_string())?;
     
-    // Recreate operator (same as in start_upload)
-    let operator = {
-        use opendal::services::S3;
-        use opendal::Operator;
-        
-        let mut builder = S3::default();
-        builder.bucket(&source.config.path_or_bucket);
-        if let Some(region) = &source.config.region {
-            builder.region(region);
-        }
-        if let Some(ak) = &source.config.access_key {
-            builder.access_key_id(ak);
-        }
-        if let Some(sk) = &source.config.secret_key {
-            builder.secret_access_key(sk);
-        }
-        if let Some(ep) = &source.config.endpoint {
-            builder.endpoint(ep);
-        }
-        
-        Operator::new(builder)
-            .map_err(|e| format!("Failed to create S3 operator: {}", e))?
-            .finish()
-    };
+    // Recreate operator using helper function
+    let operator = create_object_storage_operator(&source)?;
     
     manager.resume_upload(&operator, &upload_id).await
         .map_err(|e| format!("Failed to resume upload: {}", e))?;
@@ -3863,29 +3885,7 @@ pub async fn vfs_cancel_upload(
     let source = service.get_source(source_id)
         .ok_or_else(|| "Storage source not found".to_string())?;
     
-    let operator = {
-        use opendal::services::S3;
-        use opendal::Operator;
-        
-        let mut builder = S3::default();
-        builder.bucket(&source.config.path_or_bucket);
-        if let Some(region) = &source.config.region {
-            builder.region(region);
-        }
-        if let Some(ak) = &source.config.access_key {
-            builder.access_key_id(ak);
-        }
-        if let Some(sk) = &source.config.secret_key {
-            builder.secret_access_key(sk);
-        }
-        if let Some(ep) = &source.config.endpoint {
-            builder.endpoint(ep);
-        }
-        
-        Operator::new(builder)
-            .map_err(|e| format!("Failed to create S3 operator: {}", e))?
-            .finish()
-    };
+    let operator = create_object_storage_operator(&source)?;
     
     manager.cancel_upload(&operator, &upload_id).await
         .map_err(|e| format!("Failed to cancel upload: {}", e))?;

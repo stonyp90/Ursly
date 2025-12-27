@@ -53,6 +53,11 @@ impl GcsStorageAdapter {
         })
     }
     
+    /// Get the OpenDAL operator (for multipart uploads)
+    pub fn operator(&self) -> &Operator {
+        &self.operator
+    }
+    
     /// Convert path to GCS key
     fn to_key(&self, path: &Path) -> String {
         path.strip_prefix("/")
