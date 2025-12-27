@@ -153,6 +153,42 @@
   color: var(--vfs-text-muted, #8e8e93);
   margin-bottom: var(--space-2, 8px);
   padding: 0 var(--space-1, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upload-status-view-all-btn,
+.upload-status-view-less-btn {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--vfs-primary, #6366f1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm, 4px);
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.upload-status-view-all-btn:hover,
+.upload-status-view-less-btn:hover {
+  background: rgba(var(--vfs-primary-rgb, 99, 102, 241), 0.1);
+}
+
+.upload-status-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+  flex-shrink: 0;
+}
+
+.upload-status-timestamp {
+  font-size: 9px;
+  color: var(--vfs-text-muted, #8e8e93);
+  font-weight: 400;
 }
 
 .upload-status-item {

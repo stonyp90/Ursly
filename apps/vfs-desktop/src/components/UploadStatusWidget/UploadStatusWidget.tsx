@@ -4,7 +4,7 @@
  * Compact widget showing upload progress and recent completions
  * Designed to be integrated into the FS view sidebar
  */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import './UploadStatusWidget.css';
 
@@ -27,32 +27,57 @@ interface UploadState {
   error?: string;
   speed_bytes_per_sec?: number;
   eta_seconds?: number;
+  created_at?: string;
+  completed_at?: string;
+  last_updated_at?: string;
 }
 
-export const UploadStatusWidget: React.FC = () => {
+interface UploadStatusWidgetProps {
+  onUploadComplete?: () => void;
+}
+
+export const UploadStatusWidget: React.FC<UploadStatusWidgetProps> = ({
+  onUploadComplete,
+}) => {
   const [uploads, setUploads] = useState<UploadState[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [recentCompletions, setRecentCompletions] = useState<UploadState[]>([]);
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const prevCompletedCount = useRef(0);
 
   const loadUploads = useCallback(async () => {
     try {
       const uploadList = await invoke<UploadState[]>('vfs_list_uploads');
       setUploads(uploadList);
 
-      // Track recent completions (last 5 completed uploads, max 5 minutes old)
-      const now = Date.now();
-      const recent = uploadList
+      // Track recent completions (last 5 completed uploads, sorted by completion time)
+      const completed = uploadList
         .filter((u) => u.status === 'Completed')
-        .slice(-5)
-        .filter((u) => {
-          // Keep completions for 5 minutes
-          return true; // We'll track by keeping last 5
-        });
-      setRecentCompletions(recent);
+        .sort((a, b) => {
+          const aTime =
+            a.completed_at || a.last_updated_at || a.created_at || '';
+          const bTime =
+            b.completed_at || b.last_updated_at || b.created_at || '';
+          return bTime.localeCompare(aTime); // Most recent first
+        })
+        .slice(0, 5);
+      setRecentCompletions(completed);
+
+      // Trigger refresh if a new upload completed
+      const currentCompletedCount = uploadList.filter(
+        (u) => u.status === 'Completed',
+      ).length;
+      if (
+        currentCompletedCount > prevCompletedCount.current &&
+        onUploadComplete
+      ) {
+        onUploadComplete();
+      }
+      prevCompletedCount.current = currentCompletedCount;
     } catch (err) {
       console.error('Failed to load uploads:', err);
     }
-  }, []);
+  }, [onUploadComplete]);
 
   useEffect(() => {
     loadUploads();
@@ -92,6 +117,26 @@ export const UploadStatusWidget: React.FC = () => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}m ${s}s`;
+  };
+
+  const formatTimestamp = (timestamp?: string): string => {
+    if (!timestamp) return '';
+    try {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString();
+    } catch {
+      return '';
+    }
   };
 
   const getFileName = (upload: UploadState): string => {
@@ -274,9 +319,37 @@ export const UploadStatusWidget: React.FC = () => {
           {/* Recent Completions */}
           {recentCompletions.length > 0 && (
             <div className="upload-status-section">
-              <div className="upload-status-section-header">Completed</div>
-              {recentCompletions.map((upload) => {
+              <div className="upload-status-section-header">
+                Completed
+                {!showAllHistory && (
+                  <button
+                    className="upload-status-view-all-btn"
+                    onClick={() => setShowAllHistory(true)}
+                  >
+                    View All
+                  </button>
+                )}
+              </div>
+              {(showAllHistory
+                ? uploads
+                    .filter((u) => u.status === 'Completed')
+                    .sort((a, b) => {
+                      const aTime =
+                        a.completed_at ||
+                        a.last_updated_at ||
+                        a.created_at ||
+                        '';
+                      const bTime =
+                        b.completed_at ||
+                        b.last_updated_at ||
+                        b.created_at ||
+                        '';
+                      return bTime.localeCompare(aTime);
+                    })
+                : recentCompletions
+              ).map((upload) => {
                 const fileName = getFileName(upload);
+                const percentage = getProgressPercentage(upload);
                 return (
                   <div
                     key={upload.upload_id}
@@ -286,20 +359,37 @@ export const UploadStatusWidget: React.FC = () => {
                       <span className="upload-status-filename" title={fileName}>
                         {fileName}
                       </span>
-                      <svg
-                        className="upload-status-success-icon"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                      >
-                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                      </svg>
+                      <div className="upload-status-item-meta">
+                        {upload.completed_at && (
+                          <span className="upload-status-timestamp">
+                            {formatTimestamp(upload.completed_at)}
+                          </span>
+                        )}
+                        <svg
+                          className="upload-status-success-icon"
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                        >
+                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                        </svg>
+                      </div>
                     </div>
                     <div className="upload-status-item-details">
                       <span>{formatBytes(upload.total_size)}</span>
+                      <span className="upload-status-separator">•</span>
+                      <span>{percentage}%</span>
                     </div>
                   </div>
                 );
               })}
+              {showAllHistory && (
+                <button
+                  className="upload-status-view-less-btn"
+                  onClick={() => setShowAllHistory(false)}
+                >
+                  Show Less
+                </button>
+              )}
             </div>
           )}
         </div>

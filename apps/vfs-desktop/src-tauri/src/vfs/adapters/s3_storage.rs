@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use async_trait::async_trait;
 use opendal::services::S3;
 use opendal::Operator;
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use tracing::{debug, error, info, warn};
@@ -51,10 +52,18 @@ impl S3StorageAdapter {
             builder.endpoint(&ep);
         }
         
-        let operator = Operator::new(builder)?
+        let operator = Operator::new(builder)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "Failed to create S3 operator for bucket '{}' in region '{}': {}. \
+                    Check that bucket name, region, and credentials are correct.",
+                    bucket, region, e
+                )
+            })?
             .finish();
         
-        info!("S3 adapter initialized for bucket: {}", bucket);
+        info!("S3 adapter initialized - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}, endpoint: {:?}", 
+            bucket, region, access_key.is_some(), secret_key.is_some(), endpoint);
         
         Ok(Self {
             operator,
@@ -113,29 +122,93 @@ impl StorageAdapter for S3StorageAdapter {
     
     async fn list_files(&self, path: &Path) -> Result<Vec<VirtualFile>> {
         let key = self.to_key(path);
+        // For root path, use empty string; otherwise add trailing slash for prefix
         let prefix = if key.is_empty() { String::new() } else { format!("{}/", key) };
         
-        debug!("Listing S3 objects with prefix: {}", prefix);
+        info!("[S3] Listing files - bucket: {}, region: {}, path: {:?}, key: '{}', prefix: '{}'", 
+            self.bucket, self.region, path, key, prefix);
         
-        let entries = self.operator.list(&prefix).await?;
+        // OpenDAL's list() returns all entries with the given prefix
+        // We need to filter to only immediate children
+        let entries = self.operator.list(&prefix).await
+            .with_context(|| {
+                format!(
+                    "Failed to list S3 objects in bucket '{}' (region: {}) with prefix '{}'. \
+                    Check IAM permissions: s3:ListBucket on bucket, s3:GetObject on objects. \
+                    Verify bucket name, region, and credentials are correct.",
+                    self.bucket, self.region, prefix
+                )
+            })?;
+        
+        info!("[S3] Received {} entries from OpenDAL", entries.len());
+        
         let mut files = Vec::new();
+        let mut seen_names = HashSet::new();
         
-        for entry in entries {
-            let name = entry.name().to_string();
-            
-            // Skip the directory itself
-            if name.is_empty() || name == "/" {
-                continue;
-            }
-            
+        for (idx, entry) in entries.iter().enumerate() {
+            let entry_name = entry.name().to_string();
             let metadata = entry.metadata();
             let is_dir = metadata.is_dir();
             let size = metadata.content_length();
             
-            let file_path = PathBuf::from("/").join(&prefix).join(&name);
+            info!("[S3] Entry {}: name='{}', is_dir={}, size={}", idx, entry_name, is_dir, size);
+            
+            // Skip empty entries
+            if entry_name.is_empty() || entry_name == "/" {
+                debug!("[S3] Skipping empty entry");
+                continue;
+            }
+            
+            // Skip if entry name exactly matches prefix (this is the directory itself)
+            if entry_name == prefix {
+                debug!("[S3] Skipping prefix directory: '{}'", entry_name);
+                continue;
+            }
+            
+            // Extract immediate child name
+            // OpenDAL returns full paths from bucket root
+            // At root (prefix=""), entries are like "file.txt" or "folder/"
+            // In subdirectory (prefix="folder/"), entries are like "folder/file.txt" or "folder/subfolder/"
+            let child_name = if !prefix.is_empty() && entry_name.starts_with(&prefix) {
+                // Remove prefix: "folder/file.txt" -> "file.txt"
+                let relative = entry_name.strip_prefix(&prefix).unwrap_or(&entry_name);
+                // Get first component only (immediate child)
+                let first_part = relative.split('/').next().unwrap_or(relative);
+                first_part.trim_end_matches('/')
+            } else if prefix.is_empty() {
+                // At root: entry_name is "file.txt" or "folder/" - use as-is
+                entry_name.split('/').next().unwrap_or(&entry_name).trim_end_matches('/')
+            } else {
+                // Entry doesn't match prefix - log warning but don't skip (might be a bug in our logic)
+                warn!("[S3] Entry '{}' doesn't start with prefix '{}' - checking anyway", entry_name, prefix);
+                // Try to extract anyway
+                entry_name.split('/').last().unwrap_or(&entry_name).trim_end_matches('/')
+            };
+            
+            if child_name.is_empty() {
+                warn!("[S3] Entry '{}' resulted in empty child name, skipping", entry_name);
+                continue;
+            }
+            
+            // Deduplicate by child name
+            if seen_names.contains(child_name) {
+                debug!("[S3] Skipping duplicate child: '{}' (from entry '{}')", child_name, entry_name);
+                continue;
+            }
+            seen_names.insert(child_name.to_string());
+            
+            // Build file path relative to current path
+            let file_path = if path.as_os_str().is_empty() || path == Path::new("/") {
+                PathBuf::from("/").join(child_name)
+            } else {
+                path.join(child_name)
+            };
+            
+            info!("[S3] ✓ Adding: child='{}', path={:?}, is_dir={}, size={}", 
+                child_name, file_path, is_dir, size);
             
             let mut vfile = VirtualFile::new(
-                name.trim_end_matches('/').to_string(),
+                child_name.to_string(),
                 file_path,
                 size,
                 is_dir,
@@ -153,6 +226,8 @@ impl StorageAdapter for S3StorageAdapter {
             
             files.push(vfile);
         }
+        
+        info!("[S3] Returning {} files after processing {} entries", files.len(), entries.len());
         
         // Sort: directories first, then by name
         files.sort_by(|a, b| {

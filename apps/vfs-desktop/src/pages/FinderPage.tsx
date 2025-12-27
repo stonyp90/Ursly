@@ -575,16 +575,120 @@ export function FinderPage({
   };
 
   // Save storage sources to localStorage
+  // SECURITY: Never persist credentials (accessKeyId, secretAccessKey, passwords, tokens)
   const savePersistedSources = (sourcesList: StorageSource[]) => {
     try {
       // Don't persist system locations or ejectable volumes
-      const toPersist = sourcesList.filter(
-        (s) => !s.isSystemLocation && !s.isEjectable,
-      );
+      const toPersist = sourcesList
+        .filter((s) => !s.isSystemLocation && !s.isEjectable)
+        .map((source) => {
+          // Remove sensitive credentials before persisting
+          const { config, ...sourceWithoutConfig } = source;
+          const safeConfig: Record<string, unknown> = { ...config };
+
+          // Remove all credential fields
+          const credentialFields = [
+            'accessKeyId',
+            'secretAccessKey',
+            'password',
+            'token',
+            'apiKey',
+            'secret',
+            'credential',
+            'accessKey',
+            'secretKey',
+            'authToken',
+            'bearerToken',
+          ];
+
+          credentialFields.forEach((field) => {
+            delete safeConfig[field];
+            delete safeConfig[field.toLowerCase()];
+            delete safeConfig[field.toUpperCase()];
+          });
+
+          return {
+            ...sourceWithoutConfig,
+            config: safeConfig,
+          };
+        });
+
       localStorage.setItem('ursly-storage-sources', JSON.stringify(toPersist));
     } catch (err) {
       console.error('Failed to save persisted sources:', err);
     }
+  };
+
+  // Helper function to infer providerId from source data
+  const inferProviderId = (source: StorageSource): string | null => {
+    // If providerId exists, use it
+    if (source.providerId) {
+      return source.providerId;
+    }
+
+    // Try to infer from category and config
+    if (source.category === 'cloud') {
+      // Check config for hints
+      const config = source.config || {};
+      if (config.endpoint && config.endpoint.includes('googleapis.com')) {
+        return 'gcs';
+      }
+      if (
+        config.endpoint &&
+        config.endpoint.includes('blob.core.windows.net')
+      ) {
+        return 'azure-blob';
+      }
+      // Default to S3 for cloud storage
+      return 'aws-s3';
+    }
+
+    // Try to infer from deprecated type field
+    if (source.type) {
+      const typeMap: Record<string, string> = {
+        s3: 'aws-s3',
+        'aws-s3': 'aws-s3',
+        gcs: 'gcs',
+        'azure-blob': 'azure-blob',
+        local: 'local',
+        nfs: 'nfs',
+        smb: 'smb',
+        sftp: 'sftp',
+      };
+      return typeMap[source.type] || source.type;
+    }
+
+    // Try to infer from category
+    const categoryMap: Record<string, string> = {
+      cloud: 'aws-s3',
+      local: 'local',
+      network: 'smb',
+    };
+    return categoryMap[source.category] || null;
+  };
+
+  // Helper function to generate a unique key for a source (for deduplication)
+  const getSourceUniqueKey = (source: StorageSource): string => {
+    const providerId =
+      source.providerId || inferProviderId(source) || 'unknown';
+
+    // For object storage (S3, GCS, Azure), use bucket + region + endpoint
+    if (
+      source.category === 'cloud' ||
+      providerId === 's3' ||
+      providerId === 'aws-s3' ||
+      providerId === 'gcs' ||
+      providerId === 'azure-blob'
+    ) {
+      const bucket =
+        source.config?.bucket || source.bucket || source.config?.path || '';
+      const region = source.config?.region || source.region || '';
+      const endpoint = source.config?.endpoint || '';
+      return `${providerId}:${bucket}:${region}:${endpoint}`.toLowerCase();
+    }
+    // For local/network storage, use path
+    const path = source.config?.path || source.path || '';
+    return `${providerId}:${path}`.toLowerCase();
   };
 
   const loadSourcesList = async () => {
@@ -595,60 +699,190 @@ export function FinderPage({
       // Then load from backend (this will include system locations)
       const list = await StorageService.listSources();
 
-      // Merge persisted sources with backend sources
-      const persistedIds = new Set(persisted?.map((s) => s.id) || []);
-      const backendIds = new Set(list.map((s) => s.id));
+      // Deduplicate backend sources first (in case backend has duplicates)
+      const backendUniqueKeys = new Map<string, StorageSource>();
+      for (const source of list) {
+        const key = getSourceUniqueKey(source);
+        // Keep the first occurrence, or prefer non-system locations
+        if (
+          !backendUniqueKeys.has(key) ||
+          (!source.isSystemLocation &&
+            backendUniqueKeys.get(key)?.isSystemLocation)
+        ) {
+          backendUniqueKeys.set(key, source);
+        }
+      }
+      const deduplicatedBackend = Array.from(backendUniqueKeys.values());
+      const backendIds = new Set(deduplicatedBackend.map((s) => s.id));
 
       // Re-add persisted sources that aren't in backend (user-added sources)
       // This ensures they're available for operations like upload
       const { invoke } = await import('@tauri-apps/api/core');
-      const merged = [...list];
+      const merged: StorageSource[] = [...deduplicatedBackend];
+      const mergedKeys = new Set(
+        deduplicatedBackend.map((s) => getSourceUniqueKey(s)),
+      );
 
       if (persisted) {
+        // Deduplicate persisted sources first
+        const persistedUnique = new Map<string, StorageSource>();
         for (const source of persisted) {
-          if (!backendIds.has(source.id)) {
-            try {
-              // Re-add the source to backend
-              const reAddedSource = await invoke<StorageSource>(
-                'vfs_add_source',
-                {
-                  source: {
-                    providerId: source.providerId,
-                    name: source.name,
-                    category: source.category,
-                    config: source.config,
-                  },
-                },
+          const key = getSourceUniqueKey(source);
+          if (!persistedUnique.has(key)) {
+            persistedUnique.set(key, source);
+          }
+        }
+
+        for (const source of persistedUnique.values()) {
+          const sourceKey = getSourceUniqueKey(source);
+
+          // Skip if already in merged list (by unique key)
+          if (mergedKeys.has(sourceKey)) {
+            console.log(
+              '[FinderPage] Skipping duplicate persisted source:',
+              source.name,
+            );
+            continue;
+          }
+
+          // Skip if already in backend (by ID)
+          if (backendIds.has(source.id)) {
+            console.log(
+              '[FinderPage] Skipping persisted source already in backend:',
+              source.name,
+            );
+            continue;
+          }
+
+          // Infer providerId if missing
+          const providerId = source.providerId || inferProviderId(source);
+          if (!providerId) {
+            console.warn(
+              '[FinderPage] Cannot re-add persisted source (missing providerId):',
+              source.name,
+              'Category:',
+              source.category,
+            );
+            // Skip this source - it can't be re-added without a providerId
+            continue;
+          }
+
+          // Validate required config fields based on provider
+          const config = source.config || {};
+          if (
+            providerId === 'aws-s3' ||
+            providerId === 'gcs' ||
+            providerId === 'azure-blob'
+          ) {
+            const bucket = config.bucket || config.path;
+            if (!bucket) {
+              console.warn(
+                '[FinderPage] Cannot re-add persisted source (missing bucket/path):',
+                source.name,
               );
+              continue;
+            }
+          }
+
+          try {
+            // Re-add the source to backend with inferred providerId
+            const reAddedSource = await invoke<StorageSource>(
+              'vfs_add_source',
+              {
+                source: {
+                  providerId,
+                  name: source.name,
+                  category: source.category,
+                  config: source.config || {},
+                },
+              },
+            );
+
+            // Check if re-added source is a duplicate
+            const reAddedKey = getSourceUniqueKey(reAddedSource);
+            if (!mergedKeys.has(reAddedKey)) {
               merged.push(reAddedSource);
+              mergedKeys.add(reAddedKey);
               console.log(
                 '[FinderPage] Re-added persisted source to backend:',
                 reAddedSource.name,
+                'ProviderId:',
+                providerId,
+                // Note: Credentials are not logged for security
               );
-            } catch (err) {
-              console.error(
-                '[FinderPage] Failed to re-add persisted source:',
-                source.name,
-                err,
+            } else {
+              console.log(
+                '[FinderPage] Re-added source is duplicate, skipping:',
+                reAddedSource.name,
               );
-              // Still add to merged list even if re-add fails (for display purposes)
-              merged.push(source);
             }
+          } catch (err) {
+            console.error(
+              '[FinderPage] Failed to re-add persisted source:',
+              source.name,
+              'ProviderId:',
+              providerId,
+              'Error:',
+              err,
+            );
+            // Don't add failed sources to merged list - they're invalid
           }
         }
       }
 
-      setSources(merged);
-      savePersistedSources(merged);
+      // Final deduplication pass to ensure no duplicates
+      const finalDeduplicated = new Map<string, StorageSource>();
+      for (const source of merged) {
+        const key = getSourceUniqueKey(source);
+        // Prefer sources that are not system locations
+        if (
+          !finalDeduplicated.has(key) ||
+          (!source.isSystemLocation &&
+            finalDeduplicated.get(key)?.isSystemLocation)
+        ) {
+          finalDeduplicated.set(key, source);
+        }
+      }
 
-      // Only auto-select first source if nothing is selected
-      if (merged.length > 0 && !selectedSource) {
-        const firstSource = merged[0];
-        setSelectedSource(firstSource);
-        // Explicitly load files for initial source
-        // (since useEffect won't trigger - prevSourceIdRef is null initially)
-        prevSourceIdRef.current = firstSource.id;
-        await loadFilesList(firstSource.id, '');
+      const finalSources = Array.from(finalDeduplicated.values());
+      console.log(
+        `[FinderPage] Loaded ${finalSources.length} unique sources (removed ${merged.length - finalSources.length} duplicates)`,
+      );
+
+      setSources(finalSources);
+      savePersistedSources(finalSources);
+
+      // Only auto-select first valid source if nothing is selected
+      if (finalSources.length > 0 && !selectedSource) {
+        // Find first source that has valid configuration
+        const validSource = finalSources.find((s) => {
+          // For cloud storage, ensure bucket is configured
+          if (
+            s.category === 'cloud' ||
+            s.providerId === 'aws-s3' ||
+            s.providerId === 'gcs' ||
+            s.providerId === 'azure-blob'
+          ) {
+            const config = s.config || {};
+            return !!(config.bucket || config.path);
+          }
+          // For local/network storage, ensure path is configured
+          if (s.category === 'local' || s.category === 'network') {
+            const config = s.config || {};
+            return !!(config.path || s.path);
+          }
+          return true; // Assume valid for other types
+        });
+
+        if (validSource) {
+          setSelectedSource(validSource);
+          // Explicitly load files for initial source
+          // (since useEffect won't trigger - prevSourceIdRef is null initially)
+          prevSourceIdRef.current = validSource.id;
+          await loadFilesList(validSource.id, '');
+        } else {
+          console.warn('[FinderPage] No valid sources found to auto-select');
+        }
       }
     } catch (err) {
       console.error('Failed to load sources:', err);
@@ -656,10 +890,52 @@ export function FinderPage({
   };
 
   const loadFilesList = async (sourceId: string, path: string) => {
+    // Validate source exists before trying to list files
+    const source = sources.find((s) => s.id === sourceId);
+    if (!source) {
+      console.warn('[VFS] Cannot load files: source not found:', sourceId);
+      setFiles([]);
+      setLoading(false);
+      return;
+    }
+
+    // Validate source has required config for cloud storage
+    if (
+      source.category === 'cloud' ||
+      source.providerId === 'aws-s3' ||
+      source.providerId === 'gcs' ||
+      source.providerId === 'azure-blob'
+    ) {
+      const config = source.config || {};
+      const bucket = config.bucket || config.path;
+      if (!bucket) {
+        // SECURITY: Never log full source object as it may contain credentials
+        console.error(
+          '[VFS] Cannot load files: source missing bucket/path:',
+          source.name,
+        );
+        DialogService.error(
+          `Storage source "${source.name}" is not properly configured. Please edit or remove it.`,
+          'Configuration Error',
+        );
+        setFiles([]);
+        setLoading(false);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      const list = await StorageService.listFiles(sourceId, path);
+      const normalizedPath = path || '';
+      console.log(
+        '[VFS] Loading files for source:',
+        sourceId,
+        'Path:',
+        normalizedPath || '(root)',
+      );
+      const list = await StorageService.listFiles(sourceId, normalizedPath);
       setFiles(list);
+      console.log('[VFS] Loaded', list.length, 'files');
 
       // Load thumbnails for image/video files in the background
       if (viewMode === 'icon') {
@@ -668,6 +944,15 @@ export function FinderPage({
     } catch (err) {
       console.error('[VFS] Failed to load files:', err);
       setFiles([]);
+      // Show user-friendly error message
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      if (!errorMessage.includes('Missing providerId')) {
+        // Don't show error for providerId issues (already handled above)
+        DialogService.error(
+          `Failed to load files: ${errorMessage}`,
+          'Load Error',
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -1948,7 +2233,12 @@ export function FinderPage({
       return;
     }
 
-    console.log('[FinderPage] Selected source:', selectedSource);
+    // SECURITY: Never log source config as it may contain credentials
+    console.log(
+      '[FinderPage] Selected source:',
+      selectedSource?.name,
+      selectedSource?.id,
+    );
 
     const storageType =
       selectedSource.providerId || selectedSource.type || 'local';
@@ -3180,7 +3470,14 @@ export function FinderPage({
           {onOpenMetrics && <MetricsPreview onOpenMetrics={onOpenMetrics} />}
 
           {/* Upload Status Widget */}
-          <UploadStatusWidget />
+          <UploadStatusWidget
+            onUploadComplete={() => {
+              // Refresh file list when upload completes
+              if (selectedSource) {
+                loadFilesList(selectedSource.id, currentPath);
+              }
+            }}
+          />
         </aside>
 
         {/* Main Content */}

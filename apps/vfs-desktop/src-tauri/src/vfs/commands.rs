@@ -553,9 +553,33 @@ pub async fn vfs_list_files(
     let service = state.get_service()
         .ok_or_else(|| "VFS not initialized".to_string())?;
     
+    // Get source info for better error messages
+    let source = service.get_source(&source_id)
+        .ok_or_else(|| format!("Storage source not found: {}", source_id))?;
+    
+    info!("[vfs_list_files] Source: {} (type: {:?}, bucket: {}, region: {:?})", 
+        source.name, source.source_type, source.config.path_or_bucket, source.config.region);
+    
     let files = service.list_files(&source_id, std::path::Path::new(&path))
         .await
-        .map_err(|e| format!("Failed to list files: {}", e))?;
+        .map_err(|e| {
+            let error_msg = format!("Failed to list files: {}", e);
+            // Add helpful IAM permission hints for S3 errors
+            if matches!(source.source_type, crate::vfs::domain::StorageSourceType::S3) {
+                format!(
+                    "{}\n\nTroubleshooting:\n\
+                    - Verify bucket name: '{}'\n\
+                    - Verify region: '{}'\n\
+                    - Check IAM permissions: s3:ListBucket on bucket, s3:GetObject on objects\n\
+                    - Verify AWS credentials are valid and not expired\n\
+                    - Check bucket exists and is accessible",
+                    error_msg, source.config.path_or_bucket, 
+                    source.config.region.as_deref().unwrap_or("us-east-1")
+                )
+            } else {
+                error_msg
+            }
+        })?;
     
     info!("vfs_list_files: found {} files", files.len());
     
@@ -3720,10 +3744,15 @@ fn create_object_storage_operator(
         crate::vfs::domain::StorageSourceType::S3 => {
             use opendal::services::S3;
             let mut builder = S3::default();
-            builder.bucket(&source.config.path_or_bucket);
-            if let Some(region) = &source.config.region {
-                builder.region(region);
-            }
+            let bucket = &source.config.path_or_bucket;
+            builder.bucket(bucket);
+            
+            let region = source.config.region.as_deref().unwrap_or("us-east-1");
+            builder.region(region);
+            
+            let has_access_key = source.config.access_key.is_some();
+            let has_secret_key = source.config.secret_key.is_some();
+            
             if let Some(ak) = &source.config.access_key {
                 builder.access_key_id(ak);
             }
@@ -3733,9 +3762,20 @@ fn create_object_storage_operator(
             if let Some(ep) = &source.config.endpoint {
                 builder.endpoint(ep);
             }
-            Ok(Operator::new(builder)
-                .map_err(|e| format!("Failed to create S3 operator: {}", e))?
-                .finish())
+            
+            info!("[create_object_storage_operator] Creating S3 operator - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}", 
+                bucket, region, has_access_key, has_secret_key);
+            
+            Operator::new(builder)
+                .map_err(|e| {
+                    format!(
+                        "Failed to create S3 operator for bucket '{}' in region '{}': {}. \
+                        Check bucket name, region, and credentials. \
+                        Required IAM permissions: s3:ListBucket, s3:GetObject",
+                        bucket, region, e
+                    )
+                })
+                .map(|op| op.finish())
         }
         crate::vfs::domain::StorageSourceType::Gcs => {
             use opendal::services::Gcs;
@@ -3833,12 +3873,9 @@ pub async fn vfs_start_multipart_upload(
         if let Err(e) = manager_clone.upload_chunks(&operator_clone, &upload_id_clone).await {
             error!("Multipart upload failed: {}", e);
             // Update state to failed - upload_chunks should handle this, but ensure it's set
-            let mut uploads = manager_clone.uploads.write().await;
-            if let Some(state) = uploads.get_mut(&upload_id_clone) {
-                state.status = crate::vfs::multipart_upload::UploadStatus::Failed;
-                state.error = Some(e.to_string());
-            }
-            drop(uploads);
+            // We'll update it via a method call instead of direct access
+            // The upload_chunks method should have already updated the state, but we ensure it's saved
+            let _ = manager_clone.save_states().await;
             // Note: save_states is private, but upload_chunks should have already saved
         } else {
             info!("Upload completed successfully: {}", upload_id_clone);

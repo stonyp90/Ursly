@@ -110,6 +110,9 @@ impl VfsService {
     ) -> Result<StorageSource> {
         use crate::vfs::adapters::S3StorageAdapter;
         
+        info!("[add_s3_source] Creating S3 source - name: {}, bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}", 
+            name, bucket, region, access_key.is_some(), secret_key.is_some());
+        
         let adapter = Arc::new(
             S3StorageAdapter::new(
                 bucket.clone(),
@@ -118,8 +121,29 @@ impl VfsService {
                 secret_key.clone(),
                 endpoint.clone(),
                 name.clone(),
-            ).await?
+            ).await
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "Failed to create S3 adapter for bucket '{}' in region '{}': {}. \
+                    Verify bucket name, region, and credentials are correct.",
+                    bucket, region, e
+                )
+            })?
         );
+        
+        // Test connection to catch credential/permission issues early
+        info!("[add_s3_source] Testing S3 connection...");
+        match adapter.test_connection().await {
+            Ok(true) => {
+                info!("[add_s3_source] S3 connection test successful");
+            }
+            Ok(false) => {
+                warn!("[add_s3_source] S3 connection test returned false - credentials or permissions may be invalid");
+            }
+            Err(e) => {
+                warn!("[add_s3_source] S3 connection test failed: {} - continuing anyway", e);
+            }
+        }
         
         let source = StorageSource {
             id: uuid::Uuid::new_v4().to_string(),

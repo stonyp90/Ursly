@@ -46,6 +46,15 @@ pub struct MultipartUploadState {
     pub status: UploadStatus,
     /// Error message if failed
     pub error: Option<String>,
+    /// Timestamp when upload was created/started
+    #[serde(with = "chrono::serde::ts_seconds_option")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// Timestamp when upload was completed (or failed/canceled)
+    #[serde(with = "chrono::serde::ts_seconds_option")]
+    pub completed_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// Timestamp of last update (for tracking recent completions)
+    #[serde(with = "chrono::serde::ts_seconds_option")]
+    pub last_updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -110,7 +119,7 @@ impl MultipartUploadManager {
     }
     
     /// Save upload states to disk
-    async fn save_states(&self) -> Result<()> {
+    pub async fn save_states(&self) -> Result<()> {
         let uploads = self.uploads.read().await;
         let data = serde_json::to_string_pretty(&*uploads)?;
         tokio::fs::write(&self.state_file, data).await?;
@@ -133,6 +142,7 @@ impl MultipartUploadManager {
         
         let upload_id = Uuid::new_v4().to_string();
         
+        let now = chrono::Utc::now();
         let state = MultipartUploadState {
             upload_id: upload_id.clone(),
             source_id: source_id.to_string(),
@@ -146,6 +156,9 @@ impl MultipartUploadManager {
             bytes_uploaded: 0,
             status: UploadStatus::Pending,
             error: None,
+            created_at: Some(now),
+            completed_at: None,
+            last_updated_at: Some(now),
         };
         
         {
@@ -175,6 +188,7 @@ impl MultipartUploadManager {
         
         state.status = UploadStatus::InProgress;
         state.error = None;
+        state.last_updated_at = Some(chrono::Utc::now());
         drop(uploads);
         
         self.save_states().await?;
@@ -221,16 +235,33 @@ impl MultipartUploadManager {
         // Write using OpenDAL - it handles multipart internally for large files
         // OpenDAL automatically uses multipart upload APIs for S3/GCS/Azure when needed
         // No visible chunk files are created - chunks are handled internally
-        operator.write(&key, file_data).await?;
+        if let Err(e) = operator.write(&key, file_data).await {
+            // Update state to failed on error
+            {
+                let mut uploads = self.uploads.write().await;
+                if let Some(state) = uploads.get_mut(upload_id) {
+                    let now = chrono::Utc::now();
+                    state.status = UploadStatus::Failed;
+                    state.error = Some(e.to_string());
+                    state.completed_at = Some(now);
+                    state.last_updated_at = Some(now);
+                }
+            }
+            self.save_states().await?;
+            return Err(anyhow::anyhow!("Upload failed: {}", e));
+        }
         
         // Update progress during upload simulation (for UI feedback)
         // In reality, OpenDAL handles this internally
         {
             let mut uploads = self.uploads.write().await;
             let state = uploads.get_mut(upload_id).unwrap();
+            let now = chrono::Utc::now();
             state.bytes_uploaded = state.total_size;
             state.status = UploadStatus::Completed;
             state.current_part = state.total_parts;
+            state.completed_at = Some(now);
+            state.last_updated_at = Some(now);
         }
         self.save_states().await?;
         
@@ -296,6 +327,7 @@ impl MultipartUploadManager {
             .ok_or_else(|| anyhow::anyhow!("Upload not found"))?;
         
         state.status = UploadStatus::Paused;
+        state.last_updated_at = Some(chrono::Utc::now());
         drop(uploads);
         
         self.save_states().await?;

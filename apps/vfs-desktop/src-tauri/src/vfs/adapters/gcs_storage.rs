@@ -6,6 +6,7 @@ use anyhow::{Context, Result};
 use async_trait::async_trait;
 use opendal::services::Gcs;
 use opendal::Operator;
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use tracing::{debug, error, info, warn};
@@ -91,24 +92,72 @@ impl StorageAdapter for GcsStorageAdapter {
         let key = self.to_key(path);
         let prefix = if key.is_empty() { String::new() } else { format!("{}/", key) };
         
-        debug!("Listing GCS objects with prefix: {}", prefix);
+        info!("[GCS] Listing files - path: {:?}, key: '{}', prefix: '{}'", path, key, prefix);
         
-        let entries = self.operator.list(&prefix).await?;
+        let entries = self.operator.list(&prefix).await
+            .with_context(|| format!("Failed to list GCS objects with prefix: {}", prefix))?;
+        
+        info!("[GCS] Received {} entries from OpenDAL", entries.len());
+        
         let mut files = Vec::new();
+        let mut seen_names = HashSet::new();
         
-        for entry in entries {
-            let name = entry.name().to_string();
-            if name.is_empty() || name == "/" {
+        for (idx, entry) in entries.iter().enumerate() {
+            let entry_name = entry.name().to_string();
+            info!("[GCS] Entry {}: name='{}'", idx, entry_name);
+            
+            // Skip empty entries
+            if entry_name.is_empty() || entry_name == "/" {
+                debug!("[GCS] Skipping empty entry");
                 continue;
             }
+            
+            // Skip if entry name exactly matches prefix (this is the directory itself)
+            if entry_name == prefix {
+                debug!("[GCS] Skipping prefix directory: '{}'", entry_name);
+                continue;
+            }
+            
+            // Extract immediate child name
+            let child_name = if !prefix.is_empty() && entry_name.starts_with(&prefix) {
+                let relative = entry_name.strip_prefix(&prefix).unwrap_or(&entry_name);
+                let first_part = relative.split('/').next().unwrap_or(relative);
+                first_part.trim_end_matches('/')
+            } else if prefix.is_empty() {
+                entry_name.split('/').next().unwrap_or(&entry_name).trim_end_matches('/')
+            } else {
+                warn!("[GCS] Entry '{}' doesn't start with prefix '{}', skipping", entry_name, prefix);
+                continue;
+            };
+            
+            if child_name.is_empty() {
+                debug!("[GCS] Skipping entry with empty child name");
+                continue;
+            }
+            
+            // Deduplicate
+            if seen_names.contains(child_name) {
+                debug!("[GCS] Skipping duplicate child: '{}'", child_name);
+                continue;
+            }
+            seen_names.insert(child_name.to_string());
             
             let metadata = entry.metadata();
             let is_dir = metadata.is_dir();
             let size = metadata.content_length();
-            let file_path = PathBuf::from("/").join(&prefix).join(&name);
+            
+            // Build file path
+            let file_path = if path.as_os_str().is_empty() || path == Path::new("/") {
+                PathBuf::from("/").join(child_name)
+            } else {
+                path.join(child_name)
+            };
+            
+            info!("[GCS] ✓ Adding: child='{}', path={:?}, is_dir={}, size={}", 
+                child_name, file_path, is_dir, size);
             
             let mut vfile = VirtualFile::new(
-                name.trim_end_matches('/').to_string(),
+                child_name.to_string(),
                 file_path,
                 size,
                 is_dir,
@@ -124,6 +173,8 @@ impl StorageAdapter for GcsStorageAdapter {
             vfile.transcodable = vfile.can_transcode();
             files.push(vfile);
         }
+        
+        info!("[GCS] Returning {} files after processing {} entries", files.len(), entries.len());
         
         files.sort_by(|a, b| {
             match (a.is_directory, b.is_directory) {
