@@ -298,56 +298,39 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     }
   }, [isOpen]);
 
-  // Handle paste events - support both native and cross-app pastes
+  // Handle paste events - only intercept for cross-app pastes in Tauri
   const handlePaste = useCallback(
     async (e: React.ClipboardEvent<HTMLInputElement>, fieldKey?: string) => {
-      try {
-        // First try to read from clipboard event (works for native pastes)
-        let pastedText =
-          e.clipboardData.getData('text/plain') ||
-          e.clipboardData.getData('text');
+      // Check if clipboard event has data (native paste works)
+      const hasData =
+        e.clipboardData.getData('text/plain') ||
+        e.clipboardData.getData('text');
 
-        // If clipboard event has data, let native paste work normally
-        if (pastedText && pastedText.trim()) {
-          // Don't prevent default - let native paste work
-          // Just sync our state after native paste completes
-          const trimmedText = pastedText.trim();
-          setTimeout(() => {
+      // If clipboard event has data, let native paste work completely
+      if (hasData && hasData.trim()) {
+        // Don't do anything - let browser handle native paste
+        return;
+      }
+
+      // Only intercept if clipboard event has no data (cross-app paste in Tauri)
+      try {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const pastedText = await navigator.clipboard.readText();
+          if (pastedText && pastedText.trim()) {
+            const trimmedText = pastedText.trim();
             if (fieldKey) {
               setConfig((prev) => ({ ...prev, [fieldKey]: trimmedText }));
             } else {
               setName(trimmedText);
             }
-          }, 0);
-          return; // Native paste will handle it
-        }
-
-        // No data in clipboard event - need to use clipboard API (cross-app paste)
-        e.preventDefault();
-        e.stopPropagation();
-
-        try {
-          if (navigator.clipboard && navigator.clipboard.readText) {
-            pastedText = await navigator.clipboard.readText();
-            if (pastedText && pastedText.trim()) {
-              const trimmedText = pastedText.trim();
-              if (fieldKey) {
-                setConfig((prev) => ({ ...prev, [fieldKey]: trimmedText }));
-              } else {
-                setName(trimmedText);
-              }
-            }
           }
-        } catch (clipboardErr) {
-          console.warn(
-            '[AddStorageModal] Clipboard API not available:',
-            clipboardErr,
-          );
-          // Let browser handle paste normally if all else fails
         }
-      } catch (err) {
-        console.error('[AddStorageModal] Error handling paste:', err);
-        // Don't prevent default on error - let native paste work
+      } catch (clipboardErr) {
+        console.warn('[AddStorageModal] Cross-app paste failed:', clipboardErr);
+        // Don't prevent default on error - let browser try
       }
     },
     [],
@@ -499,7 +482,6 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                       );
                     });
                   }}
-                  onKeyDown={(e) => handleKeyboardPaste(e)}
                   placeholder={`My ${providerName}`}
                 />
               </div>
@@ -525,7 +507,6 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                         );
                       });
                     }}
-                    onKeyDown={(e) => handleKeyboardPaste(e, field.key)}
                     placeholder={field.placeholder}
                   />
                 </div>
