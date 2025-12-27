@@ -130,6 +130,7 @@ pub fn run() {
             // VFS Clean Architecture commands
             vfs::commands::vfs_init,
             vfs::commands::vfs_list_sources,
+            vfs::commands::vfs_add_source,
             vfs::commands::vfs_mount_local,
             vfs::commands::vfs_eject,
             vfs::commands::vfs_list_files,

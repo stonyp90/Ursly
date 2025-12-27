@@ -418,6 +418,11 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData('text');
+                    setName(pastedText);
+                  }}
                   placeholder={`My ${providerName}`}
                 />
               </div>
@@ -435,6 +440,11 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                     onChange={(e) =>
                       setConfig({ ...config, [field.key]: e.target.value })
                     }
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const pastedText = e.clipboardData.getData('text');
+                      setConfig({ ...config, [field.key]: pastedText });
+                    }}
                     placeholder={field.placeholder}
                   />
                 </div>
