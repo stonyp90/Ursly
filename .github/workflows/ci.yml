@@ -131,6 +131,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev
 
+      - name: Setup Windows environment
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          # Ensure PowerShell execution policy allows scripts
+          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+          # Display Windows version info for debugging
+          Write-Host "Windows Version:"
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
+          # Ensure MSVC tools are available
+          Write-Host "MSVC Tools:"
+          where.exe cl.exe 2>$null || Write-Host "MSVC tools will be installed by Rust toolchain"
+
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -158,6 +171,19 @@ jobs:
           VITE_API_URL: https://api.ursly.io
           VITE_WS_URL: wss://api.ursly.io
         continue-on-error: true
+
+      - name: Prepare Windows artifacts
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host "Preparing Windows artifacts..."
+          $bundlePath = "apps/vfs-desktop/src-tauri/target/release/bundle"
+          if (Test-Path $bundlePath) {
+            Write-Host "Bundle directory contents:"
+            Get-ChildItem -Path $bundlePath -Recurse -File | Select-Object FullName, Length | Format-Table
+          } else {
+            Write-Host "Warning: Bundle directory not found at $bundlePath"
+          }
 
       - name: Upload build artifacts
         if: always()
