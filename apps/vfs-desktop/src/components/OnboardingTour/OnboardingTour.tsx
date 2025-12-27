@@ -117,6 +117,7 @@ const TOUR_STEPS: Step[] = [
     placement: 'bottom',
     disableBeacon: true,
     disableOverlayClose: false,
+    disableScrolling: false,
   },
 ];
 
@@ -244,15 +245,38 @@ export function OnboardingTour({
           }
         }
       } else if (type === 'error:target_not_found') {
-        setTimeout(() => {
-          if (index < TOUR_STEPS.length - 1) {
-            setStepIndex(index + 1);
-          } else {
-            setRun(false);
-            localStorage.setItem(STORAGE_KEY, 'true');
-            onComplete?.();
-          }
-        }, 500);
+        // For Alert Thresholds step, wait longer and retry
+        if (step?.target === '.metrics-header .settings-btn') {
+          setTimeout(() => {
+            const settingsBtn = document.querySelector(
+              '.metrics-header .settings-btn',
+            );
+            if (settingsBtn) {
+              // Element found, retry current step
+              setStepIndex(index);
+            } else {
+              // Still not found, skip to next step
+              if (index < TOUR_STEPS.length - 1) {
+                setStepIndex(index + 1);
+              } else {
+                setRun(false);
+                localStorage.setItem(STORAGE_KEY, 'true');
+                onComplete?.();
+              }
+            }
+          }, 1000);
+        } else {
+          // For other steps, skip normally
+          setTimeout(() => {
+            if (index < TOUR_STEPS.length - 1) {
+              setStepIndex(index + 1);
+            } else {
+              setRun(false);
+              localStorage.setItem(STORAGE_KEY, 'true');
+              onComplete?.();
+            }
+          }, 500);
+        }
       } else if (type === 'step:before') {
         const step = TOUR_STEPS[index];
         requestAnimationFrame(() => {
@@ -283,19 +307,20 @@ export function OnboardingTour({
               metricsTab.style.transition =
                 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
               metricsTab.click();
-              // Wait for metrics page to load before highlighting settings button
-              setTimeout(() => {
-                const settingsBtn = document.querySelector(
-                  '.metrics-header .settings-btn',
-                ) as HTMLElement;
-                if (settingsBtn) {
-                  settingsBtn.scrollIntoView({
-                    block: 'nearest',
-                    behavior: 'smooth',
-                  });
-                }
-              }, 300);
             }
+            // Wait for metrics page to load before highlighting settings button
+            // Use a longer timeout to ensure metrics page is fully rendered
+            setTimeout(() => {
+              const settingsBtn = document.querySelector(
+                '.metrics-header .settings-btn',
+              ) as HTMLElement;
+              if (settingsBtn) {
+                settingsBtn.scrollIntoView({
+                  block: 'nearest',
+                  behavior: 'smooth',
+                });
+              }
+            }, 500);
           }
         });
       }
