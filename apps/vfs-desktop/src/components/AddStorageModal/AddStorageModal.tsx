@@ -133,6 +133,13 @@ const PROVIDER_FIELDS: Record<
       type: 'password',
       required: false,
     },
+    {
+      key: 'sessionToken',
+      label: 'Session Token (for temporary credentials)',
+      type: 'password',
+      required: false,
+      placeholder: 'Optional - required for temporary AWS credentials',
+    },
   ],
   gcs: [
     {

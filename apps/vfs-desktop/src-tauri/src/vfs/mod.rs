@@ -67,6 +67,9 @@ pub mod multipart_upload;
 // Operation tracker (uploads, downloads, deletes, etc.)
 pub mod operation_tracker;
 
+// Audit log (persistent audit trail for user and organization operations)
+pub mod audit_log;
+
 #[cfg(feature = "vfs")]
 pub use filesystem::UrslyFS;
 #[cfg(feature = "vfs")]

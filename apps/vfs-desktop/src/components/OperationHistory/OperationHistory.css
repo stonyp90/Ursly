@@ -1,0 +1,208 @@
+.operation-history {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.operation-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.operation-history-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  background: var(--surface-elevated, #14141c);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-primary, #e8e8f0);
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background: var(--surface-overlay, #1a1a24);
+  border-color: var(--primary, #00d4ff);
+  transform: rotate(180deg);
+}
+
+.operation-history-filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.04));
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #a0a0b0);
+}
+
+.filter-group select {
+  background: var(--surface-elevated, #14141c);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: var(--text-primary, #e8e8f0);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filter-group select:hover {
+  border-color: var(--border-hover, rgba(255, 255, 255, 0.15));
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary, #00d4ff);
+}
+
+.operation-count {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--text-muted, #6a6a7a);
+}
+
+.operation-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.operation-item {
+  background: var(--surface, #0e0e14);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.operation-item:hover {
+  border-color: var(--border-hover, rgba(255, 255, 255, 0.15));
+  background: var(--surface-elevated, #14141c);
+}
+
+.operation-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.operation-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.operation-icon {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+}
+
+.operation-type-name {
+  font-weight: 600;
+  color: var(--text-primary, #e8e8f0);
+}
+
+.operation-status {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.operation-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.operation-path {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #a0a0b0);
+  word-break: break-all;
+}
+
+.operation-path strong {
+  color: var(--text-primary, #e8e8f0);
+  margin-right: 8px;
+}
+
+.operation-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.operation-detail {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6a6a7a);
+}
+
+.operation-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--error, #ef4444);
+}
+
+.operation-error strong {
+  margin-right: 8px;
+}
+
+.operation-history-loading,
+.operation-history-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: var(--text-secondary, #a0a0b0);
+}
+
+.operation-history-error {
+  padding: 20px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: var(--error, #ef4444);
+}
+
+.operation-history-error button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--error, #ef4444);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.operation-history-error button:hover {
+  opacity: 0.9;
+}

@@ -106,12 +106,13 @@ impl VfsService {
         region: String,
         access_key: Option<String>,
         secret_key: Option<String>,
+        session_token: Option<String>,
         endpoint: Option<String>,
     ) -> Result<StorageSource> {
         use crate::vfs::adapters::S3StorageAdapter;
         
-        info!("[add_s3_source] Creating S3 source - name: {}, bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}", 
-            name, bucket, region, access_key.is_some(), secret_key.is_some());
+        info!("[add_s3_source] Creating S3 source - name: {}, bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}, has_session_token: {}", 
+            name, bucket, region, access_key.is_some(), secret_key.is_some(), session_token.is_some());
         
         let adapter = Arc::new(
             S3StorageAdapter::new(
@@ -119,6 +120,7 @@ impl VfsService {
                 region.clone(),
                 access_key.clone(),
                 secret_key.clone(),
+                session_token.clone(),
                 endpoint.clone(),
                 name.clone(),
             ).await
@@ -158,6 +160,7 @@ impl VfsService {
                 endpoint,
                 access_key,
                 secret_key,
+                session_token,
             },
         };
         

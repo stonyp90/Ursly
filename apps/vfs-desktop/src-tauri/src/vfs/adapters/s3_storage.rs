@@ -35,6 +35,7 @@ impl S3StorageAdapter {
         region: String,
         access_key: Option<String>,
         secret_key: Option<String>,
+        session_token: Option<String>,
         endpoint: Option<String>,
         name: String,
     ) -> Result<Self> {
@@ -45,12 +46,17 @@ impl S3StorageAdapter {
         // Use provided credentials, or fall back to environment variables
         let access_key = access_key.or_else(|| std::env::var("AWS_ACCESS_KEY_ID").ok());
         let secret_key = secret_key.or_else(|| std::env::var("AWS_SECRET_ACCESS_KEY").ok());
+        let session_token = session_token.or_else(|| std::env::var("AWS_SESSION_TOKEN").ok());
         
         if let Some(ref ak) = access_key {
             builder.access_key_id(ak);
         }
         if let Some(ref sk) = secret_key {
             builder.secret_access_key(sk);
+        }
+        // Set session token if provided (required for temporary credentials)
+        if let Some(ref st) = session_token {
+            builder.security_token(st);
         }
         if let Some(ref ep) = endpoint {
             builder.endpoint(ep);
@@ -68,8 +74,9 @@ impl S3StorageAdapter {
         
         let has_access_key = access_key.is_some();
         let has_secret_key = secret_key.is_some();
-        info!("S3 adapter initialized - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}, endpoint: {:?}", 
-            bucket, region, has_access_key, has_secret_key, endpoint);
+        let has_session_token = session_token.is_some();
+        info!("S3 adapter initialized - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}, has_session_token: {}, endpoint: {:?}", 
+            bucket, region, has_access_key, has_secret_key, has_session_token, endpoint);
         
         Ok(Self {
             operator,
@@ -141,7 +148,8 @@ impl StorageAdapter for S3StorageAdapter {
                 format!(
                     "Failed to list S3 objects in bucket '{}' (region: {}) with prefix '{}'. \
                     Check IAM permissions: s3:ListBucket on bucket, s3:GetObject on objects. \
-                    Verify bucket name, region, and credentials are correct.",
+                    Verify bucket name, region, and credentials are correct. \
+                    For temporary credentials, ensure AWS_SESSION_TOKEN is set.",
                     self.bucket, self.region, prefix
                 )
             })?;

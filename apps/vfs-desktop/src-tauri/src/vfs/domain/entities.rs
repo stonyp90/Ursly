@@ -398,6 +398,8 @@ pub struct StorageConfig {
     /// Access credentials
     pub access_key: Option<String>,
     pub secret_key: Option<String>,
+    /// AWS session token (for temporary credentials)
+    pub session_token: Option<String>,
 }
 
 impl Default for StorageConfig {
@@ -408,6 +410,7 @@ impl Default for StorageConfig {
             endpoint: None,
             access_key: None,
             secret_key: None,
+            session_token: None,
         }
     }
 }

@@ -2331,54 +2331,59 @@ export function FinderPage({
       const s3BasePath =
         currentPath === '/' ? '' : currentPath.replace(/^\//, '');
 
-      // Show folder dialog first (allows selecting folders)
-      // On macOS, you can select folders in this dialog
-      const folderResult = await open({
+      // Unified upload dialog: Show file dialog that allows selecting both files and folders
+      // On macOS/Windows, users can navigate to folders and select them, or use Cmd/Ctrl+Click
+      // We'll detect what was selected and handle accordingly
+      const fileResult = await open({
         multiple: true,
-        directory: true,
-        title: `Select folders to upload to ${selectedSource!.name} (or Cancel to select files)`,
+        directory: false, // File dialog, but we'll check for folders
+        title: `Select files and/or folders to upload to ${selectedSource!.name}`,
       });
 
-      // If folders were selected, process them
-      let folders: string[] = [];
+      if (!fileResult) {
+        return; // User canceled
+      }
+
+      const selectedPaths = Array.isArray(fileResult)
+        ? fileResult
+        : [fileResult];
+
+      // Separate files and folders by checking each path
+      const folders: string[] = [];
       const files: string[] = [];
 
-      if (folderResult) {
-        folders = Array.isArray(folderResult) ? folderResult : [folderResult];
-      } else {
-        // If no folders selected, show file dialog
-        // Don't specify filters to allow ALL file types (no restrictions)
-        const fileResult = await open({
-          multiple: true,
-          directory: false,
-          // No filters specified = allow all file types
-          title: `Select files to upload to ${selectedSource!.name}`,
-        });
-
-        if (!fileResult) {
-          return; // User canceled both dialogs
-        }
-
-        const selectedPaths = Array.isArray(fileResult)
-          ? fileResult
-          : [fileResult];
-
-        // Check each selected path - some might be folders if user used Cmd+Click
-        for (const path of selectedPaths) {
-          try {
-            const isDir = await invoke<boolean>('vfs_is_directory', {
-              path: path,
-            });
-            if (isDir) {
-              folders.push(path);
-            } else {
-              files.push(path);
-            }
-          } catch {
-            // If check fails, assume it's a file
+      for (const path of selectedPaths) {
+        try {
+          const isDir = await invoke<boolean>('vfs_is_directory', {
+            path: path,
+          });
+          if (isDir) {
+            folders.push(path);
+          } else {
             files.push(path);
           }
+        } catch {
+          // If check fails, assume it's a file
+          files.push(path);
         }
+      }
+
+      // Show feedback about what was selected
+      if (folders.length === 0 && files.length === 0) {
+        return; // Nothing selected
+      }
+
+      // Show initial feedback about selection
+      if (folders.length > 0 && files.length > 0) {
+        toast.showToast({
+          type: 'info',
+          message: `Processing ${folders.length} folder(s) and ${files.length} file(s)...`,
+        });
+      } else if (folders.length > 0) {
+        toast.showToast({
+          type: 'info',
+          message: `Processing ${folders.length} folder(s)...`,
+        });
       }
 
       let totalUploads = 0;

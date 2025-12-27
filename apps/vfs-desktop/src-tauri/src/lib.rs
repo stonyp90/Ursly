@@ -216,6 +216,12 @@ pub fn run() {
             vfs::commands::vfs_cancel_upload,
             vfs::commands::vfs_list_uploads,
             vfs::commands::vfs_list_operations,
+            vfs::commands::vfs_get_audit_history,
+            vfs::commands::vfs_get_organization_audit,
+            // Audit log commands (new)
+            vfs::commands::vfs_get_user_audit_log,
+            vfs::commands::vfs_get_organization_audit_log,
+            vfs::commands::vfs_get_all_audit_log,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

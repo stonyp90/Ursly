@@ -329,13 +329,18 @@ pub async fn vfs_add_source(
                 .and_then(|v| v.as_str())
                 .filter(|s| !s.is_empty())
                 .map(|s| s.to_string());
+            let session_token = config.get("sessionToken")
+                .or_else(|| config.get("awsSessionToken"))
+                .and_then(|v| v.as_str())
+                .filter(|s| !s.is_empty())
+                .map(|s| s.to_string());
             let endpoint = config.get("endpoint")
                 .and_then(|v| v.as_str())
                 .filter(|s| !s.is_empty())
                 .map(|s| s.to_string());
             
             // Call add_s3_source - the method exists and should be accessible
-            service.add_s3_source(name, bucket.clone(), region.clone(), access_key, secret_key, endpoint)
+            service.add_s3_source(name, bucket.clone(), region.clone(), access_key, secret_key, session_token, endpoint)
                 .await
                 .map_err(|e| format!("Failed to add S3 source: {}", e))?
         },
@@ -897,25 +902,37 @@ pub async fn vfs_delete(
     let service = state.get_service()
         .ok_or_else(|| "VFS not initialized".to_string())?;
     
-    // Track delete operation
+    // Track delete operation with user context
     let tracker = get_operation_tracker();
-    let operation_id = tracker.create_operation(
+    let user_id = get_current_user_id();
+    let org_id = get_current_organization_id();
+    let operation_id = tracker.create_operation_with_context(
         OperationType::Delete,
         source_id.clone(),
         path.clone(),
         None,
         None,
+        user_id,
+        org_id,
     );
     
     match service.rm(&source_id, std::path::Path::new(&path)).await {
         Ok(_) => {
             let _ = tracker.complete_operation(&operation_id);
+            // Log to audit log
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             info!("Deleted: {}", path);
             Ok(format!("Deleted: {}", path))
         }
         Err(e) => {
             let error_msg = format!("Failed to delete: {}", e);
             let _ = tracker.fail_operation(&operation_id, error_msg.clone());
+            // Log failed operation to audit log
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             Err(error_msg)
         }
     }
@@ -933,14 +950,18 @@ pub async fn vfs_delete_recursive(
     let service = state.get_service()
         .ok_or_else(|| "VFS not initialized".to_string())?;
     
-    // Track delete operation
+    // Track delete operation with user context
     let tracker = get_operation_tracker();
-    let operation_id = tracker.create_operation(
+    let user_id = get_current_user_id();
+    let org_id = get_current_organization_id();
+    let operation_id = tracker.create_operation_with_context(
         OperationType::Delete,
         source_id.clone(),
         path.clone(),
         None,
         None,
+        user_id,
+        org_id,
     );
     
     // Normalize the path
@@ -952,6 +973,10 @@ pub async fn vfs_delete_recursive(
     match service.rm_rf(&source_id, path_obj).await {
         Ok(_) => {
             let _ = tracker.complete_operation(&operation_id);
+            // Log to audit log
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             info!("Successfully deleted: {}", path);
             Ok(format!("Deleted: {}", path))
         }
@@ -959,6 +984,10 @@ pub async fn vfs_delete_recursive(
             let error_msg = format!("Failed to delete '{}': {}", path, e);
             error!("{}", error_msg);
             let _ = tracker.fail_operation(&operation_id, error_msg.clone());
+            // Log failed operation to audit log
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             Err(error_msg)
         }
     }
@@ -1091,14 +1120,18 @@ pub async fn vfs_download_file(
     
     info!("Downloading file: {} -> {}", path, destination_path);
     
-    // Track download operation
+    // Track download operation with user context
     let tracker = get_operation_tracker();
-    let operation_id = tracker.create_operation(
+    let user_id = get_current_user_id();
+    let org_id = get_current_organization_id();
+    let operation_id = tracker.create_operation_with_context(
         OperationType::Download,
         source_id.clone(),
         path.clone(),
         Some(destination_path.clone()),
         None, // File size will be set after download
+        user_id,
+        org_id,
     );
     
     // Read file from source
@@ -1120,12 +1153,20 @@ pub async fn vfs_download_file(
     match std::fs::write(&destination_path, bytes) {
         Ok(_) => {
             let _ = tracker.complete_operation(&operation_id);
+            // Log to audit log (with user context - in future, get from session)
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             info!("Successfully downloaded {} bytes to {}", bytes_len, destination_path);
             Ok(format!("Downloaded {} bytes to {}", bytes_len, destination_path))
         }
         Err(e) => {
             let error_msg = format!("Failed to write file to '{}': {}", destination_path, e);
             let _ = tracker.fail_operation(&operation_id, error_msg.clone());
+            // Log failed operation to audit log
+            if let Ok(op) = tracker.get_operation(&operation_id) {
+                let _ = get_audit_log().log_operation(op);
+            }
             Err(error_msg)
         }
     }
@@ -3870,9 +3911,11 @@ mod tests {
 
 use crate::vfs::multipart_upload::{MultipartUploadManager, UploadProgress};
 use crate::vfs::operation_tracker::{OperationTracker, OperationType, OperationStatus};
+use crate::vfs::audit_log::AuditLog;
 
 static MULTIPART_UPLOAD_MANAGER: OnceLock<MultipartUploadManager> = OnceLock::new();
 static OPERATION_TRACKER: OnceLock<OperationTracker> = OnceLock::new();
+static AUDIT_LOG: OnceLock<AuditLog> = OnceLock::new();
 
 fn get_upload_manager() -> &'static MultipartUploadManager {
     MULTIPART_UPLOAD_MANAGER.get_or_init(|| {
@@ -3887,13 +3930,56 @@ fn get_upload_manager() -> &'static MultipartUploadManager {
 
 fn get_operation_tracker() -> &'static OperationTracker {
     OPERATION_TRACKER.get_or_init(|| {
-        let state_dir = dirs::cache_dir()
-            .unwrap_or_else(|| std::path::PathBuf::from("/tmp"))
+        let state_dir = dirs::data_dir()
+            .unwrap_or_else(|| dirs::cache_dir().unwrap_or_else(|| std::path::PathBuf::from("/tmp")))
             .join("ursly")
+            .join("vfs")
             .join("operations");
-        OperationTracker::new(&state_dir, 10) // Keep last 10 operations
+        OperationTracker::new(&state_dir, 1000) // Keep last 1000 operations in memory, all in audit log
             .expect("Failed to initialize operation tracker")
     })
+}
+
+fn get_audit_log() -> &'static AuditLog {
+    AUDIT_LOG.get_or_init(|| {
+        let audit_dir = dirs::data_dir()
+            .unwrap_or_else(|| dirs::cache_dir().unwrap_or_else(|| std::path::PathBuf::from("/tmp")))
+            .join("ursly")
+            .join("vfs")
+            .join("audit");
+        AuditLog::new(&audit_dir, 0) // 0 = unlimited entries for audit log
+            .expect("Failed to initialize audit log")
+    })
+}
+
+/// Get current user ID (placeholder - in future, get from session/auth)
+fn get_current_user_id() -> Option<String> {
+    // For now, use system username as user ID
+    // In future, this should come from authentication/session
+    std::env::var("USER")
+        .or_else(|_| std::env::var("USERNAME"))
+        .ok()
+        .or_else(|| {
+            // Fallback: use a local user ID
+            #[cfg(unix)]
+            {
+                std::env::var("HOME")
+                    .ok()
+                    .and_then(|home| {
+                        home.split('/').last().map(|s| format!("local-{}", s))
+                    })
+            }
+            #[cfg(not(unix))]
+            {
+                Some("local-user".to_string())
+            }
+        })
+}
+
+/// Get current organization ID (placeholder - under development)
+fn get_current_organization_id() -> Option<String> {
+    // Under development - will be populated when organization features are implemented
+    None
 }
 
 /// Initialize upload manager and load persisted states
@@ -3925,6 +4011,7 @@ fn create_object_storage_operator(
             
             let has_access_key = source.config.access_key.is_some();
             let has_secret_key = source.config.secret_key.is_some();
+            let has_session_token = source.config.session_token.is_some();
             
             if let Some(ak) = &source.config.access_key {
                 builder.access_key_id(ak);
@@ -3932,12 +4019,16 @@ fn create_object_storage_operator(
             if let Some(sk) = &source.config.secret_key {
                 builder.secret_access_key(sk);
             }
+            // Set session token if provided (required for temporary credentials)
+            if let Some(st) = &source.config.session_token {
+                builder.security_token(st);
+            }
             if let Some(ep) = &source.config.endpoint {
                 builder.endpoint(ep);
             }
             
-            info!("[create_object_storage_operator] Creating S3 operator - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}", 
-                bucket, region, has_access_key, has_secret_key);
+            info!("[create_object_storage_operator] Creating S3 operator - bucket: {}, region: {}, has_access_key: {}, has_secret_key: {}, has_session_token: {}", 
+                bucket, region, has_access_key, has_secret_key, has_session_token);
             
             Operator::new(builder)
                 .map_err(|e| {
@@ -4302,9 +4393,98 @@ pub async fn vfs_list_operations() -> Result<Vec<serde_json::Value>, String> {
     Ok(json_ops)
 }
 
+/// Get operation audit history (all operations from audit log)
+#[tauri::command]
+pub async fn vfs_get_audit_history(limit: Option<usize>) -> Result<Vec<serde_json::Value>, String> {
+    let tracker = get_operation_tracker();
+    let operations = tracker.get_audit_history(limit)
+        .map_err(|e| format!("Failed to get audit history: {}", e))?;
+    
+    // Convert to JSON values for frontend
+    let json_ops: Vec<serde_json::Value> = operations.iter()
+        .map(|op| serde_json::to_value(op).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(json_ops)
+}
+
+/// Get organization audit history (filtered by organization_id)
+#[tauri::command]
+pub async fn vfs_get_organization_audit(
+    organization_id: String,
+    limit: Option<usize>
+) -> Result<Vec<serde_json::Value>, String> {
+    let tracker = get_operation_tracker();
+    let operations = tracker.get_organization_audit(&organization_id, limit)
+        .map_err(|e| format!("Failed to get organization audit: {}", e))?;
+    
+    // Convert to JSON values for frontend
+    let json_ops: Vec<serde_json::Value> = operations.iter()
+        .map(|op| serde_json::to_value(op).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(json_ops)
+}
+
 /// List all active uploads
 #[tauri::command]
 pub async fn vfs_list_uploads() -> Result<Vec<crate::vfs::multipart_upload::MultipartUploadState>, String> {
     let manager = get_upload_manager();
     Ok(manager.list_uploads().await)
+}
+
+// ============================================================================
+// Audit Log Commands
+// ============================================================================
+
+/// Get user operations audit log
+#[tauri::command]
+pub async fn vfs_get_user_audit_log(user_id: Option<String>) -> Result<Vec<serde_json::Value>, String> {
+    let audit_log = get_audit_log();
+    
+    let entries = if let Some(uid) = user_id {
+        audit_log.get_entries_by_user(&uid)
+    } else {
+        // If no user_id provided, get current user's operations
+        // For now, get all entries (in future, get from session/auth)
+        audit_log.get_all_entries()
+    };
+    
+    let json_entries: Vec<serde_json::Value> = entries.iter()
+        .map(|e| serde_json::to_value(e).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(json_entries)
+}
+
+/// Get organization operations audit log (Under Development)
+#[tauri::command]
+pub async fn vfs_get_organization_audit_log(organization_id: Option<String>) -> Result<Vec<serde_json::Value>, String> {
+    let audit_log = get_audit_log();
+    
+    let entries = if let Some(org_id) = organization_id {
+        audit_log.get_entries_by_organization(&org_id)
+    } else {
+        // If no org_id provided, return empty (organization feature under development)
+        Vec::new()
+    };
+    
+    let json_entries: Vec<serde_json::Value> = entries.iter()
+        .map(|e| serde_json::to_value(e).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(json_entries)
+}
+
+/// Get all audit log entries
+#[tauri::command]
+pub async fn vfs_get_all_audit_log() -> Result<Vec<serde_json::Value>, String> {
+    let audit_log = get_audit_log();
+    let entries = audit_log.get_all_entries();
+    
+    let json_entries: Vec<serde_json::Value> = entries.iter()
+        .map(|e| serde_json::to_value(e).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(json_entries)
 }

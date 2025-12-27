@@ -56,6 +56,10 @@ pub struct Operation {
     pub status: OperationStatus,
     /// Error message if failed
     pub error: Option<String>,
+    /// User ID who performed the operation (for audit)
+    pub user_id: Option<String>,
+    /// Organization ID (for organization audit)
+    pub organization_id: Option<String>,
     /// Timestamp when operation was created
     #[serde(with = "chrono::serde::ts_seconds_option")]
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -73,7 +77,9 @@ pub struct OperationTracker {
     operations: Arc<RwLock<HashMap<String, Operation>>>,
     /// State file path
     state_file: PathBuf,
-    /// Maximum number of completed operations to keep in history
+    /// Audit log file path (persists all operations)
+    audit_file: PathBuf,
+    /// Maximum number of completed operations to keep in memory
     max_history: usize,
 }
 
@@ -83,10 +89,12 @@ impl OperationTracker {
             .context("Failed to create operation tracker state directory")?;
         
         let state_file = state_dir.join("operations.json");
+        let audit_file = state_dir.join("audit_log.jsonl"); // JSON Lines format for append-only log
         
         let tracker = Self {
             operations: Arc::new(RwLock::new(HashMap::new())),
             state_file,
+            audit_file,
             max_history,
         };
         
@@ -136,6 +144,28 @@ impl OperationTracker {
         destination_path: Option<String>,
         file_size: Option<u64>,
     ) -> String {
+        self.create_operation_with_context(
+            operation_type,
+            source_id,
+            source_path,
+            destination_path,
+            file_size,
+            None, // user_id
+            None, // organization_id
+        )
+    }
+
+    /// Create a new operation with user and organization context
+    pub fn create_operation_with_context(
+        &self,
+        operation_type: OperationType,
+        source_id: String,
+        source_path: String,
+        destination_path: Option<String>,
+        file_size: Option<u64>,
+        user_id: Option<String>,
+        organization_id: Option<String>,
+    ) -> String {
         let operation_id = Uuid::new_v4().to_string();
         let now = Some(Utc::now());
         
@@ -149,6 +179,8 @@ impl OperationTracker {
             bytes_processed: 0,
             status: OperationStatus::Pending,
             error: None,
+            user_id,
+            organization_id,
             created_at: now,
             completed_at: None,
             last_updated_at: now,
@@ -156,8 +188,11 @@ impl OperationTracker {
         
         {
             let mut ops = self.operations.write();
-            ops.insert(operation_id.clone(), operation);
+            ops.insert(operation_id.clone(), operation.clone());
         }
+        
+        // Append to audit log (append-only for complete history)
+        self.append_to_audit_log(&operation);
         
         if let Err(e) = self.save_state() {
             error!("Failed to save operation state: {}", e);
@@ -165,6 +200,22 @@ impl OperationTracker {
         
         info!("Created operation: {}", operation_id);
         operation_id
+    }
+
+    /// Append operation to audit log (append-only, preserves all history)
+    fn append_to_audit_log(&self, operation: &Operation) {
+        if let Ok(json) = serde_json::to_string(operation) {
+            if let Ok(mut file) = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.audit_file)
+            {
+                use std::io::Write;
+                if let Err(e) = writeln!(file, "{}", json) {
+                    error!("Failed to write to audit log: {}", e);
+                }
+            }
+        }
     }
 
     /// Update operation progress
@@ -191,7 +242,7 @@ impl OperationTracker {
         &self,
         operation_id: &str,
     ) -> Result<()> {
-        {
+        let operation = {
             let mut ops = self.operations.write();
             if let Some(op) = ops.get_mut(operation_id) {
                 op.status = OperationStatus::Completed;
@@ -202,8 +253,14 @@ impl OperationTracker {
                 if op.file_size.is_none() {
                     op.file_size = Some(op.bytes_processed);
                 }
+                op.clone()
+            } else {
+                return Ok(());
             }
-        }
+        };
+        
+        // Append updated operation to audit log (both old and new systems for compatibility)
+        self.append_to_audit_log(&operation);
         
         self.cleanup_old_operations();
         self.save_state()?;
@@ -216,15 +273,21 @@ impl OperationTracker {
         operation_id: &str,
         error: String,
     ) -> Result<()> {
-        {
+        let operation = {
             let mut ops = self.operations.write();
             if let Some(op) = ops.get_mut(operation_id) {
                 op.status = OperationStatus::Failed;
-                op.error = Some(error);
+                op.error = Some(error.clone());
                 op.completed_at = Some(Utc::now());
                 op.last_updated_at = Some(Utc::now());
+                op.clone()
+            } else {
+                return Ok(());
             }
-        }
+        };
+        
+        // Append updated operation to audit log (both old and new systems for compatibility)
+        self.append_to_audit_log(&operation);
         
         self.cleanup_old_operations();
         self.save_state()?;
@@ -236,18 +299,32 @@ impl OperationTracker {
         &self,
         operation_id: &str,
     ) -> Result<()> {
-        {
+        let operation = {
             let mut ops = self.operations.write();
             if let Some(op) = ops.get_mut(operation_id) {
                 op.status = OperationStatus::Canceled;
                 op.completed_at = Some(Utc::now());
                 op.last_updated_at = Some(Utc::now());
+                op.clone()
+            } else {
+                return Ok(());
             }
-        }
+        };
+        
+        // Append updated operation to audit log (both old and new systems for compatibility)
+        self.append_to_audit_log(&operation);
         
         self.cleanup_old_operations();
         self.save_state()?;
         Ok(())
+    }
+
+    /// Get operation by ID
+    pub fn get_operation(&self, operation_id: &str) -> Result<Operation> {
+        let ops = self.operations.read();
+        ops.get(operation_id)
+            .cloned()
+            .ok_or_else(|| anyhow::anyhow!("Operation not found: {}", operation_id))
     }
 
     /// Get all operations
@@ -296,6 +373,93 @@ impl OperationTracker {
         // Limit to max_history
         completed.truncate(self.max_history);
         completed
+    }
+
+    /// Get operation history from audit log (all operations, not limited)
+    pub fn get_audit_history(&self, limit: Option<usize>) -> Result<Vec<Operation>> {
+        if !self.audit_file.exists() {
+            return Ok(Vec::new());
+        }
+
+        let content = std::fs::read_to_string(&self.audit_file)
+            .context("Failed to read audit log file")?;
+        
+        let mut operations: Vec<Operation> = Vec::new();
+        
+        for line in content.lines() {
+            if line.trim().is_empty() {
+                continue;
+            }
+            
+            match serde_json::from_str::<Operation>(line) {
+                Ok(op) => operations.push(op),
+                Err(e) => {
+                    error!("Failed to parse audit log line: {} - {}", line, e);
+                }
+            }
+        }
+        
+        // Sort by created_at (most recent first)
+        operations.sort_by(|a, b| {
+            let a_time = a.created_at.or(a.last_updated_at);
+            let b_time = b.created_at.or(b.last_updated_at);
+            b_time.cmp(&a_time)
+        });
+        
+        // Apply limit if specified
+        if let Some(limit) = limit {
+            operations.truncate(limit);
+        }
+        
+        Ok(operations)
+    }
+
+    /// Get organization audit history (filtered by organization_id)
+    pub fn get_organization_audit(&self, organization_id: &str, limit: Option<usize>) -> Result<Vec<Operation>> {
+        let mut operations = self.get_audit_history(limit)?;
+        
+        // Filter by organization_id
+        operations.retain(|op| {
+            op.organization_id.as_ref().map(|id| id == organization_id).unwrap_or(false)
+        });
+        
+        Ok(operations)
+    }
+
+    /// Get operations by user ID (for user audit)
+    pub fn get_operations_by_user(&self, user_id: &str) -> Vec<Operation> {
+        let ops = self.operations.read();
+        let mut user_ops: Vec<Operation> = ops.values()
+            .filter(|op| op.user_id.as_ref().map(|id| id == user_id).unwrap_or(false))
+            .cloned()
+            .collect();
+        
+        // Sort by created_at (most recent first)
+        user_ops.sort_by(|a, b| {
+            let a_time = a.created_at.or(a.last_updated_at);
+            let b_time = b.created_at.or(b.last_updated_at);
+            b_time.cmp(&a_time)
+        });
+        
+        user_ops
+    }
+
+    /// Get operations by organization ID (for organization audit)
+    pub fn get_operations_by_organization(&self, organization_id: &str) -> Vec<Operation> {
+        let ops = self.operations.read();
+        let mut org_ops: Vec<Operation> = ops.values()
+            .filter(|op| op.organization_id.as_ref().map(|id| id == organization_id).unwrap_or(false))
+            .cloned()
+            .collect();
+        
+        // Sort by created_at (most recent first)
+        org_ops.sort_by(|a, b| {
+            let a_time = a.created_at.or(a.last_updated_at);
+            let b_time = b.created_at.or(b.last_updated_at);
+            b_time.cmp(&a_time)
+        });
+        
+        org_ops
     }
 
     /// Cleanup old completed operations beyond max_history

@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { FinderPage } from './pages/FinderPage';
 import { MetricsPage } from './pages/MetricsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AuditPage } from './pages/AuditPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './components/Toast';
 import { ErrorDialogProvider } from './components/ErrorDialog';
@@ -20,6 +21,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('files');
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuditPageOpen, setIsAuditPageOpen] = useState(false);
 
   useEffect(() => {
     const initVfs = async () => {
@@ -81,6 +83,16 @@ function App() {
     return () => window.removeEventListener('keydown', handleDevToolsShortcut);
   }, []);
 
+  useEffect(() => {
+    const handleOpenAuditPage = () => {
+      setIsAuditPageOpen(true);
+    };
+
+    window.addEventListener('open-audit-page', handleOpenAuditPage);
+    return () =>
+      window.removeEventListener('open-audit-page', handleOpenAuditPage);
+  }, []);
+
   if (isLoading) {
     return (
       <div
@@ -132,17 +144,23 @@ function App() {
             <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
             <main className="main-content full-height">
-              {activeTab === 'files' && (
-                <FinderPage
-                  onOpenMetrics={() => setActiveTab('metrics')}
-                  onOpenSearch={() => setIsSearchOpen(true)}
-                  isSearchOpen={isSearchOpen}
-                  onCloseSearch={() => setIsSearchOpen(false)}
-                />
-              )}
-              {activeTab === 'metrics' && <MetricsPage />}
-              {activeTab === 'settings' && (
-                <SettingsPage onClose={() => setActiveTab('files')} />
+              {isAuditPageOpen ? (
+                <AuditPage onClose={() => setIsAuditPageOpen(false)} />
+              ) : (
+                <>
+                  {activeTab === 'files' && (
+                    <FinderPage
+                      onOpenMetrics={() => setActiveTab('metrics')}
+                      onOpenSearch={() => setIsSearchOpen(true)}
+                      isSearchOpen={isSearchOpen}
+                      onCloseSearch={() => setIsSearchOpen(false)}
+                    />
+                  )}
+                  {activeTab === 'metrics' && <MetricsPage />}
+                  {activeTab === 'settings' && (
+                    <SettingsPage onClose={() => setActiveTab('files')} />
+                  )}
+                </>
               )}
             </main>
 
