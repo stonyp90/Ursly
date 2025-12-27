@@ -599,13 +599,44 @@ export function FinderPage({
       const persistedIds = new Set(persisted?.map((s) => s.id) || []);
       const backendIds = new Set(list.map((s) => s.id));
 
-      // Add persisted sources that aren't in backend (user-added sources)
+      // Re-add persisted sources that aren't in backend (user-added sources)
+      // This ensures they're available for operations like upload
+      const { invoke } = await import('@tauri-apps/api/core');
       const merged = [...list];
-      persisted?.forEach((source) => {
-        if (!backendIds.has(source.id)) {
-          merged.push(source);
+
+      if (persisted) {
+        for (const source of persisted) {
+          if (!backendIds.has(source.id)) {
+            try {
+              // Re-add the source to backend
+              const reAddedSource = await invoke<StorageSource>(
+                'vfs_add_source',
+                {
+                  source: {
+                    providerId: source.providerId,
+                    name: source.name,
+                    category: source.category,
+                    config: source.config,
+                  },
+                },
+              );
+              merged.push(reAddedSource);
+              console.log(
+                '[FinderPage] Re-added persisted source to backend:',
+                reAddedSource.name,
+              );
+            } catch (err) {
+              console.error(
+                '[FinderPage] Failed to re-add persisted source:',
+                source.name,
+                err,
+              );
+              // Still add to merged list even if re-add fails (for display purposes)
+              merged.push(source);
+            }
+          }
         }
-      });
+      }
 
       setSources(merged);
       savePersistedSources(merged);
