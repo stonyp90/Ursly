@@ -296,15 +296,6 @@ export function OnboardingTour({
                 }
               }, 300);
             }
-          } else if (step?.target === '.favorites-section') {
-            const filesTab = document.querySelector(
-              '.header-tab:not([data-tab="metrics"]):not([data-tab="settings"])',
-            ) as HTMLElement;
-            if (filesTab && !filesTab.classList.contains('active')) {
-              filesTab.style.transition =
-                'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-              filesTab.click();
-            }
           }
         });
       }
