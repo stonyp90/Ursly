@@ -99,25 +99,6 @@ const TOUR_STEPS: Step[] = [
     disableOverlayClose: false,
   },
   {
-    target: '.favorites-section',
-    content: (
-      <div className="tour-step-content">
-        <h3>Quick Access Favorites</h3>
-        <p>
-          Drag any file or folder here to add it to favorites for instant
-          access. Your favorites are saved locally and sync across sessions.
-        </p>
-        <div className="tour-step-tip">
-          <strong>Alternative:</strong> Right-click any item and select{' '}
-          <strong>"Add to Favorites"</strong> from the context menu.
-        </div>
-      </div>
-    ),
-    placement: 'right',
-    disableBeacon: true,
-    disableOverlayClose: false,
-  },
-  {
     target: '.metrics-header .settings-btn',
     content: (
       <div className="tour-step-content">
@@ -185,9 +166,6 @@ export function OnboardingTour({
         const settingsTab =
           document.querySelector('.header-tab[data-tab="settings"]') ||
           document.querySelector('.header-tab:nth-child(3)');
-        const favoritesSection =
-          document.querySelector('.favorites-section') ||
-          document.querySelector('.sidebar-section');
         const alertThresholdsBtn = document.querySelector(
           '.metrics-header .settings-btn',
         );
@@ -199,7 +177,6 @@ export function OnboardingTour({
           fileBrowser &&
           metricsTab &&
           settingsTab &&
-          favoritesSection &&
           alertThresholdsBtn
         ) {
           setRun(true);
