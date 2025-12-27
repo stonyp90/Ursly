@@ -501,28 +501,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                       );
                     });
                   }}
-                  onKeyDown={async (e) => {
-                    // Handle Cmd+V / Ctrl+V as backup
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-                      try {
-                        if (
-                          navigator.clipboard &&
-                          navigator.clipboard.readText
-                        ) {
-                          const text = await navigator.clipboard.readText();
-                          if (text && text.trim()) {
-                            e.preventDefault();
-                            setName(text.trim());
-                          }
-                        }
-                      } catch (err) {
-                        console.warn(
-                          '[AddStorageModal] Keyboard paste failed:',
-                          err,
-                        );
-                      }
-                    }
-                  }}
+                  onKeyDown={(e) => handleKeyboardPaste(e)}
                   placeholder={`My ${providerName}`}
                 />
               </div>
@@ -548,31 +527,7 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
                         );
                       });
                     }}
-                    onKeyDown={async (e) => {
-                      // Handle Cmd+V / Ctrl+V as backup
-                      if ((e.metaKey || e.ctrlKey) && e.key === 'v') {
-                        try {
-                          if (
-                            navigator.clipboard &&
-                            navigator.clipboard.readText
-                          ) {
-                            const text = await navigator.clipboard.readText();
-                            if (text && text.trim()) {
-                              e.preventDefault();
-                              setConfig({
-                                ...config,
-                                [field.key]: text.trim(),
-                              });
-                            }
-                          }
-                        } catch (err) {
-                          console.warn(
-                            '[AddStorageModal] Keyboard paste failed:',
-                            err,
-                          );
-                        }
-                      }
-                    }}
+                    onKeyDown={(e) => handleKeyboardPaste(e, field.key)}
                     placeholder={field.placeholder}
                   />
                 </div>
