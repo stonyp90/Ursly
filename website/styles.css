@@ -5197,6 +5197,27 @@ body.theme-light .theme-toggle-btn .theme-icon-dark {
 }
 
 /* Responsive for new sections */
+/* Hide sections on website and mobile */
+.hero-creative-text {
+  display: none !important;
+}
+
+#product,
+.product-section {
+  display: none !important;
+}
+
+#getting-started,
+.getting-started {
+  display: none !important;
+}
+
+/* Remove navigation links to hidden sections */
+.nav-links a[href='#product'],
+.mobile-menu a[href='#product'] {
+  display: none !important;
+}
+
 @media (max-width: 900px) {
   .product-features-grid {
     grid-template-columns: 1fr !important;
