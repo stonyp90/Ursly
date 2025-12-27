@@ -1921,16 +1921,24 @@ export function FinderPage({
 
     const storageType =
       selectedSource.providerId || selectedSource.type || 'local';
-    const isS3 =
+    const isObjectStorage =
       storageType === 's3' ||
       storageType === 'aws-s3' ||
-      storageType === 's3-compatible';
+      storageType === 's3-compatible' ||
+      storageType === 'gcs' ||
+      storageType === 'azure-blob' ||
+      selectedSource.category === 'cloud';
 
-    console.log('[FinderPage] Storage type:', storageType, 'isS3:', isS3);
+    console.log(
+      '[FinderPage] Storage type:',
+      storageType,
+      'isObjectStorage:',
+      isObjectStorage,
+    );
 
-    if (!isS3) {
+    if (!isObjectStorage) {
       DialogService.error(
-        'Upload is only available for S3 storage',
+        'Upload is only available for object storage (S3, GCS, Azure Blob)',
         'Upload Error',
       );
       return;
@@ -1982,7 +1990,7 @@ export function FinderPage({
           const uploadId = await invoke<string>('vfs_start_multipart_upload', {
             sourceId: selectedSource.id,
             localPath,
-            s3Path,
+            s3Path, // Note: parameter name is s3Path but works for all object storage
             partSize: null, // Use default 5MB
           });
 
@@ -2622,6 +2630,36 @@ export function FinderPage({
         </div>
 
         <div className="toolbar-right">
+          {/* Upload button - only show for object storage (S3, GCS, Azure) */}
+          {selectedSource &&
+            (selectedSource.category === 'cloud' ||
+              selectedSource.providerId === 's3' ||
+              selectedSource.providerId === 'aws-s3' ||
+              selectedSource.providerId === 's3-compatible' ||
+              selectedSource.providerId === 'gcs' ||
+              selectedSource.providerId === 'azure-blob') && (
+              <button
+                className="toolbar-btn upload-btn"
+                onClick={async () => {
+                  await handleUploadToS3();
+                }}
+                title="Upload Files to Object Storage"
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  width="18"
+                  height="18"
+                >
+                  <path d="M8 11V1M8 1l3 3M8 1L5 4" />
+                  <path d="M2 6v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6" />
+                </svg>
+                <span className="upload-btn-label">Upload</span>
+              </button>
+            )}
+
           <div className="view-switcher">
             <button
               className={`view-btn ${viewMode === 'icon' ? 'active' : ''}`}

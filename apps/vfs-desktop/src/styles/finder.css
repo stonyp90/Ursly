@@ -282,6 +282,49 @@
   transform: scale(1.1);
 }
 
+/* Upload button - special styling */
+.toolbar-btn.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  width: auto;
+  min-width: 90px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--finder-accent-rgb), 0.2) 0%,
+    rgba(var(--finder-secondary-rgb), 0.15) 100%
+  );
+  border-color: var(--finder-accent);
+  color: var(--finder-accent);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.toolbar-btn.upload-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--finder-accent-rgb), 0.3) 0%,
+    rgba(var(--finder-secondary-rgb), 0.25) 100%
+  );
+  box-shadow:
+    0 0 0 2px rgba(var(--finder-accent-rgb), 0.2),
+    0 4px 16px rgba(var(--finder-accent-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-btn.upload-btn .upload-btn-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.toolbar-btn.upload-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
 /* Navigation buttons */
 .toolbar-nav .toolbar-btn {
   border: none;
