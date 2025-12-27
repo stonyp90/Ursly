@@ -101,6 +101,9 @@ jobs:
           - platform: macOS
             os: macos-latest
             rust_target: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: Windows
+            os: windows-latest
+            rust_target: x86_64-pc-windows-msvc
           - platform: Linux
             os: ubuntu-latest
             rust_target: x86_64-unknown-linux-gnu
