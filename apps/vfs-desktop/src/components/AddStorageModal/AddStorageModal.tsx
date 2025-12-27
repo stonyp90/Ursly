@@ -404,31 +404,11 @@ export const AddStorageModal: React.FC<AddStorageModalProps> = ({
     <div
       className="add-storage-overlay"
       onClick={handleClose}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-storage-title"
     >
-      <div
-        className="add-storage-modal"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          position: 'relative',
-          zIndex: 10001,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className="add-storage-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 id="add-storage-title">
             {step === 'select' ? 'Add Storage' : `Configure ${providerName}`}
