@@ -5197,22 +5197,24 @@ body.theme-light .theme-toggle-btn .theme-icon-dark {
 }
 
 /* Responsive for new sections */
-/* Hide sections on website and mobile */
-.hero-creative-text {
-  display: none !important;
+/* Hide sections only on mobile devices */
+@media (max-width: 768px) {
+  .hero-creative-text {
+    display: none !important;
+  }
+
+  #product,
+  .product-section {
+    display: none !important;
+  }
+
+  #getting-started,
+  .getting-started {
+    display: none !important;
+  }
 }
 
-#product,
-.product-section {
-  display: none !important;
-}
-
-#getting-started,
-.getting-started {
-  display: none !important;
-}
-
-/* Remove navigation links to hidden sections */
+/* Remove navigation links to hidden sections (always hidden since sections are hidden on mobile) */
 .nav-links a[href='#product'],
 .mobile-menu a[href='#product'] {
   display: none !important;
