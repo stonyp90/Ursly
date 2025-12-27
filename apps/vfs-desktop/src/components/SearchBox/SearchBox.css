@@ -32,12 +32,19 @@
 .search-box .search-icon {
   width: 16px;
   height: 16px;
-  color: var(--vfs-text-tertiary);
+  color: var(
+    --vfs-text-tertiary,
+    var(--text-tertiary, var(--text-muted, #8e8e93))
+  );
   flex-shrink: 0;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .search-box.focused .search-icon {
-  color: var(--vfs-primary);
+  color: var(--vfs-primary, var(--primary, #0a84ff));
+  transform: scale(1.05);
 }
 
 .search-box input {
@@ -150,6 +157,7 @@
 .clear-btn svg {
   width: 12px;
   height: 12px;
+  color: inherit;
 }
 
 /* Suggestions Dropdown */

@@ -546,6 +546,7 @@ export function SpotlightSearch({
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            style={{ color: 'var(--primary, var(--vfs-primary, #0a84ff))' }}
           >
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />

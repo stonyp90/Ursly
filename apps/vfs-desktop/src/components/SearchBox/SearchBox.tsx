@@ -313,21 +313,65 @@ export function SearchBox({
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!suggestions.length) return;
+    // Handle Escape to close dropdown
+    if (e.key === 'Escape') {
+      if (isFocused && suggestions.length > 0) {
+        e.preventDefault();
+        setIsFocused(false);
+        inputRef.current?.blur();
+      } else if (value) {
+        // If there's a value, clear it first
+        e.preventDefault();
+        onChange('');
+        inputRef.current?.focus();
+      }
+      return;
+    }
+
+    // Only handle navigation keys when suggestions are visible
+    if (!suggestions.length || !isFocused) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, suggestions.length - 1));
+      const newIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+      setSelectedIndex(newIndex);
+      // Scroll selected item into view
+      const item = dropdownRef.current?.children[newIndex] as HTMLElement;
+      if (item) {
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
+      const newIndex = Math.max(selectedIndex - 1, 0);
+      setSelectedIndex(newIndex);
+      // Scroll selected item into view
+      const item = dropdownRef.current?.children[newIndex] as HTMLElement;
+      if (item) {
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     } else if (e.key === 'Tab' || e.key === 'Enter') {
       if (suggestions[selectedIndex]) {
         e.preventDefault();
         applySuggestion(suggestions[selectedIndex]);
       }
-    } else if (e.key === 'Escape') {
-      setIsFocused(false);
+    } else if (
+      e.key === 'Backspace' &&
+      value.length === 0 &&
+      activeFilters.length > 0
+    ) {
+      // Remove last filter when backspace on empty input
+      e.preventDefault();
+      const lastFilter = activeFilters[activeFilters.length - 1];
+      const escapedValue = lastFilter.value.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&',
+      );
+      const pattern = new RegExp(
+        `\\s*${lastFilter.operator}:${escapedValue}\\s*`,
+        'gi',
+      );
+      const newValue = value.replace(pattern, ' ').replace(/\s+/g, ' ').trim();
+      onChange(newValue);
     }
   };
 
@@ -375,20 +419,23 @@ export function SearchBox({
   const activeFilters = useMemo(() => {
     const filters: { operator: string; value: string }[] = [];
     const patterns = [
-      /tag:(\S+)/gi,
-      /type:(\S+)/gi,
-      /tier:(\S+)/gi,
-      /ext:(\S+)/gi,
-      /is:(\S+)/gi,
-      /size:(\S+)/gi,
-      /modified:(\S+)/gi,
+      { regex: /tag:(\S+)/gi, operator: 'tag' },
+      { regex: /type:(\S+)/gi, operator: 'type' },
+      { regex: /tier:(\S+)/gi, operator: 'tier' },
+      { regex: /ext:(\S+)/gi, operator: 'ext' },
+      { regex: /is:(\S+)/gi, operator: 'is' },
+      { regex: /size:(\S+)/gi, operator: 'size' },
+      { regex: /modified:(\S+)/gi, operator: 'modified' },
     ];
 
-    patterns.forEach((pattern) => {
-      const matches = value.matchAll(pattern);
+    patterns.forEach(({ regex, operator }) => {
+      // Reset regex lastIndex to avoid issues with global flag
+      regex.lastIndex = 0;
+      const matches = Array.from(value.matchAll(regex));
       for (const match of matches) {
-        const op = match[0].split(':')[0];
-        filters.push({ operator: op, value: match[1] });
+        if (match[1]) {
+          filters.push({ operator, value: match[1].trim() });
+        }
       }
     });
 
@@ -404,6 +451,7 @@ export function SearchBox({
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          style={{ color: 'var(--vfs-text-tertiary)' }}
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -418,13 +466,31 @@ export function SearchBox({
                 <span className="pill-value">{f.value}</span>
                 <button
                   className="pill-remove"
-                  onClick={() => {
-                    const pattern = new RegExp(
-                      `${f.operator}:${f.value}\\s*`,
-                      'i',
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // More robust pattern matching - handle spaces and special characters
+                    const escapedValue = f.value.replace(
+                      /[.*+?^${}()|[\]\\]/g,
+                      '\\$&',
                     );
-                    onChange(value.replace(pattern, '').trim());
+                    const pattern = new RegExp(
+                      `\\s*${f.operator}:${escapedValue}\\s*`,
+                      'gi',
+                    );
+                    const newValue = value
+                      .replace(pattern, ' ')
+                      .replace(/\s+/g, ' ')
+                      .trim();
+                    onChange(newValue);
+                    // Keep focus on input after removing filter
+                    setTimeout(() => inputRef.current?.focus(), 0);
                   }}
+                  onMouseDown={(e) => {
+                    // Prevent input from losing focus when clicking remove button
+                    e.preventDefault();
+                  }}
+                  title={`Remove ${f.operator}:${f.value} filter`}
                 >
                   ×
                 </button>
@@ -447,8 +513,25 @@ export function SearchBox({
         />
 
         {value && (
-          <button className="clear-btn" onClick={() => onChange('')}>
-            <svg viewBox="0 0 24 24" fill="currentColor">
+          <button
+            className="clear-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onChange('');
+              inputRef.current?.focus();
+            }}
+            onMouseDown={(e) => {
+              // Prevent input from losing focus when clicking clear button
+              e.preventDefault();
+            }}
+            title="Clear search"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ color: 'var(--vfs-text-tertiary)' }}
+            >
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
             </svg>
           </button>
@@ -462,8 +545,16 @@ export function SearchBox({
             <button
               key={i}
               className={`suggestion-item ${i === selectedIndex ? 'selected' : ''} ${s.type}`}
-              onClick={() => applySuggestion(s)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                applySuggestion(s);
+              }}
               onMouseEnter={() => setSelectedIndex(i)}
+              onMouseDown={(e) => {
+                // Prevent input from losing focus when clicking suggestion
+                e.preventDefault();
+              }}
             >
               <span className={`suggestion-icon icon-${s.iconType || s.type}`}>
                 {s.iconType && SearchIcons[s.iconType]}
